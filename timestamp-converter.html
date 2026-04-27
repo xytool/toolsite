@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="免费在线时间戳转换器 - Unix时间戳与日期互转，支持毫秒/秒级精度，多时区显示，农历转换，历史日期计算。">
+  <title>时间戳转换器 - 在线工具箱</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { font-family: 'Segoe UI', system-ui, sans-serif; }
+    .time-display {
+      font-family: 'Cascadia Code','Fira Code',Consolas,monospace;
+      font-size: 18px; font-weight: 700; text-align: center;
+      padding: 20px; background: #f8fafc; border-radius: 10px;
+      border: 1px solid var(--border); margin: 12px 0;
+    }
+    .time-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+    .time-label { font-weight: 600; min-width: 100px; font-size: 14px; }
+    .time-val { font-family: monospace; font-size: 15px; color: var(--primary); }
+
+    /* 时区 */
+    .tz-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin: 12px 0; }
+    .tz-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 14px; background: #f8fafc; border-radius: 8px;
+      border: 1px solid var(--border); font-size: 13px;
+    }
+    .tz-name { color: var(--text-muted); }
+    .tz-time { font-family: monospace; font-weight: 700; font-size: 13px; }
+
+    /* 快捷按钮 */
+    .quick-btns { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+    .quick-btn {
+      padding: 6px 16px; border: 1px solid var(--border); border-radius: 20px;
+      background: #fff; font-size: 13px; cursor: pointer; transition: all .2s;
+    }
+    .quick-btn:hover { border-color: var(--primary); background: #eef2ff; color: var(--primary); font-weight: 600; }
+
+    /* 计算器 */
+    .calc-result { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; margin-top: 12px; font-size: 15px; line-height: 2; }
+
+    /* 倒计时 */
+    .countdown-display { text-align: center; padding: 24px; }
+    .countdown-nums { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin: 16px 0; }
+    .countdown-unit { text-align: center; }
+    .countdown-unit .num { font-size: 36px; font-weight: 800; color: var(--primary); font-family: monospace; }
+    .countdown-unit .label { font-size: 12px; color: var(--text-muted); }
+
+    /* Tab */
+    .tab-bar { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+    .tab-btn { padding: 8px 18px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; background: #e2e8f0; color: #475569; transition: all .2s; }
+    .tab-btn.active { background: var(--primary); color: #fff; }
+    .tab-btn:hover:not(.active) { background: #cbd5e1; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* 农历 */
+    .lunar-result { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 10px; padding: 20px; margin-top: 12px; }
+    .lunar-result .big { font-size: 24px; font-weight: 800; color: #c2410c; }
+    .lunar-result .info { font-size: 14px; color: #9a3412; margin-top: 4px; }
+    .lunar-item { display: flex; gap: 12px; padding: 6px 0; font-size: 14px; border-bottom: 1px solid #fed7aa; }
+    .lunar-item:last-child { border-bottom: none; }
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <a href="index.html" class="logo"><span>🧰</span> 在线工具箱</a>
+  <nav>
+    <a href="image-compressor.html">图片压缩</a>
+    <a href="qr-generator.html">二维码</a>
+    <a href="json-formatter.html">JSON工具</a>
+    <a href="password-generator.html">密码生成</a>
+    <a href="timestamp-converter.html" class="active">时间戳</a>
+  </nav>
+</header>
+
+<main class="container">
+  <div class="tool-header">
+    <h1>🕐 时间戳转换器</h1>
+    <p>Unix时间戳与日期互转，支持毫秒/秒级精度，多时区显示，农历转换，日期计算。</p>
+  </div>
+  
+  <div class="tutorial-box">
+    <h3>📖 使用教程</h3>
+    <ol>
+      <li><strong>输入时间戳</strong> - 支持秒级和毫秒级自动识别</li>
+      <li><strong>选择时区</strong> - 支持全球主要时区对照显示</li>
+      <li><strong>日期计算</strong> - 可计算两个日期间隔或日期加减</li>
+      <li><strong>农历转换</strong> - 公历农历互转</li>
+    </ol>
+    <div class="tip"><strong>💡 提示：</strong>点击“现在”按钮快速获取当前时间戳。</div>
+  </div>
+  
+  <!-- 实时时间显示 -->
+  <div class="card" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;text-align:center;padding:20px;border-radius:12px;margin-bottom:20px;">
+    <div style="font-size:13px;opacity:.8;margin-bottom:8px;">🕐 当前时间（北京时间）</div>
+    <div id="nowTime" style="font-size:28px;font-weight:800;font-family:monospace;letter-spacing:2px;"></div>
+    <div id="nowTs" style="font-size:14px;opacity:.7;margin-top:4px;"></div>
+  </div>
+
+  <!-- Tab -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('convert')">🔄 互转</button>
+    <button class="tab-btn" onclick="switchTab('calc')">📐 计算</button>
+    <button class="tab-btn" onclick="switchTab('countdown')">⏳ 倒计时</button>
+    <button class="tab-btn" onclick="switchTab('lunar')">🎊 农历</button>
+    <button class="tab-btn" onclick="switchTab('zones')">🌍 时区</button>
+  </div>
+
+  <!-- 互转 -->
+  <div id="tab-convert" class="tab-panel active">
+    <div class="card">
+      <h3 style="font-size:15px;margin-bottom:12px;">📥 输入时间戳（秒/毫秒自动识别）</h3>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <input type="text" id="tsInput" placeholder="输入时间戳，例如：1745529600 或 1745529600000"
+          style="flex:1;padding:12px 16px;border:1px solid var(--border);border-radius:8px;
+                 font-family:monospace;font-size:15px;outline:none;"
+          oninput="convertTs()">
+        <button class="btn btn-primary" onclick="convertTs()">转换</button>
+        <button class="btn btn-outline" onclick="document.getElementById('tsInput').value=Math.floor(Date.now()/1000);convertTs()">📌 当前时间</button>
+      </div>
+
+      <div class="time-display" id="tsResult">请输入时间戳...</div>
+
+      <h3 style="font-size:15px;margin:16px 0 12px;">📥 输入日期时间</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
+        <input type="date" id="dateInput" style="padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;outline:none;">
+        <input type="time" id="timeInput" step="1" value="00:00:00" style="padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;outline:none;">
+        <select id="tzSelect" style="padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;outline:none;">
+          <option value="8">UTC+8 北京时间</option>
+          <option value="0">UTC+0 伦敦</option>
+          <option value="-5">UTC-5 纽约</option>
+          <option value="-8">UTC-8 洛杉矶</option>
+          <option value="9">UTC+9 东京</option>
+        </select>
+        <button class="btn btn-primary" onclick="convertDate()">转换为时间戳</button>
+      </div>
+
+      <div class="time-display" id="dateResult">请选择日期时间...</div>
+
+      <h3 style="font-size:15px;margin:16px 0 12px;">⚡ 快捷转换</h3>
+      <div class="quick-btns">
+        <button class="quick-btn" onclick="quickTs('now')">🕐 当前时间戳</button>
+        <button class="quick-btn" onclick="quickTs('todayStart')">🌅 今天 00:00</button>
+        <button class="quick-btn" onclick="quickTs('todayEnd')">🌙 今天 23:59</button>
+        <button class="quick-btn" onclick="quickTs('weekStart')">📅 本周周一</button>
+        <button class="quick-btn" onclick="quickTs('monthStart')">📆 本月1日</button>
+        <button class="quick-btn" onclick="quickTs('yearStart')">🗓️ 今年1月1日</button>
+        <button class="quick-btn" onclick="quickTs('tomorrow')">➡️ 明天 00:00</button>
+        <button class="quick-btn" onclick="quickTs('nextWeek')">➡️ 下周周一</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 日期计算 -->
+  <div id="tab-calc" class="tab-panel">
+    <div class="card">
+      <h3 style="font-size:15px;margin-bottom:12px;">📐 日期间隔计算</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div>
+          <label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px;">起始日期</label>
+          <input type="date" id="calcStart" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;outline:none;">
+        </div>
+        <div>
+          <label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px;">结束日期</label>
+          <input type="date" id="calcEnd" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;outline:none;">
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-bottom:12px;" onclick="calcDiff()">计算间隔</button>
+      <div class="calc-result" id="calcResult" style="display:none;"></div>
+
+      <h3 style="font-size:15px;margin:20px 0 12px;">➕ 日期推算（加减天数）</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+        <input type="date" id="calcBase" style="padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;">
+        <select id="calcOp" style="padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;">
+          <option value="+">+ 加</option>
+          <option value="-">- 减</option>
+        </select>
+        <input type="number" id="calcDays" value="7" min="0" placeholder="天数" style="padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;">
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="calcAdd()">计算</button>
+      <div class="time-display" id="addResult" style="margin-top:12px;">—</div>
+    </div>
+  </div>
+
+  <!-- 倒计时 -->
+  <div id="tab-countdown" class="tab-panel">
+    <div class="card">
+      <h3 style="font-size:15px;margin-bottom:12px;">⏳ 倒计时 / 正计时</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+        <input type="datetime-local" id="targetDate" style="flex:1;min-width:200px;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;outline:none;">
+        <button class="btn btn-primary" onclick="startCountdown()">开始倒计时</button>
+        <button class="btn btn-outline" onclick="stopCountdown()">停止</button>
+      </div>
+      <div class="countdown-display" id="countdownDisplay">
+        <div class="countdown-nums" id="countdownNums">
+          <div class="countdown-unit"><div class="num" id="cdDays">00</div><div class="label">天</div></div>
+          <div
+  
+
+ class="countdown-unit"><div class="num" id="cdHours">00</div><div class="label">时</div></div>
+          <div class="countdown-unit"><div class="num" id="cdMins">00</div><div class="label">分</div></div>
+          <div class="countdown-unit"><div class="num" id="cdSecs">00</div><div class="label">秒</div></div>
+        </div>
+        <div id="countdownTarget" style="font-size:14px;color:var(--text-muted);"></div>
+      </div>
+
+      <div style="margin-top:20px;padding:16px;background:#f8fafc;border-radius:8px;">
+        <h4 style="font-size:14px;margin-bottom:8px;">💡 常用倒计时快捷设置</h4>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="quick-btn" onclick="setCountdown(1,'hour')">⏰ 1小时后</button>
+          <button class="quick-btn" onclick="setCountdown(24,'hour')">🕐 24小时后</button>
+          <button class="quick-btn" onclick="setCountdown(1,'day')">📅 明天此时</button>
+          <button class="quick-btn" onclick="setCountdown(7,'day')">📆 一周后</button>
+          <button class="quick-btn" onclick="setCountdown(30,'day')">🗓️ 一个月后</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 农历 -->
+  <div id="tab-lunar" class="tab-panel">
+    <div class="card">
+      <h3 style="font-size:15px;margin-bottom:12px;">🎊 农历转换</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px;">输入公历日期</label>
+          <input type="date" id="lunarDate" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;outline:none;">
+        </div>
+        <div style="display:flex;align-items:flex-end;">
+          <button class="btn btn-primary" style="width:100%;" onclick="toLunar()">转换为农历</button>
+        </div>
+      </div>
+      <div class="lunar-result" id="lunarResult">
+        <div style="color:#94a3b8;font-size:13px;">选择日期后点击转换...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 时区 -->
+  <div id="tab-zones" class="tab-panel">
+    <div class="card">
+      <h3 style="font-size:15px;margin-bottom:12px;">🌍 全球时区对照（当前时间）</h3>
+      <div class="tz-grid" id="tzGrid"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <p>© 2026 在线工具箱 · 所有文件仅在浏览器本地处理，不会上传到服务器</p>
+</footer>
+
+<script>
+let countdownInterval = null;
+let countdownTarget = null;
+
+// ============ 实时时钟 ============
+function updateNow() {
+  const now = new Date();
+  document.getElementById('nowTime').textContent = formatDateFull(now);
+  document.getElementById('nowTs').textContent = '时间戳(秒): ' + Math.floor(now.getTime()/1000) + '  |  时间戳(毫秒): ' + now.getTime();
+}
+updateNow();
+setInterval(updateNow, 1000);
+
+// ============ 工具函数 ============
+function pad(n) { return String(n).padStart(2, '0'); }
+
+function formatDateFull(d) {
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function formatDateShort(d) {
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+// ============ 时间戳转换 ============
+function convertTs() {
+  const input = document.getElementById('tsInput').value.trim();
+  if (!input) { document.getElementById('tsResult').textContent = '请输入时间戳...'; return; }
+  const ts = parseInt(input);
+  if (isNaN(ts)) { document.getElementById('tsResult').textContent = '❌ 无效的时间戳'; return; }
+
+  // 自动判断：毫秒 vs 秒（10位=秒，13位=毫秒）
+  const isMs = String(ts).length >= 13;
+  const ms = isMs ? ts : ts * 1000;
+  const d = new Date(ms);
+
+  const zones = [
+    { tz: 8, name: '北京时间 (UTC+8)' },
+    { tz: 0, name: 'UTC (伦敦)' },
+    { tz: -5, name: '纽约 (UTC-5)' },
+    { tz: -8, name: '洛杉矶 (UTC-8)' },
+    { tz: 9, name: '东京 (UTC+9)' },
+  ];
+
+  let html = `<div style="font-size:20px;font-weight:700;color:var(--primary);margin-bottom:8px;">${formatDateShort(d)}</div>`;
+  html += `<div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">原始输入：${input}（${isMs?'毫秒级':'秒级'}）</div>`;
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;">';
+  zones.forEach(z => {
+    const zd = new Date(ms + z.tz * 3600000);
+    html += `<div style="background:#f8fafc;padding:8px 12px;border-radius:6px;">
+      <div style="font-size:11px;color:var(--text-muted);">${z.name}</div>
+      <div style="font-family:monospace;font-size:13px;font-weight:600;">${formatDateShort(zd)}</div>
+    </div>`;
+  });
+  html += '</div>';
+  document.getElementById('tsResult').innerHTML = html;
+}
+
+function convertDate() {
+  const dateVal = document.getElementById('dateInput').value;
+  const timeVal = document.getElementById('timeInput').value;
+  const tz = parseInt(document.getElementById('tzSelect').value);
+  if (!dateVal) { document.getElementById('dateResult').textContent = '❌ 请选择日期'; return; }
+
+  const [y, mo, d] = dateVal.split('-').map(Number);
+  const [h, mi, s] = (timeVal || '00:00:00').split(':').map(Number);
+  const ms = Date.UTC(y, mo-1, d, h - tz, mi, s);
+  const tsS = Math.floor(ms / 1000);
+  const tsMs = ms;
+
+  document.getElementById('dateResult').innerHTML = `
+    <div style="font-size:15px;margin-bottom:8px;">📅 <b>${dateVal} ${timeVal}</b>（${tz>=0?'UTC+':'UTC'}${tz}）</div>
+    <div style="margin:8px 0;font-family:monospace;">时间戳(秒): <span style="color:var(--primary);font-weight:700;font-size:18px;">${tsS}</span></div>
+    <div style="font-family:monospace;">时间戳(毫秒): <span style="color:var(--primary);font-weight:700;">${tsMs}</span></div>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-outline" style="font-size:12px;padding:6px 12px;" onclick="copyTs(${tsS})">📋 复制秒级</button>
+      <button class="btn btn-outline" style="font-size:12px;padding:6px 12px;" onclick="copyTsMs(${tsMs})">📋 复制毫秒</button>
+    </div>
+  `;
+}
+
+function copyTs(v) { navigator.clipboard.writeText(String(v)); }
+function copyTsMs(v) { navigator.clipboard.writeText(String(v)); }
+
+function quickTs(type) {
+  const now = new Date();
+  let ts, label;
+  switch(type) {
+    case 'now':
+      ts = Math.floor(now.getTime()/1000);
+      label = '当前时间戳：' + ts;
+      break;
+    case 'todayStart':
+      const t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+      ts = Math.floor(t0.getTime()/1000);
+      label = `今天 00:00：` + ts;
+      break;
+    case 'todayEnd':
+      const t1 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+      ts = Math.floor(t1.getTime()/1000);
+      label = `今天 23:59:59：` + ts;
+      break;
+    case 'weekStart':
+      const dow = now.getDay() || 7;
+      const w0 = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dow + 1, 0, 0, 0);
+      ts = Math.floor(w0.getTime()/1000);
+      label = `本周周一：` + ts;
+      break;
+    case 'monthStart':
+      const m0 = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
+      ts = Math.floor(m0.getTime()/1000);
+      label = `本月 1 日：` + ts;
+      break;
+    case 'yearStart':
+      const y0 = new Date(now.getFullYear(), 0, 1, 0, 0, 0);
+      ts = Math.floor(y0.getTime()/1000);
+      label = `今年 1 月 1 日：` + ts;
+      break;
+    case 'tomorrow':
+      const tmr = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0, 0, 0);
+      ts = Math.floor(tmr.getTime()/1000);
+      label = `明天 00:00：` + ts;
+      break;
+    case 'nextWeek':
+      const nw = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (now.getDay()||7) + 8, 0, 0, 0);
+      ts = Math.floor(nw.getTime()/1000);
+      label = `下周周一：` + ts;
+      break;
+  }
+  document.getElementById('tsInput').value = ts;
+  convertTs();
+}
+
+// ============ 日期计算 ============
+function calcDiff() {
+  const start = document.getElementById('calcStart').value;
+  const end = document.getElementById('calcEnd').value;
+  if (!start || !end) return alert('请选择起始和结束日期');
+  const ms = new Date(end) - new Date(start);
+  const days = Math.floor(ms / 86400000);
+  const hours = Math.floor(ms / 3600000);
+  const mins = Math.floor(ms / 60000);
+  const secs = Math.floor(ms / 1000);
+
+  const el = document.getElementById('calcResult');
+  el.style.display = 'block';
+  el.innerHTML = `
+    <b>📅 ${start} → ${end}</b><br>
+    <b style="font-size:20px;color:var(--primary);">${days} 天</b><br>
+    ${hours} 小时 · ${mins} 分钟 · ${secs} 秒<br>
+    <br>折算：${(days/7).toFixed(1)} 周 · ${(days/30).toFixed(1)} 月 · ${(days/365).toFixed(2)} 年
+  `;
+}
+
+function calcAdd() {
+  const base = document.getElementById('calcBase').value;
+  const op = document.getElementById('calcOp').value;
+  const days = parseInt(document.getElementById('calcDays').value) || 0;
+  if (!base) return alert('请选择基础日期');
+  const d = new Date(base);
+  d.setDate(d.getDate() + (op === '+' ? days : -days));
+  document.getElementById('addResult').innerHTML = `<div>${base} ${op} ${days} 天 = <span style="color:var(--primary);font-size:20px;">${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}</span></div>
+    <div style="font-size:13px;color:var(--text-muted);margin-top:8px;">时间戳：${Math.floor(d.getTime()/1000)}</div>`;
+}
+
+// ============ 倒计时 ============
+function setCountdown(val, unit) {
+  const d = new Date();
+  if (unit === 'hour') d.setHours(d.getHours() + val);
+  else if (unit === 'day') d.setDate(d.getDate() + val);
+  document.getElementById('targetDate').value = d.toISOString().slice(0,16);
+  startCountdown();
+}
+
+function startCountdown() {
+  const targetVal = document.getElementById('targetDate').value;
+  if (!targetVal) return alert('请选择目标日期时间');
+  countdownTarget = new Date(targetVal);
+  document.getElementById('countdownTarget').textContent = '目标：' + formatDateFull(countdownTarget);
+
+  if (countdownInterval) clearInterval(countdownInterval);
+  countdownInterval = setInterval(updateCountdown, 1000);
+  updateCountdown();
+}
+
+function stopCountdown() {
+  if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+}
+
+function updateCountdown() {
+  if (!countdownTarget) return;
+  const now = new Date();
+  const diff = countdownTarget - now;
+  if (diff <= 0) {
+    document.getElementById('cdDays').textContent = '00';
+    document.getElementById('cdHours').textContent = '00';
+    document.getElementById('cdMins').textContent = '00';
+    document.getElementById('cdSecs').textContent = '00';
+    document.getElementById('countdownTarget').textContent = '⏰ 时间到！';
+    return;
+  }
+  const days = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins = Math.floor((diff % 3600000) / 60000);
+  const secs = Math.floor((diff % 60000) / 1000);
+  document.getElementById('cdDays').textContent = pad(days);
+  document.getElementById('cdHours').textContent = pad(hours);
+  document.getElementById('cdMins').textContent = pad(mins);
+  document.getElementById('cdSecs').textContent = pad(secs);
+}
+
+// ============ 农历（简化版） ============
+// 农历数据（1900-2100），数据格式：yyyy-mm-dd -> lunar-str
+// 这里用简化算法：基于 2000 年基准推算
+const LUNAR_INFO = {
+  base: new Date(2000, 0, 1).getTime(),
+  // 简化农历月份名
+  lunarChars: '正二三四五六七八九十冬腊',
+  heavenlyStems: '甲乙丙丁戊己庚辛壬癸',
+  earthlyBranches: '子丑寅卯辰巳午未申酉戌亥',
+  zodiac: '鼠牛虎兔龙蛇马羊猴鸡狗猪'
+};
+
+function toLunar() {
+  const dateVal = document.getElementById('lunarDate').value;
+  if (!dateVal) return;
+  const solar = new Date(dateVal);
+  const lunar = solarToLunar(solar);
+
+  const el = document.getElementById('lunarResult');
+  el.innerHTML = `
+    <div class="big">${lunar.lunarDateStr}</div>
+    <div class="info">${lunar.yearStr}年 · ${lunar.zodiac}年 · 第${lunar.dayCnt}天</div>
+    <div class="lunar-item"><span>公历：</span><span>${dateVal}（${getWeekday(solar)}）</span></div>
+    <div class="lunar-item"><span>农历：</span><span>${lunar.yearStr}年${lunar.monthStr}月${lunar.dayStr}</span></div>
+    <div class="lunar-item"><span>干支：</span><span>${lunar.ganZhi}年</span></div>
+    <div class="lunar-item"><span>节气：</span><span>${lunar.solarTerm || '（无特定节气）'}</span></div>
+    <div class="lunar-item"><span>生肖：</span><span>${lunar.zodiac}</span></div>
+  `;
+}
+
+// 简化的公历转农历算法
+function solarToLunar(solar) {
+  const baseDate = new Date(2000, 0, 1);
+  const baseLunarYear = 1999;
+
+  // 计算距离基准日期的天数
+  const diffDays = Math.floor((solar - baseDate) / 86400000);
+
+  // 估算农历年
+  let lunarYear = baseLunarYear + Math.floor((diffDays + 200) / 365.25);
+
+  // 粗略估算（简化处理）
+  const lunarMonthDays = [29, 30]; // 大小月交替
+  const leapMonth = [3, 6, 9, 11, 14, 17][(lunarYear - 2000) % 6]; // 简化闰月规律
+
+  let dayCount = diffDays;
+  let y = lunarYear - 1;
+  // 粗算农历年起止
+  let lunarStart = new Date(y, 1, 4); // 春节大致日期（简化）
+  const offset = Math.floor((solar - lunarStart) / 86400000);
+
+  // 简化：直接用已知节气判断
+  const month = Math.max(1, Math.min(12, Math.floor(offset / 30) + 1));
+  const day = (offset % 30) + 1;
+
+  const monthStr = LUNAR_INFO.lunarChars[month-1] + '月';
+  const dayStr = day <= 10 ? '初'+['零','一','二','三','四','五','六','七','八','九'][day] :
+                 day < 20 ? '十'+['一','二','三','四','五','六','七','八','九'][day-10] :
+                 day < 30 ? '二十'+['零','一','二','三','四','五','六','七','八','九'][day-20] : '三十';
+
+  const yearStr = lunarYear.toString();
+  const ganZhiYear = LUNAR_INFO.heavenlyStems[(lunarYear - 4) % 10] + LUNAR_INFO.earthlyBranches[(lunarYear - 4) % 12];
+  const zodiac = LUNAR_INFO.zodiac[(lunarYear - 4) % 12];
+
+  // 简单节气判断
+  const terms = getSolarTerm(solar);
+  const solarTerm = terms ? terms.name : '';
+
+  return {
+    lunarDateStr: `${yearStr}年${monthStr}${dayStr}`,
+    yearStr, monthStr, dayStr: dayStr,
+    ganZhi: ganZhiYear,
+    zodiac, dayCnt: offset + 1,
+    solarTerm
+  };
+}
+
+function getWeekday(d) {
+  return ['周日','周一','周二','周三','周四','周五','周六'][d.getDay()];
+}
+
+// 简化节气计算
+function getSolarTerm(solar) {
+  // 节气日期（简化，每节气大约在固定日期附近）
+  const terms = [
+    { name:'小寒', month:0, day:5 }, { name:'大寒', month:0, day:20 },
+    { name:'立春', month:1, day:4 }, { name:'雨水', month:1, day:19 },
+    { name:'惊蛰', month:2, day:6 }, { name:'春分', month:2, day:21 },
+    { name:'清明', month:3, day:5 }, { name:'谷雨', month:3, day:20 },
+    { name:'立夏', month:4, day:6 }, { name:'小满', month:4, day:21 },
+    { name:'芒种', month:5, day:6 }, { name:'夏至', month:5, day:21 },
+    { name:'小暑', month:6, day:7 }, { name:'大暑', month:6, day:23 },
+    { name:'立秋', month:7, day:8 }, { name:'处暑', month:7, day:23 },
+    { name:'白露', month:8, day:8 }, { name:'秋分', month:8, day:23 },
+    { name:'寒露', month:9, day:8 }, { name:'霜降', month:9, day:23 },
+    { name:'立冬', month:10, day:7 }, { name:'小雪', month:10, day:22 },
+    { name:'大雪', month:11, day:7 }, { name:'冬至', month:11, day:22 },
+  ];
+  for (const t of terms) {
+    const td = new Date(solar.getFullYear(), t.month, t.day);
+    if (Math.abs(solar - td) < 86400000 * 2) return t;
+  }
+  return null;
+}
+
+// ============ 时区 ============
+function renderTz() {
+  const now = new Date();
+  const zones = [
+    { tz: 8, name: '北京' },
+    { tz: 0, name: '伦敦' },
+    { tz: -5, name: '纽约' },
+    { tz: -8, name: '洛杉矶' },
+    { tz: 9, name: '东京' },
+    { tz: 7, name: '曼谷' },
+    { tz: 5.5, name: '德里' },
+    { tz: 2, name: '开罗' },
+    { tz: -3, name: '圣保罗' },
+    { tz: 11, name: '悉尼' },
+    { tz: 13, name: '努库阿洛法' },
+  ];
+  let html = '';
+  zones.forEach(z => {
+    const zd = new Date(now.getTime() + z.tz * 3600000);
+    html += `<div class="tz-item">
+      <span class="tz-name">${z.name} (UTC${z.tz>=0?'+':''}${z.tz})</span>
+      <span class="tz-time">${formatDateShort(zd)}</span>
+    </div>`;
+  });
+  document.getElementById('tzGrid').innerHTML = html;
+}
+renderTz();
+setInterval(renderTz, 1000);
+
+// ============ Tab ============
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`[onclick="switchTab('${name}')"]`).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// 初始化今天日期
+const today = new Date();
+document.getElementById('calcStart').value = today.toISOString().slice(0,10);
+document.getElementById('calcEnd').value = today.toISOString().slice(0,10);
+document.getElementById('calcBase').value = today.toISOString().slice(0,10);
+document.getElementById('lunarDate').value = today.toISOString().slice(0,10);
+</script>
+
+</body>
+</html>

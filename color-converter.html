@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="免费在线颜色转换工具 - HEX/RGB/HSL/HSV/CMYK/HSL互转，实时颜色预览，调色板，颜色渐变生成器。">
+  <title>颜色转换器 - 在线工具箱</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { font-family: 'Segoe UI', system-ui, sans-serif; }
+    .color-preview {
+      width: 100%; height: 100px; border-radius: 12px; border: 1px solid var(--border);
+      margin: 12px 0; box-shadow: 0 2px 8px rgba(0,0,0,.1);
+      transition: background-color .2s;
+    }
+    .color-input-row { display: flex; gap: 8px; align-items: center; margin: 8px 0; flex-wrap: wrap; }
+    .color-input-row .label { font-weight: 700; font-size: 13px; min-width: 80px; }
+    .color-input-row input[type="text"] {
+      flex: 1; min-width: 100px; padding: 8px 12px; border: 1px solid var(--border);
+      border-radius: 8px; font-family: monospace; font-size: 14px; outline: none;
+    }
+    .color-input-row input[type="text"]:focus { border-color: var(--primary); }
+    input[type="color"] { width: 40px; height: 36px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
+    input[type="range"] { flex: 1; min-width: 100px; }
+
+    .color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin: 12px 0; }
+    .color-swatch {
+      aspect-ratio: 1; border-radius: 8px; cursor: pointer; border: 2px solid transparent;
+      transition: all .2s; position: relative; overflow: hidden;
+    }
+    .color-swatch:hover { transform: scale(1.05); border-color: var(--primary); }
+    .color-swatch input[type="range"] { position: absolute; bottom: 2px; left: 0; right: 0; width: 100%; opacity: 0; }
+    .color-swatch .name { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,.5); color: #fff; font-size: 10px; padding: 2px 4px; text-align: center; }
+
+    /* 调色板 */
+    .palette-row { display: flex; gap: 6px; margin: 4px 0; flex-wrap: wrap; align-items: center; }
+    .palette-item { width: 32px; height: 32px; border-radius: 6px; cursor: pointer; border: 1px solid rgba(0,0,0,.1); transition: transform .2s; }
+    .palette-item:hover { transform: scale(1.15); }
+
+    /* 渐变 */
+    .gradient-preview {
+      height: 80px; border-radius: 12px; margin: 12px 0; border: 1px solid var(--border);
+      transition: all .3s;
+    }
+    .gradient-stops { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    .stop-row { display: flex; gap: 8px; align-items: center; }
+    .stop-row input[type="color"] { width: 36px; height: 36px; }
+
+    /* 复制按钮 */
+    .copy-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+    .copy-chip {
+      display: flex; align-items: center; gap: 6px; padding: 6px 14px;
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;
+      font-family: monospace; font-size: 13px; cursor: pointer; transition: all .2s;
+    }
+    .copy-chip:hover { border-color: var(--primary); background: #eef2ff; }
+    .copy-chip .type { font-weight: 700; color: var(--primary); font-size: 11px; }
+
+    /* Tab */
+    .tab-bar { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+    .tab-btn { padding: 8px 18px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; background: #e2e8f0; color: #475569; transition: all .2s; }
+    .tab-btn.active { background: var(--primary); color: #fff; }
+    .tab-btn:hover:not(.active) { background: #cbd5e1; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <a href="index.html" class="logo"><span>🧰</span> 在线工具箱</a>
+  <nav>
+    <a href="image-compressor.html">图片压缩</a>
+    <a href="qr-generator.html">二维码</a>
+    <a href="json-formatter.html">JSON工具</a>
+    <a href="password-generator.html">密码生成</a>
+    <a href="timestamp-converter.html">时间戳</a>
+    <a href="base64-tool.html">Base64</a>
+    <a href="text-diff-tool.html">文本对比</a>
+    <a href="word-counter.html">字数统计</a>
+    <a href="color-converter.html" class="active">颜色转换</a>
+  </nav>
+</header>
+
+<main class="container">
+  <div class="tool-header">
+    <h1>🎨 颜色转换器</h1>
+    <p>HEX / RGB / RGBA / HSL / HSV / CMYK 互转，实时预览，调色板，颜色渐变生成。</p>
+  </div>
+  
+  <div class="tutorial-box">
+    <h3>📖 使用教程</h3>
+    <ol>
+      <li><strong>输入颜色</strong> - 输入HEX、RGB、HSL等任意格式颜色值</li>
+      <li><strong>实时转换</strong> - 自动显示所有格式的转换结果</li>
+      <li><strong>调色板</strong> - 可视化选择和保存颜色</li>
+      <li><strong>渐变生成</strong> - 生成CSS渐变代码</li>
+    </ol>
+    <div class="tip"><strong>💡 提示：</strong>点击颜色值可快速复制到剪贴板。</div>
+  </div>
+  
+  <!-- Tab -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('convert')">🔄 颜色转换</button>
+    <button class="tab-btn" onclick="switchTab('palette')">🎨 调色板</button>
+    <button class="tab-btn" onclick="switchTab('gradient')">🌈 渐变生成</button>
+  </div>
+
+  <!-- ============ 颜色转换 ============ -->
+  <div id="tab-convert" class="tab-panel active">
+    <div class="card">
+      <!-- 颜色选择器 -->
+      <div style="margin-bottom:16px;">
+        <label style="font-weight:700;font-size:14px;display:block;margin-bottom:8px;">🎯 选择颜色</label>
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <input type="color" id="colorPicker" value="#4f46e5" style="width:60px;height:50px;border-radius:8px;border:1px solid var(--border);cursor:pointer;" oninput="onPickerChange()">
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">当前颜色</div>
+            <div style="font-family:monospace;font-size:18px;font-weight:700;" id="pickerHex">#4F46E5</div>
+          </div>
+          <button class="btn btn-outline" style="font-size:13px;" onclick="randomColor()">🎲 随机颜色</button>
+          <button class="btn btn-outline" style="font-size:13px;" onclick="lockColor()">🔒 锁定</button>
+        </div>
+      </div>
+
+      <div
+  
+
+ class="color-preview" id="colorPreview" style="background:#4f46e5;"></div>
+
+      <!-- HEX -->
+      <div class="color-input-row">
+        <span class="label">HEX</span>
+        <input type="color" onclick="document.getElementById('hexInput').focus()">
+        <input type="text" id="hexInput" value="#4F46E5" oninput="onHexChange()">
+        <button class="btn btn-outline" style="font-size:12px;padding:8px 12px;" onclick="copyVal('hex')">📋</button>
+      </div>
+
+      <!-- RGB -->
+      <div class="color-input-row">
+        <span class="label">RGB</span>
+        <input type="color" onclick="document.getElementById('rgbInput').focus()">
+        <input type="text" id="rgbInput" value="rgb(79, 70, 229)" oninput="onRgbChange()">
+        <button class="btn btn-outline" style="font-size:12px;padding:8px 12px;" onclick="copyVal('rgb')">📋</button>
+      </div>
+
+      <!-- RGBA -->
+      <div class="color-input-row">
+        <span class="label">RGBA</span>
+        <input type="color" onclick="document.getElementById('rgbaInput').focus()">
+        <input type="text" id="rgbaInput" value="rgba(79, 70, 229, 1)" oninput="onRgbaChange()">
+        <button class="btn btn-outline" style="font-size:12px;padding:8px 12px;" onclick="copyVal('rgba')">📋</button>
+      </div>
+
+      <!-- HSL -->
+      <div class="color-input-row">
+        <span class="label">HSL</span>
+        <input type="color" onclick="document.getElementById('hslInput').focus()">
+        <input type="text" id="hslInput" value="hsl(243, 75%, 59%)" oninput="onHslChange()">
+        <button class="btn btn-outline" style="font-size:12px;padding:8px 12px;" onclick="copyVal('hsl')">📋</button>
+      </div>
+
+      <!-- HSV -->
+      <div class="color-input-row">
+        <span class="label">HSV</span>
+        <input type="color" onclick="document.getElementById('hsvInput').focus()">
+        <input type="text" id="hsvInput" value="hsv(243, 70%, 90%)" oninput="onHsvChange()">
+        <button class="btn btn-outline" style="font-size:12px;padding:8px 12px;" onclick="copyVal('hsv')">📋</button>
+      </div>
+
+      <!-- CMYK -->
+      <div class="color-input-row">
+        <span class="label">CMYK</span>
+        <input type="color" onclick="document.getElementById('cmykInput').focus()">
+        <input type="text" id="cmykInput" value="cmyk(66%, 70%, 0%, 10%)" oninput="onCmykChange()">
+        <button class="btn btn-outline" style="font-size:12px;padding:8px 12px;" onclick="copyVal('cmyk')">📋</button>
+      </div>
+
+      <!-- 复制全部 -->
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+        <div style="font-weight:700;font-size:14px;margin-bottom:8px;">📋 一键复制</div>
+        <div class="copy-row">
+          <div class="copy-chip" onclick="copyVal('hex')"><span class="type">HEX</span><span id="copyHex">#4F46E5</span></div>
+          <div class="copy-chip" onclick="copyVal('rgb')"><span class="type">RGB</span><span id="copyRgb">rgb(79,70,229)</span></div>
+          <div class="copy-chip" onclick="copyVal('hsl')"><span class="type">HSL</span><span id="copyHsl">hsl(243,75%,59%)</span></div>
+          <div class="copy-chip" onclick="copyVal('css')"><span class="type">CSS</span><span>var(--c)</span></div>
+        </div>
+      </div>
+
+      <!-- 颜色调节 -->
+      <div style="margin-top:20px;">
+        <div style="font-weight:700;font-size:14px;margin-bottom:8px;">🌀 颜色调节</div>
+        <div class="color-input-row">
+          <span class="label">色相 H</span>
+          <input type="range" id="adjH" min="0" max="360" value="243" oninput="onAdjChange()">
+          <span id="adjHVal" style="font-weight:700;min-width:40px;">243°</span>
+        </div>
+        <div class="color-input-row">
+          <span class="label">饱和度 S</span>
+          <input type="range" id="adjS" min="0" max="100" value="75" oninput="onAdjChange()">
+          <span id="adjSVal" style="font-weight:700;min-width:40px;">75%</span>
+        </div>
+        <div class="color-input-row">
+          <span class="label">亮度 L</span>
+          <input type="range" id="adjL" min="0" max="100" value="59" oninput="onAdjChange()">
+          <span id="adjLVal" style="font-weight:700;min-width:40px;">59%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 相似色 -->
+    <div class="card" style="margin-top:16px;">
+      <div style="font-weight:700;font-size:14px;margin-bottom:8px;">🌓 相似色 / 互补色</div>
+      <div class="color-grid" id="similarColors"></div>
+    </div>
+  </div>
+
+  <!-- ============ 调色板 ============ -->
+  <div id="tab-palette" class="tab-panel">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span style="font-weight:700;font-size:15px;">🎨 Material Design 调色板</span>
+        <button class="btn btn-outline" style="font-size:12px;" onclick="document.getElementById('paletteSearch').focus()">🔍 搜索颜色</button>
+      </div>
+      <input type="text" id="paletteSearch" placeholder="搜索颜色名称..." style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;margin-bottom:12px;font-size:14px;outline:none;" oninput="filterPalette(this.value)">
+
+      <div id="paletteGrid" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div style="font-weight:700;font-size:15px;margin-bottom:12px;">🏠 网页安全色</div>
+      <div class="color-grid" id="webSafeColors"></div>
+    </div>
+  </div>
+
+  <!-- ============ 渐变生成 ============ -->
+  <div id="tab-gradient" class="tab-panel">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span style="font-weight:700;font-size:15px;">🌈 CSS 渐变生成器</span>
+        <button class="btn btn-outline" style="font-size:12px;" onclick="randomGradient()">🎲 随机</button>
+      </div>
+
+      <div class="gradient-preview" id="gradientPreview" style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+
+      <div style="margin-bottom:16px;">
+        <div style="font-weight:700;font-size:14px;margin-bottom:8px;">渐变类型</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-primary" id="gradType-linear" onclick="setGradType('linear')">线性渐变</button>
+          <button class="btn btn-outline" id="gradType-radial" onclick="setGradType('radial')">径向渐变</button>
+          <button class="btn btn-outline" id="gradType-conic" onclick="setGradType('conic')">圆锥渐变</button>
+        </div>
+      </div>
+
+      <div id="gradAngle" style="margin-bottom:16px;">
+        <div class="color-input-row">
+          <span class="label">渐变角度</span>
+          <input type="range" id="gradAngleSlider" min="0" max="360" value="135" oninput="updateGradient()">
+          <span id="gradAngleVal" style="font-weight:700;">135°</span>
+        </div>
+      </div>
+
+      <div class="gradient-stops" id="gradStops">
+        <div class="stop-row">
+          <input type="color" value="#667eea" oninput="updateGradient()">
+          <input type="text" value="#667eea" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:monospace;" oninput="updateGradient()">
+          <input type="range" min="0" max="100" value="0" style="flex:1;" oninput="updateGradient()">
+          <span style="min-width:40px;font-size:13px;">0%</span>
+          <button onclick="removeStop(this)" style="border:none;background:none;cursor:pointer;font-size:18px;color:#dc2626;">×</button>
+        </div>
+        <div class="stop-row">
+          <input type="color" value="#764ba2" oninput="updateGradient()">
+          <input type="text" value="#764ba2" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:monospace;" oninput="updateGradient()">
+          <input type="range" min="0" max="100" value="100" style="flex:1;" oninput="updateGradient()">
+          <span style="min-width:40px;font-size:13px;">100%</span>
+          <button onclick="removeStop(this)" style="border:none;background:none;cursor:pointer;font-size:18px;color:#dc2626;">×</button>
+        </div>
+      </div>
+
+      <button class="btn btn-outline" style="font-size:13px;" onclick="addStop()">+ 添加颜色</button>
+
+      <div style="margin-top:16px;padding:16px;background:#f8fafc;border-radius:8px;">
+        <div style="font-weight:700;font-size:14px;margin-bottom:8px;">📋 CSS 代码</div>
+        <div style="font-family:monospace;font-size:13px;background:#1e293b;color:#e2e8f0;padding:14px;border-radius:8px;word-break:break-all;line-height:1.8;" id="gradCssCode">
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        </div>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="copyGradient()">📋 复制 CSS</button>
+      </div>
+    </div>
+
+    <!-- 预设渐变 -->
+    <div class="card" style="margin-top:16px;">
+      <div style="font-weight:700;font-size:15px;margin-bottom:12px;">✨ 预设渐变</div>
+      <div id="presetGradients" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <p>© 2026 在线工具箱 · 所有文件仅在浏览器本地处理，不会上传到服务器</p>
+</footer>
+
+<script>
+// ============ 颜色转换核心 ============
+let currentHex = '#4F46E5';
+let gradType = 'linear';
+let locked = false;
+
+function hexToRgb(hex) {
+  hex = hex.replace('#', '');
+  if (hex.length === 3) hex = hex.split('').map(c => c+c).join('');
+  return {
+    r: parseInt(hex.slice(0,2), 16),
+    g: parseInt(hex.slice(2,4), 16),
+    b: parseInt(hex.slice(4,6), 16)
+  };
+}
+
+function rgbToHex(r, g, b) {
+  return '#' + [r,g,b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2,'0')).join('').toUpperCase();
+}
+
+function rgbToHsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r,g,b), min = Math.min(r,g,b);
+  let h, s, l = (max+min)/2;
+  if (max === min) { h = s = 0; }
+  else {
+    const d = max - min;
+    s = l > .5 ? d/(2-max-min) : d/(max+min);
+    switch(max) {
+      case r: h = ((g-b)/d + (g<b?6:0))/6; break;
+      case g: h = ((b-r)/d + 2)/6; break;
+      case b: h = ((r-g)/d + 4)/6; break;
+    }
+  }
+  return { h: Math.round(h*360), s: Math.round(s*100), l: Math.round(l*100) };
+}
+
+function hslToRgb(h, s, l) {
+  h /= 360; s /= 100; l /= 100;
+  let r, g, b;
+  if (s === 0) { r = g = b = l; }
+  else {
+    const hue2rgb = (p, q, t) => {
+      if (t < 0) t += 1; if (t > 1) t -= 1;
+      if (t < 1/6) return p + (q-p)*6*t;
+      if (t < 1/2) return q;
+      if (t < 2/3) return p + (q-p)*(2/3-t)*6;
+      return p;
+    };
+    const q = l < .5 ? l*(1+s) : l+s-l*s;
+    const p = 2*l-q;
+    r = hue2rgb(p,q,h+1/3);
+    g = hue2rgb(p,q,h);
+    b = hue2rgb(p,q,h-1/3);
+  }
+  return { r: Math.round(r*255), g: Math.round(g*255), b: Math.round(b*255) };
+}
+
+function rgbToHsv(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r,g,b), min = Math.min(r,g,b);
+  let h, s, v = max;
+  const d = max - min;
+  s = max === 0 ? 0 : d/max;
+  if (max === min) { h = 0; }
+  else {
+    switch(max) {
+      case r: h = ((g-b)/d + (g<b?6:0))/6; break;
+      case g: h = ((b-r)/d + 2)/6; break;
+      case b: h = ((r-g)/d + 4)/6; break;
+    }
+  }
+  return { h: Math.round(h*360), s: Math.round(s*100), v: Math.round(v*100) };
+}
+
+function hsvToRgb(h, s, v) {
+  h /= 360; s /= 100; v /= 100;
+  let r, g, b;
+  const i = Math.floor(h*6);
+  const f = h*6 - i;
+  const p = v*(1-s);
+  const q = v*(1-f*s);
+  const t = v*(1-(1-f)*s);
+  switch(i%6) {
+    case 0: r=v; g=t; b=p; break; case 1: r=q; g=v; b=p; break;
+    case 2: r=p; g=v; b=t; break; case 3: r=p; g=q; b=v; break;
+    case 4: r=t; g=p; b=v; break; case 5: r=v; g=p; b=q; break;
+  }
+  return { r: Math.round(r*255), g: Math.round(g*255), b: Math.round(b*255) };
+}
+
+function rgbToCmyk(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const k = 1 - Math.max(r,g,b);
+  if (k === 1) return { c: 0, m: 0, y: 0, k: 100 };
+  const c = (1-r-k)/(1-k)*100;
+  const m = (1-g-k)/(1-k)*100;
+  const y = (1-b-k)/(1-k)*100;
+  return { c: Math.round(c), m: Math.round(m), y: Math.round(y), k: Math.round(k*100) };
+}
+
+function cmykToRgb(c, m, y, k) {
+  c /= 100; m /= 100; y /= 100; k /= 100;
+  const r = 255 * (1-c) * (1-k);
+  const g = 255 * (1-m) * (1-k);
+  const b = 255 * (1-y) * (1-k);
+  return { r: Math.round(r), g: Math.round(g), b: Math.round(b) };
+}
+
+function parseHex(val) {
+  val = val.trim();
+  if (!val.startsWith('#')) val = '#' + val;
+  return val.replace(/[^0-9a-fA-F#]/g,'');
+}
+
+function updateAllFormats(hex) {
+  currentHex = hex;
+  const rgb = hexToRgb(hex);
+  const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+  const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+  const cmyk = rgbToCmyk(rgb.r, rgb.g, rgb.b);
+
+  // 更新预览
+  document.getElementById('colorPreview').style.background = hex;
+  document.getElementById('colorPicker').value = hex;
+  document.getElementById('pickerHex').textContent = hex;
+
+  // 更新输入框
+  document.getElementById('hexInput').value = hex;
+  document.getElementById('rgbInput').value = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+  document.getElementById('rgbaInput').value = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 1)`;
+  document.getElementById('hslInput').value = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+  document.getElementById('hsvInput').value = `hsv(${hsv.h}, ${hsv.s}%, ${hsv.v}%)`;
+  document.getElementById('cmykInput').value = `cmyk(${cmyk.c}%, ${cmyk.m}%, ${cmyk.y}%, ${cmyk.k}%)`;
+
+  // 更新复制区
+  document.getElementById('copyHex').textContent = hex;
+  document.getElementById('copyRgb').textContent = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+  document.getElementById('copyHsl').textContent = `hsl(${hsl.h},${hsl.s}%,${hsl.l}%)`;
+
+  // 更新滑块
+  document.getElementById('adjH').value = hsl.h;
+  document.getElementById('adjS').value = hsl.s;
+  document.getElementById('adjL').value = hsl.l;
+  document.getElementById('adjHVal').textContent = hsl.h + '°';
+  document.getElementById('adjSVal').textContent = hsl.s + '%';
+  document.getElementById('adjLVal').textContent = hsl.l + '%';
+
+  // 相似色
+  updateSimilarColors(hsl, hex);
+}
+
+function onPickerChange() {
+  if (locked) return;
+  updateAllFormats(document.getElementById('colorPicker').value.toUpperCase());
+}
+
+function onHexChange() {
+  const val = parseHex(document.getElementById('hexInput').value);
+  if (val.length >= 4) updateAllFormats(val);
+}
+
+function onRgbChange() {
+  const m = document.getElementById('rgbInput').value.match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+  if (m) updateAllFormats(rgbToHex(+m[1], +m[2], +m[3]));
+}
+
+function onRgbaChange() {
+  const m = document.getElementById('rgbaInput').value.match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+  if (m) updateAllFormats(rgbToHex(+m[1], +m[2], +m[3]));
+}
+
+function onHslChange() {
+  const m = document.getElementById('hslInput').value.match(/(\d+)[°,]\s*(\d+)%?\s*,?\s*(\d+)%?/);
+  if (m) {
+    const rgb = hslToRgb(+m[1], +m[2], +m[3]);
+    updateAllFormats(rgbToHex(rgb.r, rgb.g, rgb.b));
+  }
+}
+
+function onHsvChange() {
+  const m = document.getElementById('hsvInput').value.match(/(\d+)[°,]\s*(\d+)%?\s*,?\s*(\d+)%?/);
+  if (m) {
+    const rgb = hsvToRgb(+m[1], +m[2], +m[3]);
+    updateAllFormats(rgbToHex(rgb.r, rgb.g, rgb.b));
+  }
+}
+
+function onCmykChange() {
+  const m = document.getElementById('cmykInput').value.match(/(\d+)%?\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*,\s*(\d+)%?/);
+  if (m) {
+    const rgb = cmykToRgb(+m[1], +m[2], +m[3], +m[4]);
+    updateAllFormats(rgbToHex(rgb.r, rgb.g, rgb.b));
+  }
+}
+
+function onAdjChange() {
+  const h = +document.getElementById('adjH').value;
+  const s = +document.getElementById('adjS').value;
+  const l = +document.getElementById('adjL').value;
+  document.getElementById('adjHVal').textContent = h + '°';
+  document.getElementById('adjSVal').textContent = s + '%';
+  document.getElementById('adjLVal').textContent = l + '%';
+  const rgb = hslToRgb(h, s, l);
+  updateAllFormats(rgbToHex(rgb.r, rgb.g, rgb.b));
+}
+
+function updateSimilarColors(hsl, hex) {
+  const el = document.getElementById('similarColors');
+  const variations = [
+    { h: hsl.h, s: hsl.s, l: Math.min(95, hsl.l + 15) },
+    { h: hsl.h, s: hsl.s, l: Math.max(5, hsl.l - 15) },
+    { h: (hsl.h + 30) % 360, s: hsl.s, l: hsl.l },
+    { h: (hsl.h - 30 + 360) % 360, s: hsl.s, l: hsl.l },
+    { h: hsl.h, s: Math.min(100, hsl.s + 20), l: hsl.l },
+    { h: hsl.h, s: Math.max(0, hsl.s - 20), l: hsl.l },
+    { h: (hsl.h + 180) % 360, s: hsl.s, l: hsl.l },
+    { h: (hsl.h + 120) % 360, s: hsl.s, l: hsl.l },
+    { h: hsl.h, s: hsl.s, l: 50 },
+    { h: hsl.h, s: 100, l: 50 },
+  ];
+  el.innerHTML = variations.map(v => {
+    const rgb = hslToRgb(v.h, v.s, v.l);
+    const c = rgbToHex(rgb.r, rgb.g, rgb.b);
+    const text = v.l > 55 ? '#333' : '#fff';
+    return `<div class="color-swatch" style="background:${c};" onclick="updateAllFormats('${c}')" title="${c}">
+      <span class="name" style="color:${text}">${c}</span>
+    </div>`;
+  }).join('');
+}
+
+function randomColor() {
+  const hex = '#' + Math.floor(Math.random()*0xFFFFFF).toString(16).padStart(6,'0').toUpperCase();
+  updateAllFormats(hex);
+}
+
+function lockColor() {
+  locked = !locked;
+  event.target.textContent = locked ? '🔓 已锁定' : '🔒 锁定';
+}
+
+function copyVal(type) {
+  const vals = {
+    hex: document.getElementById('hexInput').value,
+    rgb: document.getElementById('rgbInput').value,
+    rgba: document.getElementById('rgbaInput').value,
+    hsl: document.getElementById('hslInput').value,
+    hsv: document.getElementById('hsvInput').value,
+    cmyk: document.getElementById('cmykInput').value,
+    css: `color: ${currentHex};`
+  };
+  navigator.clipboard.writeText(vals[type] || vals.hex);
+}
+
+// ============ 调色板 ============
+const MATERIAL_PALETTE = [
+  { name: '红色', colors: ['#f44336','#e57373','#ef5350','#f36c60','#e53935','#d32f2f','#c62828','#b71c1c'] },
+  { name: '粉色', colors: ['#e91e63','#f48fb1','#ec407a','#f06292','#d81b60','#c2185b','#ad1457','#880e4f'] },
+  { name: '紫色', colors: ['#9c27b0','#ce93d8','#ab47bc','#ba68c8','#8e24aa','#7b1fa2','#6a1b9a','#4a148c'] },
+  { name: '蓝色', colors: ['#2196f3','#90caf9','#42a5f5','#64b5f6','#1e88e5','#1976d2','#1565c0','#0d47a1'] },
+  { name: '青色', colors: ['#00bcd4','#80deea','#26c6da','#4dd0e1','#00acc1','#0097a7','#00838f','#006064'] },
+  { name: '绿色', colors: ['#4caf50','#a5d6a7','#66bb6a','#81c784','#43a047','#388e3c','#2e7d32','#1b5e20'] },
+  { name: '黄色', colors: ['#ffeb3b','#fff59d','#ffee58','#fff176','#fdd835','#fbc02d','#f9a825','#f57f17'] },
+  { name: '橙色', colors: ['#ff9800','#ffcc80','#ffa726','#ffb74d','#fb8c00','#f57c00','#ef6c00','#e65100'] },
+  { name: '棕色', colors: ['#795548','#bcaaa4','#8d6e63','#a1887f','#6d4c41','#5d4037','#4e342e','#3e2723'] },
+  { name: '灰色', colors: ['#9e9e9e','#e0e0e0','#bdbdbd','#9e9e9e','#757575','#616161','#424242','#212121'] },
+];
+
+function renderPalette(filter) {
+  const grid = document.getElementById('paletteGrid');
+  grid.innerHTML = MATERIAL_PALETTE.map(group => {
+    const filtered = filter ? group.colors.filter(c => c.toUpperCase().includes(filter.toUpperCase())) : group.colors;
+    if (!filtered.length) return '';
+    return `
+      <div>
+        <div style="font-weight:700;font-size:13px;margin-bottom:6px;">${group.name}</div>
+        <div class="palette-row">
+          ${filtered.map(c => `
+            <div class="palette-item" style="background:${c};" onclick="updateAllFormats('${c}')" title="${c}"></div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function filterPalette(val) { renderPalette(val); }
+
+function renderWebSafe() {
+  const el = document.getElementById('webSafeColors');
+  const colors = ['000','333','666','999','CCC','FFF','00F','0FF','0F0','FF0','F0F','F00','080','080808','333333','666666','999999','CCCCCC','FFFFFF','0000FF','00FFFF','00FF00','FFFF00','FF00FF','FF0000','008000','800080','000080','008080','C0C0C0','808080','800000','808000','008080','000080','FF0080','80FF00','00FF80','8000FF','0080FF','FFFFCC','CCFFFF','CCFFCC','FFCCCC','CCCCFF','FFCCFF','FFFF99','99FFFF','99FFCC','FF99CC','CC99FF','FFCC99','99CCFF','CCFF99','9999FF','FF9999','99FF99'];
+  el.innerHTML = colors.map(c => `<div class="color-swatch" style="background:#${c};width:100%;" onclick="updateAllFormats('#${c}')" title="#${c}"></div>`).join('');
+}
+
+// ============ 渐变 ============
+function setGradType(type) {
+  gradType = type;
+  ['linear','radial','conic'].forEach(t => {
+    document.getElementById('gradType-' + t).className = t === type ? 'btn btn-primary' : 'btn btn-outline';
+  });
+  document.getElementById('gradAngle').style.display = type === 'linear' ? 'flex' : 'none';
+  updateGradient();
+}
+
+function updateGradient() {
+  const stops = document.querySelectorAll('.stop-row');
+  let gradStr = '';
+  const colorStops = Array.from(stops).map(s => {
+    const color = s.children[1].value || s.children[0].value;
+    const pos = s.children[2].value + '%';
+    return `${color} ${pos}`;
+  });
+
+  const angle = document.getElementById('gradAngleSlider').value;
+  document.getElementById('gradAngleVal').textContent = angle + '°';
+
+  if (gradType === 'linear') {
+    gradStr = `linear-gradient(${angle}deg, ${colorStops.join(', ')})`;
+  } else if (gradType === 'radial') {
+    gradStr = `radial-gradient(circle, ${colorStops.join(', ')})`;
+  } else {
+    gradStr = `conic-gradient(from ${angle}deg, ${colorStops.join(', ')})`;
+  }
+
+  document.getElementById('gradientPreview').style.background = gradStr;
+  document.getElementById('gradCssCode').textContent = 'background: ' + gradStr + ';';
+}
+
+function addStop() {
+  const stops = document.getElementById('gradStops');
+  const count = stops.children.length;
+  const newStop = document.createElement('div');
+  newStop.className = 'stop-row';
+  newStop.innerHTML = `
+    <input type="color" value="#ffffff" oninput="updateGradient()">
+    <input type="text" value="#ffffff" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:monospace;" oninput="updateGradient()">
+    <input type="range" min="0" max="100" value="${count * 33 % 100}" style="flex:1;" oninput="updateGradient()">
+    <span style="min-width:40px;font-size:13px;">${count * 33 % 100}%</span>
+    <button onclick="removeStop(this)" style="border:none;background:none;cursor:pointer;font-size:18px;color:#dc2626;">×</button>
+  `;
+  stops.appendChild(newStop);
+  updateGradient();
+}
+
+function removeStop(btn) {
+  const row = btn.parentElement;
+  if (row.parentElement.children.length <= 2) return;
+  row.remove();
+  updateGradient();
+}
+
+function randomGradient() {
+  const rand = () => '#' + Math.floor(Math.random()*0xFFFFFF).toString(16).padStart(6,'0').toUpperCase();
+  const stops = document.querySelectorAll('.stop-row');
+  stops[0].children[0].value = rand();
+  stops[0].children[1].value = stops[0].children[0].value;
+  stops[1].children[0].value = rand();
+  stops[1].children[1].value = stops[1].children[0].value;
+  document.getElementById('gradAngleSlider').value = Math.floor(Math.random()*360);
+  updateGradient();
+}
+
+function copyGradient() {
+  navigator.clipboard.writeText('background: ' + document.getElementById('gradCssCode').textContent.replace('background: ',''));
+}
+
+function renderPresetGradients() {
+  const presets = [
+    ['#667eea','#764ba2'],['#f093fb','#f5576c'],['#4facfe','#00f2fe'],
+    ['#43e97b','#38f9d7'],['#fa709a','#fee140'],['#a18cd1','#fbc2eb'],
+    ['#0fd850','#f9f047'],['#ff0844','#ffb199'],['#6a11cb','#2575fc'],
+    ['#ee0979','#ff6a00'],['#f83600','#f9d423'],['#209cff','#68e0cf'],
+    ['#ed1e79','#d2016d'],['#00c6ff','#0072ff'],['#f12711','#f5af19'],
+    ['#c471f5','#fa71cd'],['#48c6ef','#6f86d6'],['#84fab0','#8fd3f4'],
+  ];
+  const el = document.getElementById('presetGradients');
+  el.innerHTML = presets.map(([c1, c2]) => `
+    <div style="border-radius:8px;overflow:hidden;cursor:pointer;" onclick="applyPreset('${c1}','${c2}')">
+      <div style="height:50px;background:linear-gradient(135deg,${c1},${c2});"></div>
+      <div style="padding:6px 8px;font-size:11px;font-family:monospace;">${c1}<br>${c2}</div>
+    </div>
+  `).join('');
+}
+
+function applyPreset(c1, c2) {
+  const stops = document.querySelectorAll('.stop-row');
+  stops[0].children[0].value = c1; stops[0].children[1].value = c1;
+  stops[1].children[0].value = c2; stops[1].children[1].value = c2;
+  updateGradient();
+}
+
+// ============ Tab ============
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`[onclick="switchTab('${name}')"]`).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'palette') { renderPalette(); renderWebSafe(); }
+  if (name === 'gradient') { renderPresetGradients(); updateGradient(); }
+}
+
+// 初始化
+updateAllFormats('#4F46E5');
+</script>
+
+</body>
+</html>

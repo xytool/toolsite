@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="免费在线Lorem Ipsum生成器 - 占位文本生成，中文乱文，自定义段落数/句子数/词数，纯浏览器本地处理。">
+  <meta name="keywords" content="Lorem Ipsum生成器,占位文本,假文生成,中文乱文,填充文字,设计师工具">
+  <title>Lorem Ipsum 生成器 - 在线工具箱</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .settings-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px 20px; margin:16px 0; }
+    @media(max-width:640px) { .settings-grid { grid-template-columns:1fr; } }
+    .sg { display:flex; flex-direction:column; gap:4px; }
+    .sg label { font-size:12px; color:var(--text-muted); font-weight:600; }
+    .sg input, .sg select {
+      padding:8px 12px; border:1px solid var(--border); border-radius:6px; font-size:14px;
+    }
+
+    .type-tabs { display:flex; gap:4px; margin:12px 0; }
+    .type-tab {
+      padding:8px 18px; border:1px solid var(--border); border-radius:8px;
+      cursor:pointer; font-size:14px; font-weight:600; background:var(--card);
+      transition:all .2s;
+    }
+    .type-tab:hover { border-color:var(--primary); }
+    .type-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+
+    .result-box {
+      margin-top:16px; padding:20px; border:1px solid var(--border); border-radius:8px;
+      background:#f8fafc; min-height:200px; max-height:500px; overflow-y:auto;
+      font-size:15px; line-height:1.8;
+    }
+    .result-box p { margin:8px 0; text-indent:2em; }
+
+    .raw-box {
+      margin-top:12px; padding:16px; border:1px solid var(--border); border-radius:8px;
+      background:#1e293b; color:#e2e8f0; font-family:"Cascadia Code","Fira Code",Consolas,monospace;
+      font-size:13px; line-height:1.6; max-height:300px; overflow-y:auto;
+      white-space:pre-wrap; word-break:break-all;
+    }
+
+    .stats-bar {
+      display:flex; gap:20px; padding:10px 16px; background:#f0fdf4; border-radius:8px;
+      margin:12px 0; font-size:14px; color:#16a34a; flex-wrap:wrap;
+    }
+    .stats-bar strong { font-size:16px; }
+
+    .format-row { display:flex; gap:8px; margin:12px 0; }
+    .fmt-btn {
+      padding:6px 14px; border:1px solid var(--border); border-radius:6px;
+      cursor:pointer; font-size:13px; font-weight:600; background:var(--card);
+      transition:all .15s;
+    }
+    .fmt-btn:hover { border-color:var(--primary); }
+    .fmt-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <a href="index.html" class="logo"><span>🧰</span> 在线工具箱</a>
+  <nav>
+    <a href="unit-converter.html">单位换算</a>
+    <a href="lorem-generator.html" class="active">Lorem</a>
+    <a href="url-encoder.html">URL编码</a>
+    <a href="word-counter.html">字数统计</a>
+  </nav>
+</header>
+
+<main class="container">
+  <div class="tool-header">
+    <h1>✍️ Lorem Ipsum 生成器</h1>
+    <p>占位文本生成，英文Lorem Ipsum / 中文乱文 / 自定义，设计师与前端开发者必备</p>
+  </div>
+
+  <div class="tutorial-box">
+    <h3>📖 使用教程</h3>
+    <ol>
+      <li><strong>选择类型</strong> - Lorem Ipsum英文/中文乱文/英文随机/自定义词库</li>
+      <li><strong>设置参数</strong> - 调整段落数、每段句数、输出单位（按段落/词数/字符数）</li>
+      <li><strong>生成文本</strong> - 自动生成或点击「重新生成」获取新内容</li>
+      <li><strong>复制输出</strong> - 复制文本或代码（HTML/Markdown/纯文本格式）</li>
+    </ol>
+    <div class="tip"><strong>💡 提示：</strong>自定义词库模式下，用逗号分隔多个词语，生成器会随机组合。</div>
+  </div>
+
+  
+
+  <div class="card">
+    <!-- 类型 -->
+    <div class="type-tabs">
+      <div class="type-tab active" onclick="setType('lorem')">📜 Lorem Ipsum</div>
+      <div class="type-tab" onclick="setType('chinese')">🇨🇳 中文乱文</div>
+      <div class="type-tab" onclick="setType('english')">🔤 英文随机</div>
+      <div class="type-tab" onclick="setType('custom')">✏️ 自定义</div>
+    </div>
+
+    <!-- 设置 -->
+    <div class="settings-grid">
+      <div class="sg">
+        <label>段落数</label>
+        <input type="number" id="numParagraphs" value="3" min="1" max="50" oninput="generate()">
+      </div>
+      <div class="sg">
+        <label>每段句数</label>
+        <input type="number" id="numSentences" value="5" min="1" max="20" oninput="generate()">
+      </div>
+      <div class="sg">
+        <label>输出单位</label>
+        <select id="unitType" onchange="generate()">
+          <option value="paragraphs">按段落</option>
+          <option value="words">按词数</option>
+          <option value="characters">按字符数</option>
+        </select>
+      </div>
+      <div class="sg" id="countGroup">
+        <label>数量</label>
+        <input type="number" id="customCount" value="0" min="1" max="10000" oninput="generate()" placeholder="自动">
+      </div>
+      <div class="sg">
+        <label>开头包含 "Lorem ipsum..."</label>
+        <select id="startWithLorem" onchange="generate()">
+          <option value="yes">是</option>
+          <option value="no">否</option>
+        </select>
+      </div>
+      <div class="sg">
+        <label>自定义词库（逗号分隔）</label>
+        <input type="text" id="customWords" placeholder="词1,词2,词3..." oninput="generate()" disabled>
+      </div>
+    </div>
+
+    <!-- 格式 -->
+    <div class="format-row">
+      <span style="font-size:13px;color:var(--text-muted);font-weight:600;line-height:30px;">输出格式：</span>
+      <div class="fmt-btn active" onclick="setFormat('html')">HTML</div>
+      <div class="fmt-btn" onclick="setFormat('plain')">纯文本</div>
+      <div class="fmt-btn" onclick="setFormat('markdown')">Markdown</div>
+    </div>
+
+    <!-- 统计 -->
+    <div class="stats-bar">
+      <div>段落数: <strong id="statP">3</strong></div>
+      <div>词数: <strong id="statW">0</strong></div>
+      <div>字符数: <strong id="statC">0</strong></div>
+    </div>
+
+    <!-- 结果 -->
+    <div class="result-box" id="resultBox"></div>
+
+    <!-- 原始代码 -->
+    <div id="rawArea" style="margin-top:12px;">
+      <label style="font-size:13px;color:var(--text-muted);font-weight:600;">📋 原始代码：</label>
+      <div class="raw-box" id="rawBox"></div>
+    </div>
+
+    <!-- 操作 -->
+    <div style="display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="generate()">🔄 重新生成</button>
+      <button class="btn btn-outline" onclick="copyText()">📋 复制文本</button>
+      <button class="btn btn-outline" onclick="copyCode()">📋 复制代码</button>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <p>© 2026 在线工具箱 · 所有文件仅在浏览器本地处理，不会上传到服务器</p>
+</footer>
+
+<script>
+const LOREM_WORDS = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum'.split(' ');
+
+const CHARS = '的一是不了人我在有他这中大来上个国到说们为子和你地出会也时要就可以对生能而那得于着下自之年过发后作里用道行所然家种事成方多经么去法学如都同现当没动面起看定天分还进好小部其些主样理心她本前开但因只从想实日军三已老关点正也新十阵无力它与长把机十者次进使等社'.split('');
+
+let genType = 'lorem';
+let outFormat = 'html';
+let generatedText = '';
+let generatedCode = '';
+
+function setType(t) {
+  genType = t;
+  document.querySelectorAll('.type-tab').forEach(el => el.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('customWords').disabled = t !== 'custom';
+  generate();
+}
+
+function setFormat(f) {
+  outFormat = f;
+  document.querySelectorAll('.fmt-btn').forEach(el => el.classList.remove('active'));
+  event.target.classList.add('active');
+  renderOutput();
+}
+
+function generate() {
+  const numP = parseInt(document.getElementById('numParagraphs').value) || 3;
+  const numS = parseInt(document.getElementById('numSentences').value) || 5;
+  const unitType = document.getElementById('unitType').value;
+  const count = parseInt(document.getElementById('customCount').value) || 0;
+  const startLorem = document.getElementById('startWithLorem').value === 'yes';
+  const customWords = document.getElementById('customWords').value.split(',').filter(w => w.trim());
+
+  let paragraphs = [];
+
+  if (genType === 'lorem') {
+    if (startLorem && numP > 0) {
+      paragraphs.push(generateLoremParagraph(numS, true));
+      for (let i = 1; i < numP; i++) paragraphs.push(generateLoremParagraph(numS, false));
+    } else {
+      for (let i = 0; i < numP; i++) paragraphs.push(generateLoremParagraph(numS, false));
+    }
+  } else if (genType === 'chinese') {
+    for (let i = 0; i < numP; i++) paragraphs.push(generateChineseParagraph(numS));
+  } else if (genType === 'english') {
+    for (let i = 0; i < numP; i++) paragraphs.push(generateEnglishParagraph(numS));
+  } else if (genType === 'custom') {
+    for (let i = 0; i < numP; i++) paragraphs.push(generateCustomParagraph(numS, customWords));
+  }
+
+  // 按词数/字符数裁剪
+  if (unitType === 'words' && count > 0) {
+    const allWords = paragraphs.join(' ').split(/\s+/);
+    const trimmed = allWords.slice(0, count).join(' ');
+    paragraphs = [trimmed];
+  } else if (unitType === 'characters' && count > 0) {
+    const allText = paragraphs.join('\n\n');
+    paragraphs = [allText.slice(0, count)];
+  }
+
+  generatedText = paragraphs.join('\n\n');
+
+  // 生成代码
+  if (outFormat === 'html') {
+    generatedCode = paragraphs.map(p => `<p>${p}</p>`).join('\n');
+  } else if (outFormat === 'markdown') {
+    generatedCode = paragraphs.join('\n\n');
+  } else {
+    generatedCode = generatedText;
+  }
+
+  renderOutput();
+
+  // 统计
+  document.getElementById('statP').textContent = paragraphs.length;
+  const wordCount = generatedText.split(/\s+/).filter(w => w).length;
+  document.getElementById('statW').textContent = wordCount;
+  document.getElementById('statC').textContent = generatedText.length;
+}
+
+function generateLoremParagraph(numSentences, isFirst) {
+  const sentences = [];
+  for (let i = 0; i < numSentences; i++) {
+    if (isFirst && i === 0) {
+      sentences.push('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.');
+    } else {
+      const len = 8 + Math.floor(Math.random() * 12);
+      const words = [];
+      for (let j = 0; j < len; j++) {
+        words.push(LOREM_WORDS[Math.floor(Math.random() * LOREM_WORDS.length)]);
+      }
+      words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
+      sentences.push(words.join(' ') + '.');
+    }
+  }
+  return sentences.join(' ');
+}
+
+function generateChineseParagraph(numSentences) {
+  const sentences = [];
+  for (let i = 0; i < numSentences; i++) {
+    const len = 10 + Math.floor(Math.random() * 20);
+    let s = '';
+    for (let j = 0; j < len; j++) {
+      s += CHARS[Math.floor(Math.random() * CHARS.length)];
+    }
+    // 随机加标点
+    s = s.replace(/(.{4,8}?)/g, (m) => m + '，');
+    s = s.replace(/，$/, '。');
+    sentences.push(s);
+  }
+  return sentences.join('');
+}
+
+function generateEnglishParagraph(numSentences) {
+  const words = 'the be to of and a in that have I it for not on with he as you do at this but his by from they we say her she or an will my one all would there their what so up out if about who get which go me when make can like time no just him know take people into year your good some could them see other than then now look only come its over think also back after use two how our work first well way even new want because any these give day most us'.split(' ');
+  const sentences = [];
+  for (let i = 0; i < numSentences; i++) {
+    const len = 6 + Math.floor(Math.random() * 14);
+    const s = [];
+    for (let j = 0; j < len; j++) {
+      s.push(words[Math.floor(Math.random() * words.length)]);
+    }
+    s[0] = s[0].charAt(0).toUpperCase() + s[0].slice(1);
+    sentences.push(s.join(' ') + '.');
+  }
+  return sentences.join(' ');
+}
+
+function generateCustomParagraph(numSentences, wordList) {
+  if (wordList.length === 0) return '(请输入自定义词库，用逗号分隔)';
+  const sentences = [];
+  for (let i = 0; i < numSentences; i++) {
+    const len = 4 + Math.floor(Math.random() * 8);
+    const s = [];
+    for (let j = 0; j < len; j++) {
+      s.push(wordList[Math.floor(Math.random() * wordList.length)].trim());
+    }
+    s[0] = s[0].charAt(0).toUpperCase() + s[0].slice(1);
+    sentences.push(s.join(' ') + '.');
+  }
+  return sentences.join(' ');
+}
+
+function renderOutput() {
+  const resultBox = document.getElementById('resultBox');
+  const rawBox = document.getElementById('rawBox');
+
+  if (outFormat === 'html') {
+    resultBox.innerHTML = generatedCode;
+  } else {
+    resultBox.innerHTML = `<p>${generatedText.replace(/\n\n/g, '</p><p>')}</p>`;
+  }
+
+  rawBox.textContent = generatedCode;
+}
+
+function copyText() {
+  navigator.clipboard.writeText(generatedText).then(() => {
+    const btn = event.target; const o = btn.textContent;
+    btn.textContent = '✅ 已复制'; setTimeout(() => btn.textContent = o, 1500);
+  });
+}
+
+function copyCode() {
+  navigator.clipboard.writeText(generatedCode).then(() => {
+    const btn = event.target; const o = btn.textContent;
+    btn.textContent = '✅ 已复制'; setTimeout(() => btn.textContent = o, 1500);
+  });
+}
+
+// 初始生成
+generate();
+</script>
+
+</body>
+</html>

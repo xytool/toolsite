@@ -1,0 +1,283 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="鍏嶈垂鍦ㄧ嚎URL缂栫爜瑙ｇ爜宸ュ叿 - URL缂栫爜/瑙ｇ爜锛孒TML瀹炰綋缂栫爜锛孊ase64锛孶nicode杞箟锛岀函娴忚鍣ㄦ湰鍦板鐞嗐€?>
+  <meta name="keywords" content="URL缂栫爜,URL瑙ｇ爜,urlencode,urldecode,HTML瀹炰綋,鍦ㄧ嚎缂栫爜宸ュ叿">
+  <title>URL 缂栫爜瑙ｇ爜宸ュ叿 - 鍦ㄧ嚎宸ュ叿绠?/title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .dual-pane { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media(max-width:768px) { .dual-pane { grid-template-columns:1fr; } }
+    .pane { display:flex; flex-direction:column; }
+    .pane label { font-size:14px; font-weight:600; margin-bottom:6px; }
+    .pane textarea {
+      flex:1; min-height:260px; padding:14px; border:1px solid var(--border); border-radius:8px;
+      font-family:"Cascadia Code","Fira Code",Consolas,monospace; font-size:14px; line-height:1.6;
+      resize:vertical; outline:none; transition:border-color .2s; word-break:break-all;
+    }
+    .pane textarea:focus { border-color:var(--primary); }
+    .pane textarea:read-only { background:#f8fafc; }
+
+    .encode-tabs { display:flex; gap:4px; flex-wrap:wrap; margin:16px 0; }
+    .enc-tab {
+      padding:8px 16px; border:1px solid var(--border); border-radius:8px;
+      cursor:pointer; font-size:13px; font-weight:600; background:var(--card);
+      transition:all .2s;
+    }
+    .enc-tab:hover { border-color:var(--primary); }
+    .enc-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+
+    .direction-row { display:flex; gap:8px; justify-content:center; margin:12px 0; }
+    .dir-btn {
+      padding:8px 20px; border:1px solid var(--border); border-radius:8px;
+      cursor:pointer; font-size:14px; font-weight:600; background:var(--card);
+      transition:all .2s;
+    }
+    .dir-btn:hover { border-color:var(--primary); }
+    .dir-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+
+    .info-box {
+      padding:12px 16px; background:#eff6ff; border-radius:8px;
+      font-size:13px; color:#1e40af; margin:12px 0;
+    }
+
+    .quick-samples { display:flex; gap:6px; flex-wrap:wrap; margin:12px 0; }
+    .sample-btn {
+      padding:4px 12px; font-size:12px; border:1px solid var(--border);
+      border-radius:4px; cursor:pointer; background:var(--card); transition:all .15s;
+    }
+    .sample-btn:hover { border-color:var(--primary); background:#eef2ff; }
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <a href="index.html" class="logo"><span>馃О</span> 鍦ㄧ嚎宸ュ叿绠?/a>
+  <nav>
+    <a href="image-watermark.html">鍥剧墖姘村嵃</a>
+    <a href="text-dedup.html">鏂囨湰鍘婚噸</a>
+    <a href="base-converter.html">杩涘埗杞崲</a>
+    <a href="url-encoder.html" class="active">URL缂栫爜</a>
+  </nav>
+</header>
+
+<main class="container">
+  <div class="tool-header">
+    <h1>馃敆 URL 缂栫爜瑙ｇ爜宸ュ叿</h1>
+    <p>URL缂栫爜/瑙ｇ爜锛孒TML瀹炰綋缂栫爜锛孶nicode杞箟锛屽绉嶆牸寮忎簰杞紝绾祻瑙堝櫒鏈湴澶勭悊</p>
+  </div>
+
+  <div class="tutorial-box">
+    <h3>馃摉 浣跨敤鏁欑▼</h3>
+    <ol>
+      <li><strong>閫夋嫨缂栫爜绫诲瀷</strong> - URL缂栫爜/URL Component/HTML瀹炰綋/Unicode/Base64</li>
+      <li><strong>閫夋嫨鏂瑰悜</strong> - 鐐瑰嚮銆岀紪鐮併€嶆垨銆岃В鐮併€嶆寜閽?/li>
+      <li><strong>杈撳叆鏂囨湰</strong> - 鍦ㄥ乏渚ц緭鍏ユ绮樿创鎴栬緭鍏ュ唴瀹?/li>
+      <li><strong>澶嶅埗缁撴灉</strong> - 缁撴灉瀹炴椂鏄剧ず鍦ㄥ彸渚э紝鐐瑰嚮澶嶅埗鍗冲彲</li>
+    </ol>
+    <div class="tip"><strong>馃挕 鎻愮ず锛?/strong>URL缂栫爜淇濈暀缁撴瀯瀛楃锛孶RL Component缂栫爜鎵€鏈夌壒娈婂瓧绗︼紝閫傚悎涓嶅悓鍦烘櫙銆?/div>
+  </div>
+
+  
+
+  <div class="card">
+    <!-- 缂栫爜绫诲瀷 -->
+    <div class="encode-tabs">
+      <div class="enc-tab active" onclick="setEncType('url')">URL 缂栫爜</div>
+      <div class="enc-tab" onclick="setEncType('urlcomponent')">URL Component</div>
+      <div class="enc-tab" onclick="setEncType('html')">HTML 瀹炰綋</div>
+      <div class="enc-tab" onclick="setEncType('unicode')">Unicode 杞箟</div>
+      <div class="enc-tab" onclick="setEncType('base64')">Base64</div>
+    </div>
+
+    <!-- 鏂瑰悜 -->
+    <div class="direction-row">
+      <div class="dir-btn active" onclick="setDir('encode')">馃敀 缂栫爜 鈫?/div>
+      <div class="dir-btn" onclick="setDir('decode')">馃敁 鈫?瑙ｇ爜</div>
+    </div>
+
+    <!-- 杈撳叆杈撳嚭 -->
+    <div class="dual-pane">
+      <div class="pane">
+        <label>馃摜 杈撳叆锛?/label>
+        <textarea id="inputText" placeholder="杈撳叆瑕佺紪鐮?瑙ｇ爜鐨勬枃鏈?.." oninput="convert()"></textarea>
+      </div>
+      <div class="pane">
+        <label>馃摛 缁撴灉锛?span id="resultInfo" style="font-size:12px;color:var(--text-muted);font-weight:400;"></span></label>
+        <textarea id="outputText" readonly placeholder="缁撴灉灏嗗湪姝ゆ樉绀?.."></textarea>
+      </div>
+    </div>
+
+    <div class="info-box" id="infoBox">
+      褰撳墠妯″紡锛歎RL 缂栫爜 (encodeURIComponent) 鈥?灏嗙壒娈婂瓧绗﹁浆鎹负 %XX 鏍煎紡锛岄€傚悎URL鍙傛暟鍊肩紪鐮?    </div>
+
+    <!-- 蹇嵎绀轰緥 -->
+    <div>
+      <label style="font-size:13px;color:var(--text-muted);">蹇嵎绀轰緥锛?/label>
+      <div class="quick-samples">
+        <div class="sample-btn" onclick="loadSample('url')">URL鍙傛暟</div>
+        <div class="sample-btn" onclick="loadSample('chinese')">涓枃瀛楃</div>
+        <div class="sample-btn" onclick="loadSample('emoji')">Emoji琛ㄦ儏</div>
+        <div class="sample-btn" onclick="loadSample('html')">HTML鏍囩</div>
+        <div class="sample-btn" onclick="loadSample('special')">鐗规畩绗﹀彿</div>
+      </div>
+    </div>
+
+    <!-- 鎿嶄綔鎸夐挳 -->
+    <div style="display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="convert()">馃攧 杞崲</button>
+      <button class="btn btn-outline" onclick="copyResult()">馃搵 澶嶅埗缁撴灉</button>
+      <button class="btn btn-outline" onclick="swapPane()">馃攣 浜掓崲</button>
+      <button class="btn btn-outline" onclick="clearAll()">馃棏锔?娓呯┖</button>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <p>漏 2026 鍦ㄧ嚎宸ュ叿绠?路 鎵€鏈夋枃浠朵粎鍦ㄦ祻瑙堝櫒鏈湴澶勭悊锛屼笉浼氫笂浼犲埌鏈嶅姟鍣?/p>
+</footer>
+
+<script>
+let encType = 'url';
+let direction = 'encode';
+
+function setEncType(type) {
+  encType = type;
+  document.querySelectorAll('.enc-tab').forEach(el => el.classList.remove('active'));
+  event.target.classList.add('active');
+  updateInfoBox();
+  convert();
+}
+
+function setDir(dir) {
+  direction = dir;
+  document.querySelectorAll('.dir-btn').forEach(el => el.classList.remove('active'));
+  event.target.classList.add('active');
+  updateInfoBox();
+  convert();
+}
+
+function updateInfoBox() {
+  const typeNames = {
+    url: 'URL 缂栫爜 (encodeURI)',
+    urlcomponent: 'URL Component 缂栫爜 (encodeURIComponent)',
+    html: 'HTML 瀹炰綋缂栫爜',
+    unicode: 'Unicode 杞箟 (\\uXXXX)',
+    base64: 'Base64 缂栫爜'
+  };
+  const dirNames = { encode: '缂栫爜', decode: '瑙ｇ爜' };
+  const descs = {
+    url: '淇濈暀URL缁撴瀯瀛楃(:/?=&绛?锛岀紪鐮佺┖鏍间负%20锛岄€傚悎缂栫爜瀹屾暣URL',
+    urlcomponent: '缂栫爜鎵€鏈夌壒娈婂瓧绗︼紝绌烘牸鍙樹负%20锛岄€傚悎缂栫爜URL鍙傛暟鍊?,
+    html: '灏?<銆?銆?銆乗"銆乗' 杞崲涓?HTML 瀹炰綋锛岄槻姝SS娉ㄥ叆',
+    unicode: '灏嗛潪ASCII瀛楃杞崲涓?\\uXXXX 鏍煎紡锛屽父鐢ㄤ簬JSON/JS',
+    base64: '灏嗘枃鏈紪鐮佷负Base64鏍煎紡锛屽父鐢ㄤ簬鏁版嵁浼犺緭'
+  };
+  document.getElementById('infoBox').textContent =
+    `褰撳墠妯″紡锛?{typeNames[encType]} ${dirNames[direction]} 鈥?${descs[encType]}`;
+}
+
+function convert() {
+  const input = document.getElementById('inputText').value;
+  const output = document.getElementById('outputText');
+  const info = document.getElementById('resultInfo');
+
+  if (!input) { output.value = ''; info.textContent = ''; return; }
+
+  try {
+    let result;
+    const isEncode = direction === 'encode';
+
+    switch (encType) {
+      case 'url':
+        result = isEncode ? encodeURI(input) : decodeURI(input);
+        break;
+      case 'urlcomponent':
+        result = isEncode ? encodeURIComponent(input) : decodeURIComponent(input);
+        break;
+      case 'html':
+        result = isEncode ? htmlEncode(input) : htmlDecode(input);
+        break;
+      case 'unicode':
+        result = isEncode ? unicodeEncode(input) : unicodeDecode(input);
+        break;
+      case 'base64':
+        result = isEncode ? btoa(unescape(encodeURIComponent(input))) : decodeURIComponent(escape(atob(input)));
+        break;
+    }
+
+    output.value = result;
+    const diff = result.length - input.length;
+    info.textContent = `${result.length} 瀛楃 (${diff >= 0 ? '+' : ''}${diff})`;
+  } catch (e) {
+    output.value = '鉂?' + e.message;
+    info.textContent = '閿欒';
+  }
+}
+
+function htmlEncode(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function htmlDecode(s) {
+  const el = document.createElement('div');
+  el.innerHTML = s;
+  return el.textContent;
+}
+
+function unicodeEncode(s) {
+  return Array.from(s).map(ch => {
+    const code = ch.codePointAt(0);
+    return code > 127 ? `\\u${code.toString(16).padStart(4, '0')}` : ch;
+  }).join('');
+}
+
+function unicodeDecode(s) {
+  return s.replace(/\\u([0-9a-fA-F]{4,6})/g, (_, hex) => String.fromCodePoint(parseInt(hex, 16)));
+}
+
+function loadSample(type) {
+  const samples = {
+    url: 'https://example.com/search?q=hello world&lang=涓枃&page=1',
+    chinese: '浣犲ソ涓栫晫锛佽繖鏄腑鏂囨祴璇?馃帀',
+    emoji: '馃榾馃帀馃敟馃挴馃専馃寛馃殌馃捇馃幆鉁?,
+    html: '<scr' + 'ipt>alert("XSS")</scr' + 'ipt><b>绮椾綋</b>&"寮曞彿"',
+    special: 'a@b#c$d%e^f&g*h(i)j=+[]{}|;:,.<>?/'
+  };
+  document.getElementById('inputText').value = samples[type];
+  convert();
+}
+
+function copyResult() {
+  navigator.clipboard.writeText(document.getElementById('outputText').value).then(() => {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '鉁?宸插鍒?;
+    setTimeout(() => btn.textContent = orig, 1500);
+  });
+}
+
+function swapPane() {
+  const input = document.getElementById('inputText');
+  const output = document.getElementById('outputText');
+  input.value = output.value;
+  // Toggle direction
+  direction = direction === 'encode' ? 'decode' : 'encode';
+  document.querySelectorAll('.dir-btn').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.dir-btn')[direction === 'encode' ? 0 : 1].classList.add('active');
+  updateInfoBox();
+  convert();
+}
+
+function clearAll() {
+  document.getElementById('inputText').value = '';
+  document.getElementById('outputText').value = '';
+  document.getElementById('resultInfo').textContent = '';
+}
+</script>
+
+</body>
+</html>

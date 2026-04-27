@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="免费在线文本去重排序工具 - 去除重复行，排序，提取唯一值，计数统计，纯浏览器本地处理。">
+  <meta name="keywords" content="文本去重,去重复行,排序工具,文本排序,提取唯一值,在线去重">
+  <title>文本去重排序工具 - 在线工具箱</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .dual-pane { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media(max-width:768px) { .dual-pane { grid-template-columns:1fr; } }
+    .pane { display:flex; flex-direction:column; }
+    .pane label { font-size:14px; font-weight:600; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; }
+    .pane label .count { font-size:12px; color:var(--text-muted); font-weight:400; }
+    .pane textarea {
+      flex:1; min-height:320px; padding:14px; border:1px solid var(--border); border-radius:8px;
+      font-family:"Cascadia Code","Fira Code",Consolas,monospace; font-size:14px; line-height:1.6;
+      resize:vertical; outline:none; transition:border-color .2s;
+    }
+    .pane textarea:focus { border-color:var(--primary); }
+    .pane textarea:read-only { background:#f8fafc; }
+
+    .options-row { display:flex; gap:12px; flex-wrap:wrap; margin:16px 0; align-items:center; }
+    .opt-label { display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer; }
+    .opt-label input { accent-color:var(--primary); }
+    .opt-select { padding:6px 12px; border:1px solid var(--border); border-radius:6px; font-size:13px; }
+
+    .stats-bar {
+      display:flex; gap:20px; padding:10px 16px; background:#f0fdf4; border-radius:8px;
+      margin:12px 0; font-size:14px; color:#16a34a; flex-wrap:wrap;
+    }
+    .stats-bar strong { font-size:16px; }
+
+    .freq-list { margin-top:12px; }
+    .freq-item {
+      display:flex; align-items:center; gap:10px; padding:6px 12px;
+      border-bottom:1px solid var(--border); font-size:13px;
+    }
+    .freq-item:last-child { border-bottom:none; }
+    .freq-item .rank { color:var(--primary); font-weight:700; min-width:24px; }
+    .freq-item .val { flex:1; font-family:monospace; word-break:break-all; }
+    .freq-item .cnt { color:var(--text-muted); font-size:12px; }
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <a href="index.html" class="logo"><span>🧰</span> 在线工具箱</a>
+  <nav>
+    <a href="image-watermark.html">图片水印</a>
+    <a href="text-dedup.html" class="active">文本去重</a>
+    <a href="base-converter.html">进制转换</a>
+    <a href="url-encoder.html">URL编码</a>
+  </nav>
+</header>
+
+<main class="container">
+  <div class="tool-header">
+    <h1>📝 文本去重排序工具</h1>
+    <p>去除重复行，排序，提取唯一值，重复计数统计，纯浏览器本地处理</p>
+  </div>
+
+  <div class="tutorial-box">
+    <h3>📖 使用教程</h3>
+    <ol>
+      <li><strong>输入文本</strong> - 在左侧输入框粘贴文本，默认按行分割</li>
+      <li><strong>选择选项</strong> - 勾选忽略大小写、去空行、显示计数等选项</li>
+      <li><strong>排序方式</strong> - 选择升序、降序、按长度、按出现次数等排序</li>
+      <li><strong>复制结果</strong> - 点击复制按钮或点击「结果→输入」进行二次处理</li>
+    </ol>
+    <div class="tip"><strong>💡 提示：</strong>可切换分隔符为逗号、空格、分号，适用于不同格式数据。</div>
+  </div>
+
+  
+
+  <div class="card">
+    <div class="options-row">
+      <label class="opt-label"><input type="checkbox" id="optIgnoreCase"> 忽略大小写</label>
+      <label class="opt-label"><input type="checkbox" id="optTrim" checked> 去除首尾空格</label>
+      <label class="opt-label"><input type="checkbox" id="optRemoveEmpty" checked> 去除空行</label>
+      <label class="opt-label"><input type="checkbox" id="optShowFreq"> 显示重复计数</label>
+      <select class="opt-select" id="optSort">
+        <option value="none">不排序</option>
+        <option value="asc">升序 A→Z</option>
+        <option value="desc">降序 Z→A</option>
+        <option value="len-asc">长度升序</option>
+        <option value="len-desc">长度降序</option>
+        <option value="freq-desc">出现次数降序</option>
+        <option value="shuffle">随机打乱</option>
+      </select>
+      <label class="opt-label">分隔符：
+        <select class="opt-select" id="optSeparator">
+          <option value="newline">换行</option>
+          <option value="comma">逗号</option>
+          <option value="space">空格</option>
+          <option value="semicolon">分号</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="dual-pane">
+      <div class="pane">
+        <label>📥 输入文本 <span class="count" id="inputInfo">0 行</span></label>
+        <textarea id="inputText" placeholder="每行一条内容，例如：&#10;苹果&#10;香蕉&#10;苹果&#10;橘子&#10;香蕉&#10;葡萄" oninput="process()"></textarea>
+      </div>
+      <div class="pane">
+        <label>📤 去重结果 <span class="count" id="outputInfo">0 行</span></label>
+        <textarea id="outputText" readonly placeholder="处理结果..."></textarea>
+      </div>
+    </div>
+
+    <div class="stats-bar" id="statsBar" style="display:none;">
+      <div>原始: <strong id="statTotal">0</strong> 行</div>
+      <div>去重后: <strong id="statUnique">0</strong> 行</div>
+      <div>重复: <strong id="statDup">0</strong> 行</div>
+      <div>重复率: <strong id="statRate">0%</strong></div>
+    </div>
+
+    <div id="freqArea" style="display:none;">
+      <label style="font-size:14px;font-weight:600;">📊 重复计数（Top 50）：</label>
+      <div class="freq-list" id="freqList"></div>
+    </div>
+
+    <div style="display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="process()">🔄 立即处理</button>
+      <button class="btn btn-outline" onclick="copyResult()">📋 复制结果</button>
+      <button class="btn btn-outline" onclick="swapPane()">🔁 结果→输入</button>
+      <button class="btn btn-outline" onclick="clearAll()">🗑️ 清空</button>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <p>© 2026 在线工具箱 · 所有文件仅在浏览器本地处理，不会上传到服务器</p>
+</footer>
+
+<script>
+const inputText = document.getElementById('inputText');
+const outputText = document.getElementById('outputText');
+
+document.querySelectorAll('.opt-label input, .opt-select').forEach(el => {
+  el.addEventListener('change', process);
+});
+
+function process() {
+  const raw = inputText.value;
+  if (!raw.trim()) {
+    outputText.value = '';
+    document.getElementById('inputInfo').textContent = '0 行';
+    document.getElementById('outputInfo').textContent = '0 行';
+    // statsBar/freqArea always visible
+    return;
+  }
+
+  const sep = document.getElementById('optSeparator').value;
+  const sepChar = { newline: '\n', comma: ',', space: ' ', semicolon: ';' }[sep];
+  let lines = raw.split(sepChar);
+
+  const trim = document.getElementById('optTrim').checked;
+  const ignoreCase = document.getElementById('optIgnoreCase').checked;
+  const removeEmpty = document.getElementById('optRemoveEmpty').checked;
+  const showFreq = document.getElementById('optShowFreq').checked;
+
+  if (trim) lines = lines.map(l => l.trim());
+  if (removeEmpty) lines = lines.filter(l => l.length > 0);
+
+  const total = lines.length;
+
+  // 去重 + 计数
+  const map = new Map();
+  lines.forEach(l => {
+    const key = ignoreCase ? l.toLowerCase() : l;
+    if (!map.has(key)) map.set(key, { original: l, count: 0 });
+    map.get(key).count++;
+  });
+
+  let entries = [...map.values()];
+
+  // 排序
+  const sort = document.getElementById('optSort').value;
+  switch (sort) {
+    case 'asc': entries.sort((a, b) => a.original.localeCompare(b.original, 'zh')); break;
+    case 'desc': entries.sort((a, b) => b.original.localeCompare(a.original, 'zh')); break;
+    case 'len-asc': entries.sort((a, b) => a.original.length - b.original.length); break;
+    case 'len-desc': entries.sort((a, b) => b.original.length - a.original.length); break;
+    case 'freq-desc': entries.sort((a, b) => b.count - a.count); break;
+    case 'shuffle': entries.sort(() => Math.random() - 0.5); break;
+  }
+
+  const unique = entries.length;
+  const dup = total - unique;
+  const rate = total > 0 ? Math.round(dup / total * 100) : 0;
+
+  const outputSep = sep === 'newline' ? '\n' : sepChar + ' ';
+  outputText.value = entries.map(e => showFreq ? `${e.original} (${e.count})` : e.original).join(outputSep);
+
+  document.getElementById('inputInfo').textContent = total + ' 行';
+  document.getElementById('outputInfo').textContent = unique + ' 行';
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statUnique').textContent = unique;
+  document.getElementById('statDup').textContent = dup;
+  document.getElementById('statRate').textContent = rate + '%';
+  // statsBar always visible
+
+  // 重复计数
+  if (showFreq) {
+    const freqEntries = entries.filter(e => e.count > 1).sort((a, b) => b.count - a.count).slice(0, 50);
+    if (freqEntries.length > 0) {
+      // freqArea always visible
+      document.getElementById('freqList').innerHTML = freqEntries.map((e, i) => `
+        <div class="freq-item">
+          <span class="rank">#${i + 1}</span>
+          <span class="val">${esc(e.original)}</span>
+          <span class="cnt">×${e.count}</span>
+        </div>
+      `).join('');
+    } else {
+      // freqArea always visible
+    }
+  } else {
+    // freqArea always visible
+  }
+}
+
+function copyResult() {
+  navigator.clipboard.writeText(outputText.value).then(() => {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✅ 已复制';
+    setTimeout(() => btn.textContent = orig, 1500);
+  });
+}
+
+function swapPane() {
+  inputText.value = outputText.value;
+  process();
+}
+
+function clearAll() {
+  inputText.value = '';
+  outputText.value = '';
+  // statsBar/freqArea always visible
+}
+
+function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+</script>
+
+</body>
+</html>

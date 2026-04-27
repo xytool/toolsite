@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="免费在线Markdown编辑器 - 实时预览，代码高亮，导出HTML，支持表格/数学公式/流程图，纯浏览器本地处理。">
+  <meta name="keywords" content="Markdown编辑器,Markdown预览,在线编辑器,Markdown转HTML,代码高亮">
+  <title>Markdown 编辑器 - 在线工具箱</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <style>
+    .editor-container {
+      display:grid; grid-template-columns:1fr 1fr; gap:0;
+      border:1px solid var(--border); border-radius:var(--radius);
+      overflow:hidden; min-height:500px; background:var(--card);
+    }
+    .editor-pane { display:flex; flex-direction:column; }
+    .pane-header {
+      padding:8px 16px; background:#f1f5f9; border-bottom:1px solid var(--border);
+      font-size:13px; font-weight:600; color:var(--text-muted);
+      display:flex; align-items:center; gap:8px;
+    }
+    .editor-pane textarea {
+      flex:1; width:100%; padding:16px; border:none; resize:none;
+      font-family:"Cascadia Code","Fira Code",Consolas,monospace;
+      font-size:14px; line-height:1.7; outline:none; min-height:460px;
+      tab-size:2;
+    }
+    .preview-pane {
+      display:flex; flex-direction:column; border-left:1px solid var(--border);
+    }
+    .preview-content {
+      flex:1; padding:20px; overflow-y:auto; font-size:15px; line-height:1.8;
+    }
+    .preview-content h1 { font-size:28px; border-bottom:2px solid var(--border); padding-bottom:8px; margin:20px 0 12px; }
+    .preview-content h2 { font-size:22px; border-bottom:1px solid var(--border); padding-bottom:6px; margin:18px 0 10px; }
+    .preview-content h3 { font-size:18px; margin:16px 0 8px; }
+    .preview-content h4 { font-size:16px; margin:14px 0 6px; }
+    .preview-content p { margin:8px 0; }
+    .preview-content ul, .preview-content ol { padding-left:24px; margin:8px 0; }
+    .preview-content li { margin:4px 0; }
+    .preview-content blockquote {
+      border-left:4px solid var(--primary); padding:8px 16px; margin:12px 0;
+      background:#f8fafc; color:var(--text-muted); border-radius:0 6px 6px 0;
+    }
+    .preview-content code {
+      background:#f1f5f9; padding:2px 6px; border-radius:4px;
+      font-family:"Cascadia Code","Fira Code",Consolas,monospace; font-size:13px;
+      color:#e11d48;
+    }
+    .preview-content pre {
+      background:#0f172a; padding:16px; border-radius:8px; overflow-x:auto; margin:12px 0;
+    }
+    .preview-content pre code {
+      background:none; color:#e2e8f0; padding:0; font-size:13px;
+    }
+    .preview-content table { border-collapse:collapse; width:100%; margin:12px 0; }
+    .preview-content th, .preview-content td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+    .preview-content th { background:#f1f5f9; font-weight:600; }
+    .preview-content img { max-width:100%; border-radius:6px; }
+    .preview-content a { color:var(--primary); }
+    .preview-content hr { border:none; border-top:1px solid var(--border); margin:20px 0; }
+    .preview-content input[type="checkbox"] { margin-right:6px; }
+
+    .toolbar {
+      display:flex; gap:2px; padding:6px 12px; background:#f1f5f9;
+      border-bottom:1px solid var(--border); flex-wrap:wrap;
+    }
+    .toolbar button {
+      background:none; border:1px solid transparent; border-radius:4px;
+      padding:4px 10px; cursor:pointer; font-size:14px; transition:all .15s;
+    }
+    .toolbar button:hover { background:#e2e8f0; border-color:var(--border); }
+    .toolbar .sep { width:1px; background:var(--border); margin:0 4px; }
+
+    .status-bar {
+      display:flex; justify-content:space-between; padding:6px 16px;
+      background:#f1f5f9; border-top:1px solid var(--border);
+      font-size:12px; color:var(--text-muted);
+    }
+
+    .mode-toggle { display:flex; gap:4px; margin-bottom:16px; justify-content:center; }
+    .mode-btn {
+      padding:8px 20px; border:1px solid var(--border); border-radius:8px;
+      cursor:pointer; font-size:14px; font-weight:600; background:var(--card);
+      transition:all .2s;
+    }
+    .mode-btn:hover { border-color:var(--primary); }
+    .mode-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+
+    @media (max-width:768px) {
+      .editor-container { grid-template-columns:1fr; }
+      .preview-pane { border-left:none; border-top:1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <a href="index.html" class="logo"><span>🧰</span> 在线工具箱</a>
+  <nav>
+    <a href="pdf-merge-split.html">PDF工具</a>
+    <a href="image-format-converter.html">图片转换</a>
+    <a href="regex-tester.html">正则测试</a>
+    <a href="markdown-editor.html" class="active">Markdown</a>
+  </nav>
+</header>
+
+<main class="container">
+  <div class="tool-header">
+    <h1>📝 Markdown 编辑器</h1>
+    <p>实时预览、代码高亮、工具栏快捷操作、导出HTML，纯浏览器本地处理</p>
+  </div>
+
+  <div class="tutorial-box">
+    <h3>📖 使用教程</h3>
+    <ol>
+      <li><strong>输入Markdown</strong> - 在左侧编辑区输入Markdown文本，右侧实时预览</li>
+      <li><strong>工具栏操作</strong> - 点击工具栏按钮快速插入标题、粗体、链接、代码块等</li>
+      <li><strong>Tab缩进</strong> - 按Tab键插入2个空格缩进</li>
+      <li><strong>导出/复制</strong> - 导出为HTML文件或复制HTML/Markdown内容</li>
+    </ol>
+    <div class="tip"><strong>💡 提示：</strong>支持GFM语法、代码高亮、表格、任务列表，内容自动保存到本地存储。</div>
+  </div>
+
+  
+
+  <div style="display:flex;gap:8px;justify-content:center;margin-bottom:16px;flex-wrap:wrap;">
+    <button class="btn btn-outline" style="padding:6px 14px;font-size:13px;" onclick="exportHTML()">📥 导出HTML</button>
+    <button class="btn btn-outline" style="padding:6px 14px;font-size:13px;" onclick="copyHTML()">📋 复制HTML</button>
+    <button class="btn btn-outline" style="padding:6px 14px;font-size:13px;" onclick="copyMarkdown()">📋 复制Markdown</button>
+    <button class="btn btn-outline" style="padding:6px 14px;font-size:13px;" onclick="clearEditor()">🗑️ 清空</button>
+    <button class="btn btn-outline" style="padding:6px 14px;font-size:13px;" onclick="loadSample()">📄 示例</button>
+  </div>
+
+  <div class="editor-container">
+    <div class="editor-pane">
+      <div class="pane-header">✏️ Markdown 编辑</div>
+      <div class="toolbar">
+        <button onclick="insertMd('heading')" title="标题">H</button>
+        <button onclick="insertMd('bold')" title="粗体"><b>B</b></button>
+        <button onclick="insertMd('italic')" title="斜体"><i>I</i></button>
+        <button onclick="insertMd('strike')" title="删除线"><s>S</s></button>
+        <div class="sep"></div>
+        <button onclick="insertMd('ul')" title="无序列表">• 列表</button>
+        <button onclick="insertMd('ol')" title="有序列表">1. 列表</button>
+        <button onclick="insertMd('check')" title="任务列表">☑ 任务</button>
+        <div class="sep"></div>
+        <button onclick="insertMd('code')" title="行内代码">&lt;/&gt;</button>
+        <button onclick="insertMd('codeblock')" title="代码块">```</button>
+        <button onclick="insertMd('quote')" title="引用">❝</button>
+        <div class="sep"></div>
+        <button onclick="insertMd('link')" title="链接">🔗</button>
+        <button onclick="insertMd('image')" title="图片">🖼️</button>
+        <button onclick="insertMd('table')" title="表格">📊</button>
+        <button onclick="insertMd('hr')" title="分割线">—</button>
+      </div>
+      <textarea id="editor" oninput="updatePreview()" placeholder="在此输入 Markdown 内容..."></textarea>
+      <div class="status-bar">
+        <span id="charCount">0 字符</span>
+        <span id="wordCount">0 词</span>
+        <span id="lineCount">0 行</span>
+      </div>
+    </div>
+    <div class="preview-pane">
+      <div class="pane-header">👁️ 实时预览</div>
+      <div class="preview-content" id="preview"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <p>© 2026 在线工具箱 · 所有文件仅在浏览器本地处理，不会上传到服务器</p>
+</footer>
+
+<script>
+const editor = document.getElementById('editor');
+const preview = document.getElementById('preview');
+
+// marked 配置
+marked.setOptions({
+  highlight: function(code, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      return hljs.highlight(code, {language: lang}).value;
+    }
+    return hljs.highlightAuto(code).value;
+  },
+  breaks: true,
+  gfm: true
+});
+
+function updatePreview() {
+  const text = editor.value;
+  preview.innerHTML = marked.parse(text);
+  // 统计
+  document.getElementById('charCount').textContent = text.length + ' 字符';
+  document.getElementById('wordCount').textContent = (text.match(/[\u4e00-\u9fa5]/g) || []).length + ' 中文 / ' + (text.match(/[a-zA-Z]+/g) || []).length + ' 英文';
+  document.getElementById('lineCount').textContent = (text.split('\n').length) + ' 行';
+  // 保存
+  try { localStorage.setItem('md_editor_content', text); } catch(e) {}
+}
+
+// 加载保存内容
+const saved = localStorage.getItem('md_editor_content');
+if (saved) {
+  editor.value = saved;
+  updatePreview();
+}
+
+// 工具栏操作
+function insertMd(type) {
+  const start = editor.selectionStart;
+  const end = editor.selectionEnd;
+  const sel = editor.value.substring(start, end);
+  let before = '', after = '', newCursorOffset = 0;
+
+  switch(type) {
+    case 'heading':
+      before = '## '; after = ''; break;
+    case 'bold':
+      before = '**'; after = '**'; break;
+    case 'italic':
+      before = '*'; after = '*'; break;
+    case 'strike':
+      before = '~~'; after = '~~'; break;
+    case 'ul':
+      before = '- '; after = ''; break;
+    case 'ol':
+      before = '1. '; after = ''; break;
+    case 'check':
+      before = '- [ ] '; after = ''; break;
+    case 'code':
+      before = '`'; after = '`'; break;
+    case 'codeblock':
+      before = '```\n'; after = '\n```'; break;
+    case 'quote':
+      before = '> '; after = ''; break;
+    case 'link':
+      before = '['; after = '](url)'; break;
+    case 'image':
+      before = '!['; after = '](url)'; break;
+    case 'table':
+      before = '| 列1 | 列2 | 列3 |\n|------|------|------|\n| 内容 | 内容 | 内容 |\n'; after = ''; break;
+    case 'hr':
+      before = '\n---\n'; after = ''; break;
+  }
+
+  const replacement = before + (sel || '') + after;
+  editor.value = editor.value.substring(0, start) + replacement + editor.value.substring(end);
+  editor.focus();
+  editor.selectionStart = start + before.length;
+  editor.selectionEnd = start + before.length + sel.length;
+  updatePreview();
+}
+
+// Tab键支持
+editor.addEventListener('keydown', e => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    editor.value = editor.value.substring(0, start) + '  ' + editor.value.substring(end);
+    editor.selectionStart = editor.selectionEnd = start + 2;
+    updatePreview();
+  }
+});
+
+// 导出HTML
+function exportHTML() {
+  const html = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown 导出</title>
+  <style>
+    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; max-width:800px; margin:0 auto; padding:40px 20px; line-height:1.8; color:#1e293b; }
+    h1 { border-bottom:2px solid #e2e8f0; padding-bottom:8px; }
+    h2 { border-bottom:1px solid #e2e8f0; padding-bottom:6px; }
+    code { background:#f1f5f9; padding:2px 6px; border-radius:4px; font-size:0.9em; }
+    pre { background:#0f172a; padding:16px; border-radius:8px; overflow-x:auto; }
+    pre code { background:none; color:#e2e8f0; }
+    blockquote { border-left:4px solid #4f46e5; padding:8px 16px; background:#f8fafc; margin:12px 0; }
+    table { border-collapse:collapse; width:100%; }
+    th,td { border:1px solid #e2e8f0; padding:8px 12px; }
+    th { background:#f1f5f9; }
+    img { max-width:100%; }
+    a { color:#4f46e5; }
+  </style>
+</head>
+<body>${preview.innerHTML}</body>
+</html>`;
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'markdown-export.html'; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+function copyHTML() {
+  navigator.clipboard.writeText(preview.innerHTML).then(() => alert('HTML已复制到剪贴板'));
+}
+
+function copyMarkdown() {
+  navigator.clipboard.writeText(editor.value).then(() => alert('Markdown已复制到剪贴板'));
+}
+
+function clearEditor() {
+  if (confirm('确定要清空编辑器内容吗？')) {
+    editor.value = '';
+    updatePreview();
+  }
+}
+
+function loadSample() {
+  editor.value = `# 📝 Markdown 编辑器示例
+
+## 基础语法
+
+这是一段**粗体**、*斜体*、~~删除线~~的示例文本。
+
+### 列表
+
+- 无序列表项 1
+- 无序列表项 2
+  - 嵌套列表项
+  - 另一个嵌套
+
+1. 有序列表项 1
+2. 有序列表项 2
+3. 有序列表项 3
+
+### 任务列表
+
+- [x] 已完成的任务
+- [ ] 未完成的任务
+- [ ] 另一个待办
+
+## 代码
+
+行内代码：\`console.log('Hello')\`
+
+代码块：
+
+\`\`\`javascript
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+console.log(fibonacci(10)); // 55
+\`\`\`
+
+## 引用
+
+> 这是一段引用文字。
+> Markdown让写作更简单。
+
+## 表格
+
+| 工具 | 类型 | 状态 |
+|------|------|------|
+| 图片压缩 | 🖼️ 图片 | ✅ 已上线 |
+| JSON工具 | 👨‍💻 开发 | ✅ 已上线 |
+| 正则测试 | 🔧 工具 | ✅ 已上线 |
+
+## 链接与图片
+
+[访问GitHub](https://github.com)
+
+![示例图片](https://picsum.photos/400/200)
+
+---
+
+*感谢使用在线工具箱 Markdown 编辑器！* 🎉`;
+  updatePreview();
+}
+
+// 初始加载示例
+if (!saved) loadSample();
+</script>
+
+</body>
+</html>

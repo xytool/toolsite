@@ -1,0 +1,1131 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="鍏嶈垂鍦ㄧ嚎JSON宸ュ叿锟?- JSON缇庡寲銆佸帇缂┿€佹牎楠屻€佹牸寮忓寲銆佹爲褰㈣鍥俱€佸姣斻€佽〃鏍笺€佹煡璇紝鏀寔澶ф枃浠讹拷?>
+  <title>JSON 宸ュ叿锟?- 鍦ㄧ嚎宸ュ叿锟?/title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { font-family: 'Segoe UI', system-ui, sans-serif; }
+
+    /* Tab 瀵艰埅 */
+    .tab-bar { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 8px 18px; border: none; border-radius: 8px; cursor: pointer;
+      font-size: 14px; font-weight: 600; background: #e2e8f0; color: #475569;
+      transition: all .2s;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; box-shadow: 0 2px 8px rgba(79,70,229,.3); }
+    .tab-btn:hover:not(.active) { background: #cbd5e1; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* 缂栬緫锟?*/
+    .editor-wrap { position: relative; }
+    .line-nums {
+      position: absolute; left: 0; top: 0; bottom: 0; width: 44px;
+      background: #f1f5f9; border-right: 1px solid #e2e8f0; border-radius: 8px 0 0 8px;
+      padding: 14px 8px 14px 4px; text-align: right;
+      font-family: 'Cascadia Code','Fira Code',Consolas,monospace;
+      font-size: 13px; line-height: 1.65; color: #94a3b8;
+      overflow: hidden; user-select: none;
+    }
+    textarea.with-lines { padding-left: 52px !important; border-radius: 0 8px 8px 0 !important; }
+
+    /* 楂樹寒 */
+    #outputArea .k{color:#7c3aed;font-weight:700}
+    #outputArea .s{color:#059669}
+    #outputArea .n{color:#d97706}
+    #outputArea .b{color:#2563eb}
+    #outputArea .nu{color:#94a3b8}
+    #outputArea .p{color:#64748b}
+
+    /* 鏍戣锟?*/
+    .tree-node { padding-left: 20px; user-select: none; }
+    .tree-toggle { cursor: pointer; display: inline-block; width: 16px; font-size: 12px; color: #94a3b8; }
+    .tree-toggle.empty { cursor: default; }
+    .tree-key { color: #7c3aed; font-weight: 600; }
+    .tree-string { color: #059669; }
+    .tree-number { color: #d97706; }
+    .tree-bool { color: #2563eb; }
+    .tree-null { color: #94a3b8; font-style: italic; }
+    .tree-bracket { color: #64748b; }
+    .tree-preview { color: #94a3b8; font-size: 12px; margin-left: 8px; }
+
+    /* diff */
+    .diff-add { background: #dcfce7; color: #166534; }
+    .diff-del { background: #fee2e2; color: #991b1b; text-decoration: line-through; }
+    .diff-chg { background: #fef3c7; color: #92400e; }
+    .diff-section { margin: 4px 0; padding: 2px 8px; border-radius: 4px; font-family: monospace; font-size: 13px; }
+
+    /* 琛ㄦ牸 */
+    table.json-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.json-table th { background: #f1f5f9; padding: 8px 12px; text-align: left; border: 1px solid #e2e8f0; font-weight: 700; }
+    table.json-table td { padding: 8px 12px; border: 1px solid #e2e8f0; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    table.json-table tr:hover td { background: #f8fafc; }
+    .json-table-wrap { max-height: 500px; overflow: auto; border: 1px solid var(--border); border-radius: 8px; }
+
+    /* 鏌ヨ */
+    .query-result { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; margin-top: 12px; }
+    .query-error { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 16px; margin-top: 12px; color: #dc2626; }
+
+    /* 鍘嗗彶璁板綍 */
+    .history-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer;
+    }
+    .history-item:hover { background: #f8fafc; }
+    .history-item .name { font-size: 13px; color: #334155; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .history-item .meta { font-size: 11px; color: #94a3b8; }
+    .history-item .del { color: #94a3b8; font-size: 16px; cursor: pointer; padding: 0 4px; }
+    .history-item .del:hover { color: #dc2626; }
+    .history-list { max-height: 300px; overflow-y: auto; }
+
+    /* 鏂囦欢涓婁紶 */
+    .file-hint { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+    .upload-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+
+    @media (max-width: 640px) {
+      .grid-stack { grid-template-columns: 1fr !important; }
+      .upload-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <a href="index.html" class="logo"><span>馃О</span> 鍦ㄧ嚎宸ュ叿锟?/a>
+  <nav>
+    <a href="index.html">棣栭〉</a>
+    <a href="image-compressor.html">鍥剧墖鍘嬬缉</a>
+    <a href="qr-generator.html">浜岀淮锟?/a>
+    <a href="json-formatter.html" class="active">JSON宸ュ叿</a>
+  </nav>
+</header>
+
+<main class="container">
+  <div class="tool-header">
+    <h1>馃搵 JSON 宸ュ叿锟?/h1>
+    <p>缇庡寲 路 鍘嬬缉 路 鏍￠獙 路 鏍戝舰瑙嗗浘 路 瀵规瘮 路 杞〃锟?路 鏌ヨ 锟?鍏ㄥ姛鑳芥湰鍦板鐞嗭紝澶ф枃浠舵棤鍘嬪姏锟?/p>
+  </div>
+  
+  <div class="tutorial-box">
+    <h3>馃摉 浣跨敤鏁欑▼</h3>
+    <ol>
+      <li><strong>杈撳叆JSON</strong> - 绮樿创銆佹嫋鎷芥枃浠舵垨鐐瑰嚮鈥滄墦寮€鏂囦欢鈥濓紝鏀寔150+绉嶆牸锟?/li>
+      <li><strong>閫夋嫨鍔熻兘</strong> - 缇庡寲(鏍煎紡锟?銆佸帇锟?鏈€灏忓寲)銆佹牎锟?妫€鏌ラ敊锟?銆佹爲瑙嗗浘(鍙锟?</li>
+      <li><strong>楂樼骇鍔熻兘</strong> - 瀵规瘮涓ゆJSON宸紓銆佽浆琛ㄦ牸棰勮銆丣SONPath鏌ヨ</li>
+      <li><strong>瀵煎嚭缁撴灉</strong> - 澶嶅埗鍒板壀璐存澘鎴栦笅杞戒负鏂囦欢</li>
+    </ol>
+    <div class="tip"><strong>馃挕 鎻愮ず锟?/strong>鍘嗗彶璁板綍鑷姩淇濆瓨鏈€锟?0鏉★紝鍙湪鈥滃巻鍙测€濇爣绛鹃〉鏌ョ湅鍜屾仮澶嶏拷?/div>
+  </div>
+  
+  <!-- Tab 鍒囨崲 -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('beautify')">锟?缇庡寲</button>
+    <button class="tab-btn" onclick="switchTab('tree')">馃尦 鏍戣锟?/button>
+    <button class="tab-btn" onclick="switchTab('diff')">锟?瀵规瘮</button>
+    <button class="tab-btn" onclick="switchTab('table')">馃搳 杞〃锟?/button>
+    <button class="tab-btn" onclick="switchTab('query')">馃攳 鏌ヨ</button>
+    <button class="tab-btn" onclick="switchTab('history')">馃搨 鍘嗗彶</button>
+  </div>
+
+  <!-- ============ 缇庡寲 Tab ============ -->
+  <div id="tab-beautify" class="tab-panel active">
+    <div class="upload-row">
+      <div style="flex:1">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+          <button class="btn btn-primary" onclick="beautify()">锟?缇庡寲</button>
+          <button class="btn btn-outline" onclick="minify()">馃棞锟?鍘嬬缉</button>
+          <button class="btn btn-outline" onclick="sortJSON()">锟?鎺掑簭</button>
+          <button class="btn btn-outline" onclick="encodeURI()">馃實 URL缂栫爜</button>
+          <button class="btn btn-outline" onclick="validate()">锟?鏍￠獙</button>
+          <button class="btn btn-outline" onclick="clearAll()">馃棏锟?娓呯┖</button>
+          <button class="btn btn-outline" onclick="copyResult()">馃搵 澶嶅埗</button>
+          <button class="btn btn-outline" onclick="sampleJSON()">馃摑 绀轰緥</button>
+        </div>
+      </div>
+    </div>
+
+    <div
+  
+
+ style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" class="grid-stack">
+      <!-- 杈撳叆 -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span style="font-weight:600;font-size:14px;">馃摜 杈撳叆 JSON</span>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <label style="font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px;">
+              <input type="file" id="fileInput" accept=".json,.txt,.js,.ts,.jsx,.tsx,.vue,.svelte,.py,.rb,.php,.java,.kt,.swift,.dart,.c,.cpp,.cs,.go,.rs,.lua,.sh,.bash,.zsh,.fish,.ps1,.bat,.cmd,.sql,.graphql,.gql,.proto,.html,.htm,.css,.scss,.sass,.less,.styl,.xml,.xaml,.svg,.csv,.tsv,.yaml,.yml,.toml,.ini,.cfg,.conf,.properties,.env,.gitignore,.editorconfig,.prettierrc,.prettierrc.json,.prettierrc.yaml,.prettierrc.toml,.eslintrc,.eslintrc.json,.babelrc,.babelrc.json,.babel.config.json,.webpack.config.js,.vite.config.js,.rollup.config.js,.nuxt.config.js,.next.config.js,.nest-cli.json,.package.json,.tsconfig.json,.compile_commands.json,.gradle,.gradle.kts,.maven,.pom.xml,.makefile,.cmake,.dockerfile,.dockerignore,.nginx,.htaccess,.lock,.jsonl,.ndjson,.jsonc,.json5,.geojson,.topojson,.har,.reqwest,.raml,.openapi,.asyncapi,.graphqlrc,.graphql.config.json" onchange="loadFile(this)" style="display:none;">
+              <span style="background:#e2e8f0;padding:4px 10px;border-radius:6px;font-size:12px;">馃搨 鎵撳紑鏂囦欢</span>
+            </label>
+            <span style="font-size:11px;color:#94a3b8;">鏀寔 150+ 绉嶆牸锟?/span>
+            <span id="inputInfo" style="font-size:12px;color:var(--text-muted);"></span>
+          </div>
+        </div>
+        <div class="editor-wrap">
+          <div class="line-nums" id="lineNums1">1</div>
+          <textarea id="inputJSON"
+            placeholder="绮樿创鎴栬緭锟?JSON 鍐呭...&#10;鏀寔鎷栨嫿 150+ 绉嶆牸寮忥紙浠ｇ爜/閰嶇疆/鏁版嵁/璇佷功绛夛級"
+            style="width:100%;min-height:380px;padding:14px 14px 14px 52px;border:1px solid var(--border);border-radius:8px;
+                   font-family:'Cascadia Code','Fira Code',Consolas,monospace;font-size:13px;line-height:1.65;
+                   resize:vertical;outline:none;background:#fafbff;
+                   transition:border-color .2s;box-sizing:border-box;"
+            oninput="onInputChange()" spellcheck="false"></textarea>
+        </div>
+        <div id="inputError" style="margin-top:8px;font-size:13px;color:#dc2626;display:none;"></div>
+      </div>
+
+      <!-- 杈撳嚭 -->
+      <div class="card" style="background:#f8fafc;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span style="font-weight:600;font-size:14px;">馃摛 缁撴灉</span>
+          <span id="outputInfo" style="font-size:12px;color:var(--text-muted);"></span>
+        </div>
+        <div id="outputArea"
+          style="min-height:380px;padding:14px;border:1px solid var(--border);border-radius:8px;
+                 font-family:'Cascadia Code','Fira Code',Consolas,monospace;font-size:13px;line-height:1.65;
+                 white-space:pre-wrap;word-break:break-all;overflow:auto;
+                 background:#fff;color:#334155;">
+          缁撴灉灏嗗湪姝ゆ樉锟?..
+        </div>
+        <div id="outputError" style="margin-top:8px;font-size:13px;color:#dc2626;display:none;"></div>
+      </div>
+    </div>
+
+    <!-- 缁熻 -->
+    <div id="statsArea" style="margin-top:16px;display:none;">
+      <div class="card" style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;">
+        <div class="stat-item"><div class="value" id="statLines">锟?/div><div class="label">琛屾暟</div></div>
+        <div class="stat-item"><div class="value" id="statChars">锟?/div><div class="label">瀛楃锟?/div></div>
+        <div class="stat-item"><div class="value" id="statKeys">锟?/div><div class="label">閿暟锟?/div></div>
+        <div class="stat-item"><div class="value" id="statSize">锟?/div><div class="label">鍘熷</div></div>
+        <div class="stat-item"><div class="value" id="statSaved">锟?/div><div class="label">鑺傜渷</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 鏍戣锟?Tab ============ -->
+  <div id="tab-tree" class="tab-panel">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+      <button class="btn btn-primary" onclick="buildTree()">馃尦 鐢熸垚鏍戣锟?/button>
+      <button class="btn btn-outline" onclick="expandAll()">锟?鍏ㄩ儴灞曞紑</button>
+      <button class="btn btn-outline" onclick="collapseAll()">锟?鍏ㄩ儴鎶樺彔</button>
+      <button class="btn btn-outline" onclick="copyTreeResult()">馃搵 澶嶅埗</button>
+    </div>
+    <div class="card">
+      <div id="treeInputWrap" style="margin-bottom:12px;">
+        <textarea id="treeInput"
+          placeholder="绮樿创 JSON 鍐呭..."
+          style="width:100%;min-height:120px;padding:12px;border:1px solid var(--border);border-radius:8px;
+                 font-family:monospace;font-size:13px;resize:vertical;outline:none;background:#fafbff;"
+          oninput="onTreeInput()"></textarea>
+        <div id="treeInputError" style="margin-top:6px;font-size:13px;color:#dc2626;display:none;"></div>
+      </div>
+      <div id="treeStats" style="margin-bottom:12px;font-size:13px;color:var(--text-muted);"></div>
+      <div id="treeView" style="font-family:monospace;font-size:14px;line-height:1.8;min-height:200px;overflow:auto;">
+        杈撳叆 JSON 鍚庣偣锟?鐢熸垚鏍戣锟?
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 瀵规瘮 Tab ============ -->
+  <div id="tab-diff" class="tab-panel">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+      <button class="btn btn-primary" onclick="runDiff()">锟?鎵ц瀵规瘮</button>
+      <button class="btn btn-outline" onclick="clearDiff()">馃棏锟?娓呯┖</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" class="grid-stack">
+      <div class="card">
+        <div style="font-weight:600;font-size:14px;margin-bottom:8px;">馃摜 JSON A锛堝師濮嬶級</div>
+        <textarea id="diffA" placeholder="绮樿创绗竴锟?JSON..."
+          style="width:100%;min-height:280px;padding:12px;border:1px solid var(--border);border-radius:8px;
+                 font-family:monospace;font-size:13px;resize:vertical;outline:none;background:#fafbff;"
+          spellcheck="false"></textarea>
+      </div>
+      <div class="card">
+        <div style="font-weight:600;font-size:14px;margin-bottom:8px;">馃摜 JSON B锛堝姣旓級</div>
+        <textarea id="diffB" placeholder="绮樿创绗簩锟?JSON..."
+          style="width:100%;min-height:280px;padding:12px;border:1px solid var(--border);border-radius:8px;
+                 font-family:monospace;font-size:13px;resize:vertical;outline:none;background:#fafbff;"
+          spellcheck="false"></textarea>
+      </div>
+    </div>
+    <div id="diffSummary" style="margin-top:12px;display:none;">
+      <div class="card" style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;">
+        <div class="stat-item"><div class="value" id="diffAdd" style="color:#166534">0</div><div class="label">馃煝 鏂板</div></div>
+        <div class="stat-item"><div class="value" id="diffDel" style="color:#991b1b">0</div><div class="label">馃敶 鍒犻櫎</div></div>
+        <div class="stat-item"><div class="value" id="diffChg" style="color:#92400e">0</div><div class="label">馃煛 鍙樻洿</div></div>
+        <div class="stat-item"><div class="value" id="diffSame" style="color:#334155">0</div><div class="label">锟?鐩稿悓</div></div>
+      </div>
+    </div>
+    <div id="diffResult" style="margin-top:12px;"></div>
+  </div>
+
+  <!-- ============ 杞〃锟?Tab ============ -->
+  <div id="tab-table" class="tab-panel">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+      <button class="btn btn-primary" onclick="jsonToTable()">馃搳 鐢熸垚琛ㄦ牸</button>
+      <button class="btn btn-outline" onclick="document.getElementById('tableInput').value='';document.getElementById('tableResult').innerHTML='璇峰厛杈撳叆 JSON 鏁扮粍'">馃棏锟?娓呯┖</button>
+    </div>
+    <div class="card" style="margin-bottom:16px;">
+      <div style="font-weight:600;font-size:14px;margin-bottom:8px;">馃摜 JSON 杈撳叆锛堟暟缁勬牸寮忥紝锟?[&#123;&#125;, &#123;&#125;]锟?/div>
+      <textarea id="tableInput" placeholder='绀轰緥锟?#10;[&#10;  &#123;"name":"寮犱笁","age":28,"city":"鍖椾含"&#125;,&#10;  &#123;"name":"鏉庡洓","age":35,"city":"涓婃捣"&#125;&#10;]'
+        style="width:100%;min-height:160px;padding:12px;border:1px solid var(--border);border-radius:8px;
+               font-family:monospace;font-size:13px;resize:vertical;outline:none;background:#fafbff;"
+        oninput="onTableInput()"></textarea>
+      <div id="tableInputError" style="margin-top:6px;font-size:13px;color:#dc2626;display:none;">  </div>
+
+  <div class="card" style="border-left:4px solid #10b981;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <span style="font-size:20px;">??</span>
+      <span style="font-size:15px;font-weight:700;color:#10b981;">锟斤拷迎锟结交使锟矫凤拷锟斤拷</span>
+    </div>
+    <p style="font-size:14px;color:#64748b;margin:0 0 10px 0;">锟斤拷锟斤拷惴拷锟?bug锟斤拷锟叫癸拷锟杰斤拷锟介，锟斤拷使锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟解，锟斤拷迎锟斤拷锟铰凤拷锟斤拷锟桔匡拷锟结交锟斤拷</p>
+    <p style="font-size:13px;color:#94a3b8;margin:0;">?? 锟斤拷锟斤拷锟斤拷锟揭筹拷锟阶诧拷锟斤拷锟斤拷写锟斤拷锟桔憋拷锟斤拷锟斤拷锟结交锟斤拷锟斤拷谢锟斤拷姆锟斤拷锟斤拷锟?/p>
+  </div>
+
+  <div class="card"><div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span style="font-weight:600;font-size:14px;">馃搳 琛ㄦ牸缁撴灉</span>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="copyTable()">馃搵 澶嶅埗琛ㄦ牸</button>
+      </div>
+      <div id="tableResult" style="font-family:monospace;font-size:13px;">
+        杈撳叆 JSON 鏁扮粍鍚庣偣锟?鐢熸垚琛ㄦ牸"
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 鏌ヨ Tab ============ -->
+  <div id="tab-query" class="tab-panel">
+    <div class="card" style="margin-bottom:16px;">
+      <div style="font-weight:600;font-size:14px;margin-bottom:8px;">馃摜 JSON 鏁版嵁</div>
+      <textarea id="queryInput"
+        placeholder="绮樿创瑕佹煡璇㈢殑 JSON 鏁版嵁...&#10;鏀寔鎷栨嫿 150+ 绉嶆枃浠舵牸锟?
+        style="width:100%;min-height:200px;padding:12px;border:1px solid var(--border);border-radius:8px;
+               font-family:monospace;font-size:13px;resize:vertical;outline:none;background:#fafbff;"
+        oninput="onQueryInput()"></textarea>
+      <div id="queryInputError" style="margin-top:6px;font-size:13px;color:#dc2626;display:none;"></div>
+    </div>
+    <div class="card" style="margin-bottom:16px;">
+      <div style="font-weight:600;font-size:14px;margin-bottom:8px;">馃攳 JSONPath 鏌ヨ</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;">
+        <input type="text" id="queryPath"
+          placeholder="杈撳叆璺緞锛屽 data[0].name 锟?$[0].title"
+          style="flex:1;min-width:200px;padding:10px 14px;border:1px solid var(--border);border-radius:8px;
+                 font-family:monospace;font-size:14px;outline:none;">
+        <button class="btn btn-primary" onclick="runQuery()">馃攳 鏌ヨ</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <span style="font-size:12px;color:var(--text-muted);">甯哥敤璺緞锟?/span>
+        <button style="font-size:12px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:3px 10px;cursor:pointer;" onclick="setQuery('$.')">$.</button>
+        <button style="font-size:12px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:3px 10px;cursor:pointer;" onclick="setQuery('$.length')">$.length</button>
+        <button style="font-size:12px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:3px 10px;cursor:pointer;" onclick="setQuery('$.keys()')">$.keys()</button>
+        <button style="font-size:12px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:3px 10px;cursor:pointer;" onclick="setQuery('$.values()')">$.values()</button>
+      </div>
+      <div id="queryResult" style="margin-top:12px;">  </div>
+
+  <div class="card" style="border-left:4px solid #10b981;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <span style="font-size:20px;">??</span>
+      <span style="font-size:15px;font-weight:700;color:#10b981;">锟斤拷迎锟结交使锟矫凤拷锟斤拷</span>
+    </div>
+    <p style="font-size:14px;color:#64748b;margin:0 0 10px 0;">锟斤拷锟斤拷惴拷锟?bug锟斤拷锟叫癸拷锟杰斤拷锟介，锟斤拷使锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟解，锟斤拷迎锟斤拷锟铰凤拷锟斤拷锟桔匡拷锟结交锟斤拷</p>
+    <p style="font-size:13px;color:#94a3b8;margin:0;">?? 锟斤拷锟斤拷锟斤拷锟揭筹拷锟阶诧拷锟斤拷锟斤拷写锟斤拷锟桔憋拷锟斤拷锟斤拷锟结交锟斤拷锟斤拷谢锟斤拷姆锟斤拷锟斤拷锟?/p>
+  </div>
+
+  <div class="card"><div class="card">
+      <div style="font-weight:600;font-size:14px;margin-bottom:8px;">馃摉 JSONPath 璇硶鍙傦拷?/div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;font-size:13px;">
+        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$.name</code> 锟?鏍瑰璞＄殑 name 锟?/div>
+        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$.data[0]</code> 锟?data 鏁扮粍绗竴涓厓锟?/div>
+        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$.items[*].name</code> 锟?鎵€锟?items 锟?name</div>
+        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$..key</code> 锟?閫掑綊鏌ユ壘鎵€锟?key</div>
+        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$.data[?(@.age>18)]</code> 锟?杩囨护 age>18</div>
+        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$.length</code> 锟?鏁扮粍闀垮害</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 鍘嗗彶璁板綍 Tab ============ -->
+  <div id="tab-history" class="tab-panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span style="font-size:14px;color:var(--text-muted);">鏈€锟?20 鏉¤褰曪紙瀛樺偍鍦ㄦ湰鍦帮紝涓嶄細涓婁紶锟?/span>
+      <button class="btn btn-outline" style="font-size:13px;" onclick="clearHistory()">馃棏锟?娓呯┖鍘嗗彶</button>
+    </div>
+    <div class="card">
+      <div class="history-list" id="historyList">
+        <div style="text-align:center;color:#94a3b8;padding:40px;">鏆傛棤鍘嗗彶璁板綍</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>漏 2026 鍦ㄧ嚎宸ュ叿锟?路 鎵€鏈夋枃浠朵粎鍦ㄦ祻瑙堝櫒鏈湴澶勭悊锛屼笉浼氫笂浼犲埌鏈嶅姟锟?/p>
+</footer>
+
+<script>
+// ==================== 鏍稿績鍔熻兘 ====================
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`[onclick="switchTab('${name}')"]`).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'history') renderHistory();
+}
+
+function highlight(json) {
+  return json
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, m => {
+      if (/^"/.test(m)) return /:$/.test(m) ? `<span class="k">${m}</span>` : `<span class="s">${m}</span>`;
+      if (/true|false/.test(m)) return `<span class="b">${m}</span>`;
+      if (/null/.test(m)) return `<span class="nu">${m}</span>`;
+      return `<span class="n">${m}</span>`;
+    });
+}
+
+function parseJSON(text) {
+  try {
+    const p = JSON.parse(text);
+    return { ok: true, data: p };
+  } catch (e) {
+    const m = e.message.match(/position (\d+)/);
+    let err = e.message;
+    if (m) {
+      const pos = parseInt(m[1]);
+      const lines = text.substring(0, pos).split('\n');
+      err = `锟?${lines.length} 琛岀 ${lines[lines.length-1].length+1} 鍒楋細${e.message}`;
+    }
+    return { ok: false, error: err };
+  }
+}
+
+function onInputChange() {
+  const text = document.getElementById('inputJSON').value;
+  updateLineNums('lineNums1', text);
+  document.getElementById('inputInfo').textContent = text.length + ' 瀛楃';
+  if (!text.trim()) {
+    document.getElementById('inputError').style.display = 'none';
+    document.getElementById('outputArea').innerHTML = '缁撴灉灏嗗湪姝ゆ樉锟?..';
+    // statsArea always visible
+    return;
+  }
+  const r = parseJSON(text);
+  if (!r.ok) {
+    document.getElementById('inputError').textContent = '鈿狅笍 ' + r.error;
+    document.getElementById('inputError').style.display = 'block';
+  } else {
+    document.getElementById('inputError').style.display = 'none';
+  }
+}
+
+function updateLineNums(id, text) {
+  const lines = text.split('\n').length;
+  document.getElementById(id).innerHTML = Array.from({length:lines},(_,i)=>i+1).join('<br>');
+}
+
+function beautify() {
+  const text = document.getElementById('inputJSON').value.trim();
+  if (!text) return alert('璇峰厛杈撳叆 JSON');
+  const r = parseJSON(text);
+  if (!r.ok) { showOutputError('锟?' + r.error); return; }
+  const fmt = JSON.stringify(r.data, null, 2);
+  document.getElementById('outputArea').innerHTML = highlight(fmt);
+  document.getElementById('outputInfo').textContent = fmt.length + ' 瀛楃';
+  document.getElementById('outputError').style.display = 'none';
+  showStats(text, fmt);
+  saveHistory(text, '缇庡寲');
+}
+
+function minify() {
+  const text = document.getElementById('inputJSON').value.trim();
+  if (!text) return alert('璇峰厛杈撳叆 JSON');
+  const r = parseJSON(text);
+  if (!r.ok) { showOutputError('锟?' + r.error); return; }
+  const min = JSON.stringify(r.data);
+  document.getElementById('outputArea').innerHTML = min;
+  document.getElementById('outputArea').style.color = '#334155';
+  document.getElementById('outputInfo').textContent = min.length + ' 瀛楃锛堝凡鍘嬬缉锟?;
+  document.getElementById('outputError').style.display = 'none';
+  showStats(text, min);
+  saveHistory(text, '鍘嬬缉');
+}
+
+function sortJSON() {
+  const text = document.getElementById('inputJSON').value.trim();
+  if (!text) return alert('璇峰厛杈撳叆 JSON');
+  const r = parseJSON(text);
+  if (!r.ok) { showOutputError('锟?' + r.error); return; }
+  const sorted = JSON.stringify(sortObj(r.data), null, 2);
+  document.getElementById('outputArea').innerHTML = highlight(sorted);
+  document.getElementById('outputInfo').textContent = '宸叉帓锟?;
+  document.getElementById('outputError').style.display = 'none';
+  showStats(text, sorted);
+  saveHistory(text, '鎺掑簭');
+}
+
+function sortObj(v) {
+  if (Array.isArray(v)) return v.map(sortObj);
+  if (v && typeof v === 'object') {
+    return Object.keys(v).sort().reduce((acc, k) => { acc[k] = sortObj(v[k]); return acc; }, {});
+  }
+  return v;
+}
+
+function encodeURI() {
+  const text = document.getElementById('inputJSON').value.trim();
+  if (!text) return alert('璇峰厛杈撳叆 JSON');
+  const r = parseJSON(text);
+  if (!r.ok) { showOutputError('锟?' + r.error); return; }
+  document.getElementById('outputArea').innerText = encodeURIComponent(text);
+  document.getElementById('outputInfo').textContent = 'URL 缂栫爜';
+  document.getElementById('outputError').style.display = 'none';
+  saveHistory(text, 'URL缂栫爜');
+}
+
+function validate() {
+  const text = document.getElementById('inputJSON').value.trim();
+  if (!text) return alert('璇峰厛杈撳叆 JSON');
+  const r = parseJSON(text);
+  if (r.ok) {
+    document.getElementById('outputArea').innerHTML = '<span style="color:#16a34a;font-size:16px;">锟?JSON 鏍煎紡姝ｇ‘锟?/span>';
+    document.getElementById('outputError').style.display = 'none';
+    document.getElementById('outputInfo').textContent = '鏍￠獙閫氳繃';
+  } else {
+    showOutputError('锟?' + r.error);
+  }
+}
+
+function showOutputError(msg) {
+  document.getElementById('outputError').textContent = msg;
+  document.getElementById('outputError').style.display = 'block';
+  document.getElementById('outputArea').innerHTML = '';
+  document.getElementById('outputInfo').textContent = '';
+}
+
+function showStats(original, result) {
+  const lines = result.split('\n').length;
+  const keys = (result.match(/"/g)||[]).length / 2;
+  const origKB = (original.length/1024).toFixed(1)+' KB';
+  const saved = Math.round((1-result.length/original.length)*100);
+  // statsArea always visible
+  document.getElementById('statLines').textContent = lines;
+  document.getElementById('statChars').textContent = result.length;
+  document.getElementById('statKeys').textContent = Math.round(keys);
+  document.getElementById('statSize').textContent = origKB;
+  document.getElementById('statSaved').textContent = (saved>0?'-':'+')+Math.abs(saved)+'%';
+}
+
+function clearAll() {
+  document.getElementById('inputJSON').value = '';
+  document.getElementById('outputArea').innerHTML = '缁撴灉灏嗗湪姝ゆ樉锟?..';
+  document.getElementById('outputArea').style.color = '#334155';
+  document.getElementById('inputError').style.display = 'none';
+  document.getElementById('outputError').style.display = 'none';
+  document.getElementById('outputInfo').textContent = '';
+  document.getElementById('inputInfo').textContent = '';
+  // statsArea always visible
+  document.getElementById('lineNums1').innerHTML = '1';
+}
+
+function copyResult() {
+  const t = document.getElementById('outputArea').innerText;
+  if (!t||t==='缁撴灉灏嗗湪姝ゆ樉锟?..') return alert('娌℃湁鍙鍒剁殑鍐呭');
+  navigator.clipboard.writeText(t).then(() => flashBtn('澶嶅埗缁撴灉'));
+}
+
+function flashBtn(name) {
+  const btns = [...document.querySelectorAll('.btn')];
+  const btn = btns.find(b=>b.textContent.includes(name));
+  if (!btn) return;
+  const orig = btn.textContent;
+  btn.textContent = '锟?宸插锟?;
+  setTimeout(()=>btn.textContent=orig,1500);
+}
+
+function sampleJSON() {
+  const sample = {
+    "site":"鍦ㄧ嚎宸ュ叿锟?,"version":"2.0","tools":[
+      {"name":"鍥剧墖鍘嬬缉","type":"media","rating":4.8,"uses":12800},
+      {"name":"浜岀淮鐮佺敓锟?,"type":"utility","rating":4.7,"uses":9400},
+      {"name":"JSON宸ュ叿锟?,"type":"dev","rating":4.9,"uses":15200}
+    ],
+    "features":["瀹屽叏鍏嶈垂","鏃犻渶娉ㄥ唽","鏈湴澶勭悊","闅愮瀹夊叏"],
+    "stats":{"dailyUsers":3200,"monthlyIncome":1250,"rating":4.8}
+  };
+  document.getElementById('inputJSON').value = JSON.stringify(sample, null, 2);
+  onInputChange();
+  beautify();
+}
+
+function loadFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('inputJSON').value = e.target.result;
+    onInputChange();
+    document.getElementById('inputInfo').textContent = '宸插姞锟? ' + file.name;
+  };
+  reader.onerror = () => alert('鏂囦欢璇诲彇澶辫触');
+  reader.readAsText(file);
+}
+
+// ==================== 鏍戣锟?====================
+let treeData = null;
+let treeState = {};
+
+function onTreeInput() {
+  const text = document.getElementById('treeInput').value;
+  const errEl = document.getElementById('treeInputError');
+  if (!text.trim()) { errEl.style.display='none'; document.getElementById('treeView').innerHTML='杈撳叆 JSON 鍚庣偣锟?鐢熸垚鏍戣锟?'; return; }
+  const r = parseJSON(text);
+  if (!r.ok) { errEl.textContent='鈿狅笍 '+r.error; errEl.style.display='block'; return; }
+  errEl.style.display='none';
+}
+
+function buildTree() {
+  const text = document.getElementById('treeInput').value.trim();
+  if (!text) return alert('璇峰厛杈撳叆 JSON');
+  const r = parseJSON(text);
+  if (!r.ok) { document.getElementById('treeInputError').textContent='鈿狅笍 '+r.error; document.getElementById('treeInputError').style.display='block'; return; }
+  treeData = r.data;
+  treeState = {};
+  document.getElementById('treeInputError').style.display='none';
+  const html = renderNode('root', treeData, true);
+  document.getElementById('treeView').innerHTML = html;
+  const nodeCount = countNodes(treeData);
+  document.getElementById('treeStats').textContent = `锟?${nodeCount.nodes} 涓妭鐐癸紝${nodeCount.keys} 涓敭锛屾繁锟?${nodeCount.depth}`;
+  saveHistory(text, '鏍戣锟?);
+}
+
+function renderNode(key, val, isRoot) {
+  const id = isRoot ? 'root' : Math.random().toString(36).substr(2, 8);
+  const type = Array.isArray(val) ? 'array' : typeof val;
+  const isObj = val && typeof val === 'object';
+
+  let toggle = '', preview = '', children = '';
+  if (isObj) {
+    const count = Array.isArray(val) ? val.length : Object.keys(val).length;
+    preview = `<span class="tree-preview">[${count} 椤筣</span>`;
+    toggle = `<span class="tree-toggle" onclick="toggleNode('${id}',this)">锟?/span>`;
+    children = `<div class="tree-node" id="node-${id}" style="display:none;">`;
+    if (Array.isArray(val)) {
+      val.forEach((item, i) => { children += renderNode(i, item, false); });
+    } else {
+      Object.keys(val).sort().forEach(k => { children += renderNode(k, val[k], false); });
+    }
+    children += '</div>';
+  }
+
+  let valHtml = '';
+  if (type === 'string') valHtml = `<span class="tree-string">"${escHtml(String(val))}"</span>`;
+  else if (type === 'number') valHtml = `<span class="tree-number">${val}</span>`;
+  else if (type === 'boolean') valHtml = `<span class="tree-bool">${val}</span>`;
+  else if (type === 'null') valHtml = `<span class="tree-null">null</span>`;
+  else if (type === 'array') valHtml = `<span class="tree-bracket">Array[${val.length}]</span>`;
+  else if (type === 'object') valHtml = `<span class="tree-bracket">Object</span>`;
+
+  const keyStr = isRoot ? '' : `<span class="tree-key">"${key}"</span><span class="tree-bracket">: </span>`;
+  return `<div>${toggle}${keyStr}${valHtml}${preview}${children}</div>`;
+}
+
+function toggleNode(id, el) {
+  const node = document.getElementById('node-' + id);
+  if (!node) return;
+  if (node.style.display === 'none') {
+    node.style.display = 'block';
+    el.textContent = '锟?;
+  } else {
+    node.style.display = 'none';
+    el.textContent = '锟?;
+  }
+}
+
+function expandAll() {
+  if (!treeData) return;
+  document.querySelectorAll('.tree-node').forEach(n => n.style.display = 'block');
+  document.querySelectorAll('.tree-toggle:not(.empty)').forEach(t => t.textContent = '锟?);
+}
+
+function collapseAll() {
+  document.querySelectorAll('.tree-node').forEach(n => n.style.display = 'none');
+  document.querySelectorAll('.tree-toggle:not(.empty)').forEach(t => t.textContent = '锟?);
+}
+
+function countNodes(val, d=0) {
+  let nodes=1, depth=d, keys=0;
+  if (val && typeof val==='object') {
+    if (!Array.isArray(val)) keys = Object.keys(val).length;
+    for (const v of Array.isArray(val) ? val : Object.values(val)) {
+      const c = countNodes(v, d+1);
+      nodes += c.nodes;
+      keys += c.keys;
+      depth = Math.max(depth, c.depth);
+    }
+  }
+  return { nodes, keys, depth };
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function copyTreeResult() {
+  const text = document.getElementById('treeView').innerText;
+  if (!text||text==='杈撳叆 JSON 鍚庣偣锟?鐢熸垚鏍戣锟?') return alert('娌℃湁鍙鍒剁殑鍐呭');
+  navigator.clipboard.writeText(text).then(()=>flashBtn('澶嶅埗'));
+}
+
+// ==================== JSON 瀵规瘮 ====================
+function runDiff() {
+  const a = document.getElementById('diffA').value.trim();
+  const b = document.getElementById('diffB').value.trim();
+  if (!a||!b) return alert('璇疯緭鍏ヤ袱锟?JSON');
+  const ra = parseJSON(a), rb = parseJSON(b);
+  if (!ra.ok) return alert('JSON A 鏍煎紡閿欒锟?+ra.error);
+  if (!rb.ok) return alert('JSON B 鏍煎紡閿欒锟?+rb.error);
+
+  const result = { added: [], removed: [], changed: [], same: [] };
+  diffRec('', ra.data, rb.data, result);
+  const sameCount = result.same.length;
+  const addCount = result.added.length;
+  const delCount = result.removed.length;
+  const chgCount = result.changed.length;
+
+  document.getElementById('diffSummary').style.display = 'flex';
+  document.getElementById('diffAdd').textContent = addCount;
+  document.getElementById('diffDel').textContent = delCount;
+  document.getElementById('diffChg').textContent = chgCount;
+  document.getElementById('diffSame').textContent = sameCount;
+
+  let html = '';
+  if (result.added.length) {
+    html += `<div style="margin-top:12px;font-weight:600;font-size:14px;color:#166534;">馃煝 鏂板锛堜粎锟?B 涓瓨鍦級</div><div class="card">`;
+    result.added.forEach(([path, val]) => { html += `<div class="diff-section diff-add"><span style="opacity:.6">${escHtml(path)}</span> ${escHtml(truncate(JSON.stringify(val),100))}</div>`; });
+    html += '</div>';
+  }
+  if (result.removed.length) {
+    html += `<div style="margin-top:12px;font-weight:600;font-size:14px;color:#991b1b;">馃敶 鍒犻櫎锛堜粎锟?A 涓瓨鍦級</div><div class="card">`;
+    result.removed.forEach(([path, val]) => { html += `<div class="diff-section diff-del"><span style="opacity:.6">${escHtml(path)}</span> ${escHtml(truncate(JSON.stringify(val),100))}</div>`; });
+    html += '</div>';
+  }
+  if (result.changed.length) {
+    html += `<div style="margin-top:12px;font-weight:600;font-size:14px;color:#92400e;">馃煛 鍙樻洿锛堝€间笉鍚岋級</div><div class="card">`;
+    result.changed.forEach(([path, aVal, bVal]) => { html += `<div class="diff-section diff-chg"><span style="opacity:.6">${escHtml(path)}</span> <span style="color:#991b1b">${escHtml(truncate(JSON.stringify(aVal),60))}</span> 锟?<span style="color:#166534">${escHtml(truncate(JSON.stringify(bVal),60))}</span></div>`; });
+    html += '</div>';
+  }
+  if (!html) html = '<div class="card" style="text-align:center;color:#16a34a;">锟?涓や釜 JSON 瀹屽叏鐩稿悓锟?/div>';
+  document.getElementById('diffResult').innerHTML = html;
+}
+
+function diffRec(path, a, b, r) {
+  const ta = Array.isArray(a), tb = Array.isArray(b);
+  if (ta !== tb || typeof a !== typeof b) {
+    if (path) r.changed.push([path, a, b]);
+    return;
+  }
+  if (ta && tb) {
+    const maxLen = Math.max(a.length, b.length);
+    for (let i = 0; i < maxLen; i++) {
+      const p = path + '[' + i + ']';
+      if (i >= a.length) r.added.push([p, b[i]]);
+      else if (i >= b.length) r.removed.push([p, a[i]]);
+      else diffRec(p, a[i], b[i], r);
+    }
+  } else if (typeof a === 'object' && a !== null) {
+    const allKeys = new Set([...Object.keys(a||{}), ...Object.keys(b||{})]);
+    allKeys.forEach(k => {
+      const p = path ? path+'.'+k : k;
+      if (!(k in b)) r.removed.push([p, a[k]]);
+      else if (!(k in a)) r.added.push([p, b[k]]);
+      else diffRec(p, a[k], b[k], r);
+    });
+  } else {
+    if (JSON.stringify(a) !== JSON.stringify(b)) r.changed.push([path, a, b]);
+    else r.same.push(path);
+  }
+}
+
+function truncate(s, max) {
+  return s.length > max ? s.substring(0, max) + '锟? : s;
+}
+
+function clearDiff() {
+  document.getElementById('diffA').value = '';
+  document.getElementById('diffB').value = '';
+  document.getElementById('diffSummary').style.display = 'none';
+  document.getElementById('diffResult').innerHTML = '';
+}
+
+// ==================== 杞〃锟?====================
+function onTableInput() {
+  const text = document.getElementById('tableInput').value;
+  const errEl = document.getElementById('tableInputError');
+  if (!text.trim()) { errEl.style.display='none'; return; }
+  const r = parseJSON(text);
+  if (!r.ok) { errEl.textContent='鈿狅笍 '+r.error; errEl.style.display='block'; return; }
+  errEl.style.display='none';
+}
+
+function jsonToTable() {
+  const text = document.getElementById('tableInput').value.trim();
+  if (!text) return alert('璇疯緭锟?JSON 鏁扮粍');
+  const r = parseJSON(text);
+  if (!r.ok) { document.getElementById('tableInputError').textContent='鈿狅笍 '+r.error; document.getElementById('tableInputError').style.display='block'; return; }
+  const data = r.data;
+  document.getElementById('tableInputError').style.display='none';
+
+  if (!Array.isArray(data)) {
+    // 濡傛灉涓嶆槸鏁扮粍锛屽皾璇曟彁鍙栨暟缁勫瓧锟?    const arrKey = Object.keys(data).find(k => Array.isArray(data[k]));
+    if (arrKey) {
+      return jsonToTable_data(data[arrKey]);
+    }
+    return alert('璇疯緭锟?JSON 鏁扮粍鏍煎紡锛屼緥锟?[{}, {}, ...]');
+  }
+  jsonToTable_data(data);
+}
+
+function jsonToTable_data(data) {
+  if (data.length === 0) return document.getElementById('tableResult').innerHTML = '<div style="color:#94a3b8;text-align:center;padding:20px;">鏁扮粍涓虹┖</div>';
+  const cols = [...new Set(data.flatMap(d => Object.keys(d||{})))];
+  let html = `<div class="json-table-wrap"><table class="json-table"><thead><tr>`;
+  cols.forEach(c => { html += `<th>${escHtml(c)}</th>`; });
+  html += '</tr></thead><tbody>';
+  data.forEach(row => {
+    html += '<tr>';
+    cols.forEach(c => {
+      const v = row && typeof row==='object' && c in row ? row[c] : '';
+      html += `<td title="${escHtml(String(v))}">${valToHtml(v)}</td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  html += `<p style="margin-top:12px;font-size:13px;color:var(--text-muted);">锟?${data.length} 琛岋紝${cols.length} 锟?/p>`;
+  document.getElementById('tableResult').innerHTML = html;
+  saveHistory(JSON.stringify(data), '杞〃锟?);
+}
+
+function valToHtml(v) {
+  if (v === null || v === undefined) return '<span style="color:#94a3b8;font-style:italic;">null</span>';
+  if (typeof v === 'object') return `<span style="color:#7c3aed">${escHtml(JSON.stringify(v))}</span>`;
+  return escHtml(String(v));
+}
+
+function copyTable() {
+  const el = document.getElementById('tableResult');
+  const text = el.innerText;
+  if (!text || text==='杈撳叆 JSON 鏁扮粍鍚庣偣锟?鐢熸垚琛ㄦ牸"') return alert('娌℃湁鍙鍒剁殑鍐呭');
+  navigator.clipboard.writeText(text).then(()=>flashBtn('澶嶅埗琛ㄦ牸'));
+}
+
+// ==================== 鏌ヨ ====================
+function onQueryInput() {
+  const text = document.getElementById('queryInput').value;
+  const errEl = document.getElementById('queryInputError');
+  if (!text.trim()) { errEl.style.display='none'; return; }
+  const r = parseJSON(text);
+  if (!r.ok) { errEl.textContent='鈿狅笍 '+r.error; errEl.style.display='block'; return; }
+  errEl.style.display='none';
+}
+
+function setQuery(path) {
+  document.getElementById('queryPath').value = path;
+  runQuery();
+}
+
+function runQuery() {
+  const text = document.getElementById('queryInput').value.trim();
+  const path = document.getElementById('queryPath').value.trim();
+  if (!text) return alert('璇峰厛杈撳叆 JSON 鏁版嵁');
+  if (!path) return alert('璇疯緭鍏ユ煡璇㈣矾锟?);
+
+  const r = parseJSON(text);
+  if (!r.ok) { document.getElementById('queryInputError').textContent='鈿狅笍 '+r.error; document.getElementById('queryInputError').style.display='block'; return; }
+  document.getElementById('queryInputError').style.display='none';
+
+  const result = jsonPathQuery(r.data, path);
+  const el = document.getElementById('queryResult');
+  if (result.found) {
+    el.innerHTML = `<div class="query-result"><b style="color:#166534">锟?鎵惧埌 ${result.count} 涓粨锟?/b><pre style="margin-top:8px;background:#fff;padding:12px;border-radius:6px;overflow:auto;max-height:400px;font-size:13px;line-height:1.6;">${highlight(JSON.stringify(result.values,null,2))}</pre></div>`;
+  } else {
+    el.innerHTML = `<div class="query-error">锟?鏈壘鍒板尮閰嶉」锟?{escHtml(result.error)}</div>`;
+  }
+}
+
+// 绠€鍖栫殑 JSONPath 瀹炵幇
+function jsonPathQuery(obj, path) {
+  try {
+    let current = obj;
+    // 绉婚櫎寮€澶寸殑 $ 锟?$.
+    const cleanPath = path.replace(/^\$\.?/, '');
+    if (!cleanPath) return { found: true, count: 1, values: [obj] };
+
+    const parts = parsePath(cleanPath);
+    for (const part of parts) {
+      if (part.type === 'root') { current = obj; continue; }
+      if (part.type === 'key') {
+        if (typeof current !== 'object' || current === null) return { found: false, error: `"${part.key}" 鍦ㄩ潪瀵硅薄绫诲瀷涓奰 };
+        current = current[part.key];
+      } else if (part.type === 'index') {
+        if (!Array.isArray(current)) return { found: false, error: `绱㈠紩 ${part.index} 鐢ㄤ簬闈炴暟缁刞 };
+        if (part.index < 0) current = current[current.length + part.index];
+        else current = current[part.index];
+      } else if (part.type === 'wildcard') {
+        if (Array.isArray(current)) {
+          const nextParts = parts.slice(parts.indexOf(part)+1);
+          if (nextParts.length === 0) return { found: true, count: current.length, values: current };
+          const results = [];
+          current.forEach(item => { results.push(...(jsonPathQuery(item, partToStr(part)+'.'+parts.slice(parts.indexOf(part)+1).map(partToStr).join('.')).values||[])); });
+          return { found: true, count: results.length, values: results };
+        } else if (typeof current === 'object' && current !== null) {
+          const results = [];
+          Object.values(current).forEach(v => results.push(v));
+          return { found: true, count: results.length, values: results };
+        }
+      } else if (part.type === 'recursive') {
+        // 閫掑綊涓嬮檷 $..
+        const results = [];
+        collectRecursive(current, part.key, results);
+        return { found: true, count: results.length, values: results };
+      }
+    }
+    return { found: true, count: 1, values: [current] };
+  } catch (e) {
+    return { found: false, error: e.message };
+  }
+}
+
+function parsePath(str) {
+  const parts = [];
+  const regex = /(\.\.?)([\w$]+)|\[(-?\d+)\]|\[\*\]|\[\?\(.*?\)\]|(\.\.?)(?=\.|$)/g;
+  let match;
+  while ((match = regex.exec(str)) !== null) {
+    if (match[1] === '.' && match[2]) parts.push({ type: 'key', key: match[2] });
+    else if (match[1] === '..') {
+      if (match[2]) parts.push({ type: 'recursive', key: match[2] });
+      else parts.push({ type: 'recursive', key: null });
+    }
+    else if (match[3] !== undefined) parts.push({ type: 'index', index: parseInt(match[3]) });
+    else if (match[0] === '[*]') parts.push({ type: 'wildcard' });
+  }
+  // 濡傛灉娌℃湁鍖归厤锟?parts锛屽皾璇曟暣涓瓧绗︿覆浣滀负 key
+  if (parts.length === 0 && str) {
+    parts.push({ type: 'key', key: str });
+  }
+  return parts;
+}
+
+function partToStr(p) {
+  if (p.type === 'key') return '.' + p.key;
+  if (p.type === 'index') return '[' + p.index + ']';
+  if (p.type === 'wildcard') return '[*]';
+  if (p.type === 'recursive') return '..' + (p.key||'');
+  return '';
+}
+
+function collectRecursive(obj, key, results) {
+  if (!obj || typeof obj !== 'object') return;
+  if (Array.isArray(obj)) {
+    obj.forEach(item => collectRecursive(item, key, results));
+  } else {
+    Object.values(obj).forEach(v => {
+      if (key && typeof v === 'object' && v !== null && key in v) results.push(v[key]);
+      collectRecursive(v, key, results);
+    });
+  }
+}
+
+// ==================== 鍘嗗彶璁板綍 ====================
+const HIST_KEY = 'json_tool_history';
+
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem(HIST_KEY)||'[]'); }
+  catch { return []; }
+}
+
+function saveHistory(text, action) {
+  const h = getHistory();
+  h.unshift({ text: text.substring(0,500), action, time: new Date().toLocaleString('zh-CN') });
+  if (h.length > 20) h.length = 20;
+  localStorage.setItem(HIST_KEY, JSON.stringify(h));
+}
+
+function renderHistory() {
+  const h = getHistory();
+  const el = document.getElementById('historyList');
+  if (!h.length) { el.innerHTML = '<div style="text-align:center;color:#94a3b8;padding:40px;">鏆傛棤鍘嗗彶璁板綍</div>'; return; }
+  el.innerHTML = h.map((item, i) => `
+    <div class="history-item" onclick="loadHistory(${i})">
+      <div>
+        <div class="name">${escHtml(item.text.substring(0,50))}${item.text.length>50?'锟?:''}</div>
+        <div class="meta">${item.action} 路 ${item.time}</div>
+      </div>
+      <span class="del" onclick="event.stopPropagation();delHistory(${i})">脳</span>
+    </div>
+  `).join('');
+}
+
+function loadHistory(i) {
+  const h = getHistory();
+  if (!h[i]) return;
+  document.getElementById('inputJSON').value = h[i].text;
+  onInputChange();
+  switchTab('beautify');
+}
+
+function delHistory(i) {
+  const h = getHistory();
+  h.splice(i, 1);
+  localStorage.setItem(HIST_KEY, JSON.stringify(h));
+  renderHistory();
+}
+
+function clearHistory() {
+  if (!confirm('纭畾娓呯┖鎵€鏈夊巻鍙茶褰曪紵')) return;
+  localStorage.removeItem(HIST_KEY);
+  renderHistory();
+}
+
+// ==================== 鎷栨嫿鏂囦欢鏀寔 ====================
+const dropZone = document.getElementById('inputJSON');
+
+dropZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropZone.style.borderColor = '#4f46e5';
+  dropZone.style.background = '#eef2ff';
+});
+
+dropZone.addEventListener('dragleave', (e) => {
+  e.preventDefault();
+  dropZone.style.borderColor = '';
+  dropZone.style.background = '';
+});
+
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.style.borderColor = '';
+  dropZone.style.background = '';
+  
+  const files = e.dataTransfer.files;
+  if (files.length === 0) return;
+  
+  const file = files[0];
+  const ext = file.name.split('.').pop().toLowerCase();
+  const supportedExts = [
+    // 浠ｇ爜
+    'js','mjs','cjs','ts','tsx','jsx','mts','cts','vue','svelte',
+    'py','pyw','rb','php','java','kt','swift','dart','scala','groovy',
+    'c','cpp','h','hpp','cs','go','rs',
+    'lua','r','R','rmd','jl','pl','pm','sh','bash','zsh','fish','ps1','bat','cmd',
+    'ex','exs','erl','hrl','clj','cljs','fs','fsx','ml','hs','nim','v','vh','vhd','sql',
+    'graphql','gql','proto',
+    // 鍓嶇
+    'html','htm','css','scss','sass','less',
+    'svg','wasm','wat',
+    // 鏁版嵁/閰嶇疆
+    'json','jsonl','ndjson','geojson','json5','yaml','yml','toml','ini','cfg','conf',
+    'xml','xsd','plist','properties','env','env.local','gitignore','gitattributes',
+    'editorconfig','prettierrc','eslintrc','babelrc','webpack','nginx',
+    // 鏂囨。/鏂囨湰
+    'txt','md','rst','adoc','tex','latex','log','err',
+    // 鍏朵粬
+    'csv','tsv','diff','patch','pem','crt','key','pub','lock','build','gradle','kts','dockerfile','makefile',
+  ];
+  
+  if (!supportedExts.includes(ext)) {
+    alert('涓嶆敮鎸佺殑鏂囦欢鏍煎紡: .' + ext + '\n鏀寔: ' + supportedExts.join(', '));
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('inputJSON').value = ev.target.result;
+    onInputChange();
+    document.getElementById('inputInfo').textContent = '宸插姞锟? ' + file.name;
+  };
+  reader.onerror = () => alert('鏂囦欢璇诲彇澶辫触');
+  reader.readAsText(file);
+});
+
+// ==================== 閫氱敤鎷栨嫿鏀寔锛堟墍鏈塼extarea锟?===================
+function setupDropZone(textareaId, callback) {
+  const el = document.getElementById(textareaId);
+  if (!el) return;
+  
+  el.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    el.style.borderColor = '#4f46e5';
+    el.style.background = '#eef2ff';
+  });
+  
+  el.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    el.style.borderColor = '';
+    el.style.background = '';
+  });
+  
+  el.addEventListener('drop', (e) => {
+    e.preventDefault();
+    el.style.borderColor = '';
+    el.style.background = '';
+    
+    const files = e.dataTransfer.files;
+    if (files.length === 0) return;
+    
+    const file = files[0];
+    const ext = file.name.split('.').pop().toLowerCase();
+    const supportedExts = [
+      // 浠ｇ爜
+      'js','mjs','cjs','ts','tsx','jsx','mts','cts','vue','svelte',
+      'py','pyw','rb','php','java','kt','swift','dart','scala','groovy',
+      'c','cpp','h','hpp','cs','go','rs',
+      'lua','r','R','rmd','jl','pl','pm','sh','bash','zsh','fish','ps1','bat','cmd',
+      'ex','exs','erl','hrl','clj','cljs','fs','fsx','ml','hs','nim','v','vh','vhd','sql',
+      'graphql','gql','proto',
+      // 鍓嶇
+      'html','htm','css','scss','sass','less',
+      'svg','wasm','wat',
+      // 鏁版嵁/閰嶇疆
+      'json','jsonl','ndjson','geojson','json5','yaml','yml','toml','ini','cfg','conf',
+      'xml','xsd','plist','properties','env','env.local','gitignore','gitattributes',
+      'editorconfig','prettierrc','eslintrc','babelrc','webpack','nginx',
+      // 鏂囨。/鏂囨湰
+      'txt','md','rst','adoc','tex','latex','log','err',
+      // 鍏朵粬
+      'csv','tsv','diff','patch','pem','crt','key','pub','lock','build','gradle','kts','dockerfile','makefile',
+    ];
+    
+    if (!supportedExts.includes(ext)) {
+      alert('涓嶆敮鎸佺殑鏂囦欢鏍煎紡: .' + ext);
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = ev => {
+      el.value = ev.target.result;
+      if (callback) callback();
+    };
+    reader.onerror = () => alert('鏂囦欢璇诲彇澶辫触');
+    reader.readAsText(file);
+  });
+}
+
+// 涓烘墍鏈夎緭鍏ユ璁剧疆鎷栨嫿
+setupDropZone('diffA');
+setupDropZone('diffB');
+setupDropZone('tableInput', onTableInput);
+setupDropZone('queryInput', onQueryInput);
+
+// 鍒濆锟?updateLineNums('lineNums1', '');
+</script>
+
+</body>
+</html>
