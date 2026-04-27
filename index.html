@@ -13,6 +13,12 @@
   <title>在线工具箱 - 20大免费实用小工具</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/home.css">
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="工具箱">
 </head>
 <body>
 
@@ -193,6 +199,63 @@
     </div>
   </div>
 
+
+  <!-- 添加到桌面指南 -->
+  <div class="card" style="margin-top:40px;padding:32px;background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:1px solid #86efac;">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;text-align:center;">📲 一键添加到桌面，像APP一样使用</h3>
+    <p style="color:#64748b;margin-bottom:20px;text-align:center;">把工具箱添加到桌面后，无需打开浏览器，点一下图标就能直接使用全部20个工具！</p>
+    
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;max-width:700px;margin:0 auto;">
+      <!-- 电脑 Chrome/Edge -->
+      <div style="background:#fff;padding:20px;border-radius:12px;border:1px solid #e2e8f0;">
+        <div style="font-size:28px;margin-bottom:8px;">💻</div>
+        <h4 style="font-size:15px;font-weight:700;margin-bottom:8px;">电脑 Chrome / Edge</h4>
+        <ol style="font-size:13px;color:#475569;padding-left:20px;line-height:2;">
+          <li>点击地址栏右侧的 <b>安装图标</b> 📥</li>
+          <li>或点击右上角 <b>⋮</b> → <b>"安装应用"</b></li>
+          <li>点击 <b>"安装"</b> 即可</li>
+        </ol>
+        <p style="font-size:12px;color:#94a3b8;margin-top:8px;">提示：地址栏没有安装图标时，请刷新页面重试</p>
+      </div>
+
+      <!-- 安卓手机 -->
+      <div style="background:#fff;padding:20px;border-radius:12px;border:1px solid #e2e8f0;">
+        <div style="font-size:28px;margin-bottom:8px;">🤖</div>
+        <h4 style="font-size:15px;font-weight:700;margin-bottom:8px;">安卓手机 Chrome</h4>
+        <ol style="font-size:13px;color:#475569;padding-left:20px;line-height:2;">
+          <li>点击右上角 <b>⋮</b> 菜单</li>
+          <li>选择 <b>"添加到主屏幕"</b></li>
+          <li>点击 <b>"添加"</b> 即可</li>
+        </ol>
+        <p style="font-size:12px;color:#94a3b8;margin-top:8px;">添加后桌面会出现工具箱图标，点一下直接打开</p>
+      </div>
+
+      <!-- 苹果手机 -->
+      <div style="background:#fff;padding:20px;border-radius:12px;border:1px solid #e2e8f0;">
+        <div style="font-size:28px;margin-bottom:8px;">🍎</div>
+        <h4 style="font-size:15px;font-weight:700;margin-bottom:8px;">苹果手机 Safari</h4>
+        <ol style="font-size:13px;color:#475569;padding-left:20px;line-height:2;">
+          <li>点击底部 <b>"分享"按钮</b> ⬆️</li>
+          <li>向下滑动找到 <b>"添加到主屏幕"</b></li>
+          <li>点击右上角 <b>"添加"</b></li>
+        </ol>
+        <p style="font-size:12px;color:#94a3b8;margin-top:8px;">Safari 浏览器操作，其他浏览器不支持此功能</p>
+      </div>
+
+      <!-- 电脑 其他浏览器 -->
+      <div style="background:#fff;padding:20px;border-radius:12px;border:1px solid #e2e8f0;">
+        <div style="font-size:28px;margin-bottom:8px;">🌐</div>
+        <h4 style="font-size:15px;font-weight:700;margin-bottom:8px;">通用方法（所有浏览器）</h4>
+        <ol style="font-size:13px;color:#475569;padding-left:20px;line-height:2;">
+          <li>打开工具箱网站</li>
+          <li><b>右键点击</b>网页空白处</li>
+          <li>选择 <b>"创建快捷方式"</b> → 勾选 <b>"打开方式"</b></li>
+        </ol>
+        <p style="font-size:12px;color:#94a3b8;margin-top:8px;">适合没有安装按钮的浏览器，窗口会独立显示</p>
+      </div>
+    </div>
+  </div>
+
   <!-- 反馈区域 -->
   <div class="card" style="margin-top:40px;padding:32px;background:#f8fafc;border:1px dashed #94a3b8;">
     <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;text-align:center;">💬 意见反馈</h3>
@@ -306,5 +369,11 @@
   <p>© 2026 在线工具箱 · 所有文件仅在浏览器本地处理，不会上传到服务器</p>
 </footer>
 
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(function(){});
+    }
+  </script>
 </body>
 </html>
