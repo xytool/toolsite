@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url><loc>https://xytool.github.io/toolsite/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
+<url><loc>https://xytool.github.io/toolsite/base64-tool.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/base-converter.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/color-converter.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/hash-generator.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/image-compressor.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/image-format-converter.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/json-formatter.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/lorem-generator.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/markdown-editor.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/password-generator.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/pdf-merge-split.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/qr-generator.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/regex-tester.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/screenshot-annotator.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/text-dedup.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/text-diff-tool.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/timestamp-converter.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/unit-converter.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/url-encoder.html</loc><priority>0.8</priority></url>
+<url><loc>https://xytool.github.io/toolsite/word-counter.html</loc><priority>0.8</priority></url>
+</urlset>

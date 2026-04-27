@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://xytool.github.io/toolsite/sitemap.xml
