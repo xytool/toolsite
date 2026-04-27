@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="免费在线二维码生成器 - �?��LOGO嵌入、�?色定制�?��?种格式�?出�?�vCard/�?��/�?��宝专用格式，�?��处理�?>
-  <title>二维码生成器 - 在线工具�?/title>
+  <meta name="description" content=" - kLOGOvCard//N?>
+  <title> - ?/title>
   <link rel="stylesheet" href="css/style.css">
   <style>
     body { font-family: 'Segoe UI', system-ui, sans-serif; }
@@ -19,12 +19,12 @@
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* 容错等级 */
+    /*  */
     .level-btn { padding: 8px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 600; transition: all .2s; cursor: pointer; text-align: center; }
     .level-btn.active { border-color: var(--primary); background: var(--primary); color: #fff; }
     .level-btn:hover:not(.active) { border-color: var(--primary); }
 
-    /* 模板 */
+    /*  */
     .template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 12px; }
     .template-card {
       border: 2px solid var(--border); border-radius: 10px; padding: 14px; cursor: pointer;
@@ -36,7 +36,7 @@
     .template-card .desc { font-size: 12px; color: var(--text-muted); }
     .template-card.active { border-color: var(--primary); background: #eef2ff; }
 
-    /* Logo 上传 */
+    /* Logo  */
     .logo-upload {
       border: 2px dashed var(--border); border-radius: 10px; padding: 20px; text-align: center;
       cursor: pointer; transition: all .2s; position: relative;
@@ -46,7 +46,7 @@
     .logo-preview { max-width: 60px; max-height: 60px; border-radius: 6px; }
     .logo-remove { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; background: #dc2626; color: #fff; border: none; border-radius: 50%; cursor: pointer; font-size: 14px; line-height: 1; }
 
-    /* vCard 表单 */
+    /* vCard  */
     .vcard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     @media (max-width: 640px) { .vcard-grid { grid-template-columns: 1fr; } }
     .vcard-field { display: flex; flex-direction: column; gap: 4px; }
@@ -57,7 +57,7 @@
     }
     .vcard-field input:focus, .vcard-field textarea:focus { border-color: var(--primary); }
 
-    /* 样式预�? */
+    /*  */
     .style-presets { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
     .style-preset {
       padding: 6px 14px; border: 1px solid var(--border); border-radius: 20px;
@@ -65,7 +65,7 @@
     }
     .style-preset:hover, .style-preset.active { border-color: var(--primary); background: #eef2ff; color: var(--primary); font-weight: 600; }
 
-    /* �?��测试 */
+    /* @ */
     .scan-test {
       background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px;
       padding: 16px; text-align: center; margin-top: 16px;
@@ -73,7 +73,7 @@
     .scan-test .icon { font-size: 32px; margin-bottom: 8px; }
     .scan-test .text { font-size: 14px; color: #166534; }
 
-    /* 平台专用 */
+    /*  */
     .platform-note {
       background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px;
       padding: 10px 14px; font-size: 13px; color: #92400e; margin-top: 12px;
@@ -83,54 +83,54 @@
 <body>
 
 <header class="navbar">
-  <a href="index.html" class="logo"><span>🧰</span> 在线工具�?/a>
+  <a href="index.html" class="logo"><span></span> ?/a>
   <nav>
-    <a href="index.html">首页</a>
-    <a href="image-compressor.html">图片压缩</a>
-    <a href="qr-generator.html" class="active">二维�?/a>
-    <a href="json-formatter.html">JSON工具</a>
+    <a href="index.html"></a>
+    <a href="image-compressor.html"></a>
+    <a href="qr-generator.html" class="active">?/a>
+    <a href="json-formatter.html">JSON</a>
   </nav>
 </header>
 
 <main class="container">
   <div class="tool-header">
-    <h1>📱 二维码生成器</h1>
-    <p>�?��文字/网址/vCard名片/LOGO嵌入/多平台专用格式，实时预�?，一�?��载�?/p>
+    <h1> </h1>
+    <p>k//vCard/LOGO/?/p>
   </div>
   
   <div class="tutorial-box">
-    <h3>📖 使用教程</h3>
+    <h3> </h3>
     <ol>
-      <li><strong>选择模式</strong> - 基�?生成(文字/网址)、名�?vCard)、LOGO嵌入、平台专�?/li>
-      <li><strong>输入内�?</strong> - 在输入�?�?��要编码的内�?，实时生成二维码</li>
-      <li><strong>�?��义样�?/strong> - 调整颜色、�?错等级�?�尺寸，或嵌�?OGO图片</li>
-      <li><strong>下载导出</strong> - �?�� PNG/JPG/SVG/PDF 多�?格式下载</li>
+      <li><strong></strong> - (/)?vCard)LOGO?/li>
+      <li><strong></strong> - G</li>
+      <li><strong>U?/strong> - OGO</li>
+      <li><strong></strong> - k PNG/JPG/SVG/PDF </li>
     </ol>
-    <div class="tip"><strong>💡 提示�?/strong>vCard 名片二维码可用手机相机扫描直接添加联系人。嵌�?LOGO 时建�??�择较高容错等级(L �?H)�?/div>
+    <div class="tip"><strong> ?/strong>vCard ?LOGO (L ?H)?/div>
   </div>
   
-  <!-- Tab 切换 -->
+  <!-- Tab  -->
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('basic')">🔗 基�?生成</button>
-    <button class="tab-btn" onclick="switchTab('vcard')">📇 名片(vCard)</button>
-    <button class="tab-btn" onclick="switchTab('logo')">🏷�?LOGO嵌入</button>
-    <button class="tab-btn" onclick="switchTab('platform')">📱 平台专用</button>
+    <button class="tab-btn active" onclick="switchTab('basic')"> </button>
+    <button class="tab-btn" onclick="switchTab('vcard')"> (vCard)</button>
+    <button class="tab-btn" onclick="switchTab('logo')">?LOGO</button>
+    <button class="tab-btn" onclick="switchTab('platform')"> </button>
   </div>
 
-  <!-- ============ 基�?生成 ============ -->
+  <!-- ============  ============ -->
   <div id="tab-basic" class="tab-panel active">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;" class="grid-stack">
-      <!-- 输入 -->
+      <!--  -->
       <div class="card">
-        <h2 style="font-size:16px;margin-bottom:16px;">📝 内�?输入</h2>
+        <h2 style="font-size:16px;margin-bottom:16px;"> </h2>
 
         <div style="margin-bottom:14px;">
-          <textarea id="qrContent" placeholder="请输入网�?、文字或任意内�?..."
+          <textarea id="qrContent" placeholder="..."
             style="width:100%;min-height:140px;padding:12px;border:1px solid var(--border);border-radius:8px;
                    font-size:15px;resize:vertical;outline:none;font-family:inherit;"
             oninput="debounceGenerate()"></textarea>
           <div style="text-align:right;font-size:12px;color:var(--text-muted);margin-top:4px;">
-            <span id="charCount">0</span> 字�? · <span id="byteCount">0</span> 字节
+            <span id="charCount">0</span>   <span id="byteCount">0</span> 
           </div>
         </div>
 
@@ -138,25 +138,25 @@
   
 
  style="margin-bottom:14px;">
-          <label style="font-size:14px;color:var(--text-muted);display:block;margin-bottom:8px;">容错等级</label>
+          <label style="font-size:14px;color:var(--text-muted);display:block;margin-bottom:8px;"></label>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;">
-            <div class="level-btn" id="level-L" onclick="setLevel('L')"><div>�?/div><div style="font-size:11px;opacity:.7">L 7%</div></div>
-            <div class="level-btn active" id="level-M" onclick="setLevel('M')"><div>�?/div><div style="font-size:11px;opacity:.7">M 15%</div></div>
-            <div class="level-btn" id="level-Q" onclick="setLevel('Q')"><div>�?/div><div style="font-size:11px;opacity:.7">Q 25%</div></div>
-            <div class="level-btn" id="level-H" onclick="setLevel('H')"><div>�?�?/div><div style="font-size:11px;opacity:.7">H 30%</div></div>
+            <div class="level-btn" id="level-L" onclick="setLevel('L')"><div>?/div><div style="font-size:11px;opacity:.7">L 7%</div></div>
+            <div class="level-btn active" id="level-M" onclick="setLevel('M')"><div>?/div><div style="font-size:11px;opacity:.7">M 15%</div></div>
+            <div class="level-btn" id="level-Q" onclick="setLevel('Q')"><div>?/div><div style="font-size:11px;opacity:.7">Q 25%</div></div>
+            <div class="level-btn" id="level-H" onclick="setLevel('H')"><div>?/div><div style="font-size:11px;opacity:.7">H 30%</div></div>
           </div>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
           <div>
-            <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:6px;">前景�?/label>
+            <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:6px;">?/label>
             <div style="display:flex;gap:6px;align-items:center;">
               <input type="color" id="fgColor" value="#000000" style="width:36px;height:34px;border:1px solid var(--border);border-radius:6px;cursor:pointer;" onchange="syncColor('fg')">
               <input type="text" id="fgText" value="#000000" style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:monospace;" oninput="document.getElementById('fgColor').value=this.value;debounceGenerate()">
             </div>
           </div>
           <div>
-            <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:6px;">背景�?/label>
+            <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:6px;">?/label>
             <div style="display:flex;gap:6px;align-items:center;">
               <input type="color" id="bgColor" value="#ffffff" style="width:36px;height:34px;border:1px solid var(--border);border-radius:6px;cursor:pointer;" onchange="syncColor('bg')">
               <input type="text" id="bgText" value="#ffffff" style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:monospace;" oninput="document.getElementById('bgColor').value=this.value;debounceGenerate()">
@@ -166,164 +166,164 @@
 
         <div style="margin-bottom:14px;">
           <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:8px;">
-            尺�?�?span id="sizeLabel">256</span> px
+            ?span id="sizeLabel">256</span> px
           </label>
           <input type="range" id="qrSize" min="128" max="1024" step="32" value="256"
             style="width:100%;" oninput="document.getElementById('sizeLabel').textContent=this.value;debounceGenerate()">
         </div>
 
         <div style="margin-bottom:14px;">
-          <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:8px;">样式预�?</label>
+          <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:8px;"></label>
           <div class="style-presets">
-            <span class="style-preset active" onclick="applyStyle('default',this)">默�?</span>
-            <span class="style-preset" onclick="applyStyle('rounded',this)">�?圆�?</span>
-            <span class="style-preset" onclick="applyStyle('dots',this)">�?圆点</span>
-            <span class="style-preset" onclick="applyStyle('invert',this)">🔄 反转</span>
-            <span class="style-preset" onclick="applyStyle('transparent',this)">透明背景</span>
+            <span class="style-preset active" onclick="applyStyle('default',this)"></span>
+            <span class="style-preset" onclick="applyStyle('rounded',this)">?</span>
+            <span class="style-preset" onclick="applyStyle('dots',this)">?</span>
+            <span class="style-preset" onclick="applyStyle('invert',this)"> </span>
+            <span class="style-preset" onclick="applyStyle('transparent',this)"></span>
           </div>
         </div>
 
-        <button class="btn btn-primary" style="width:100%;" onclick="generateQR()">🔄 生成二维�?/button>
+        <button class="btn btn-primary" style="width:100%;" onclick="generateQR()"> ?/button>
       </div>
 
-      <!-- 预�? -->
+      <!--  -->
       <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:480px;">
         <div id="qrPreview" style="display:flex;align-items:center;justify-content:center;min-height:320px;width:100%;">
           <div style="text-align:center;color:var(--text-muted);">
-            <div style="font-size:64px;margin-bottom:12px;">📱</div>
-            <p style="font-size:14px;">输入内�?后点�?生成二维�?</p>
+            <div style="font-size:64px;margin-bottom:12px;"></div>
+            <p style="font-size:14px;">??</p>
           </div>
         </div>
 
         <div id="qrActions" style="margin-top:16px;width:100%;">
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;">
-            <button class="btn btn-primary" onclick="downloadPNG()">�?PNG</button>
-            <button class="btn btn-outline" onclick="downloadSVG()">�?SVG</button>
-            <button class="btn btn-outline" onclick="copyToClipboard()">📋 复制</button>
+            <button class="btn btn-primary" onclick="downloadPNG()">?PNG</button>
+            <button class="btn btn-outline" onclick="downloadSVG()">?SVG</button>
+            <button class="btn btn-outline" onclick="copyToClipboard()"> </button>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-            <button class="btn btn-outline" style="font-size:13px;" onclick="downloadJPG()">�?JPG（白底）</button>
-            <button class="btn btn-outline" style="font-size:13px;" onclick="downloadPDF()">�?PDF</button>
+            <button class="btn btn-outline" style="font-size:13px;" onclick="downloadJPG()">?JPG</button>
+            <button class="btn btn-outline" style="font-size:13px;" onclick="downloadPDF()">?PDF</button>
           </div>
           <div class="scan-test" id="scanTest">
-            <div class="icon">📱</div>
-            <div class="text">请用�?��/�?��宝等�?��测试</div>
+            <div class="icon"></div>
+            <div class="text">/K</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- �?��模板 -->
+    <!--  -->
     <div class="card" style="margin-top:20px;">
-      <h2 style="font-size:16px;margin-bottom:12px;">💡 �?��模板</h2>
+      <h2 style="font-size:16px;margin-bottom:12px;"> </h2>
       <div class="template-grid">
         <div class="template-card" onclick="fillTemplate('url','https://')">
-          <div class="icon">🌐</div><div class="name">网址链接</div><div class="desc">输入任意网址</div>
+          <div class="icon"></div><div class="name"></div><div class="desc"></div>
         </div>
         <div class="template-card" onclick="fillTemplate('tel','tel:')">
-          <div class="icon">📞</div><div class="name">拨打电话</div><div class="desc">�?��后直接拨�?/div>
+          <div class="icon"></div><div class="name"></div><div class="desc">@?/div>
         </div>
         <div class="template-card" onclick="fillTemplate('email','mailto:')">
-          <div class="icon">✉️</div><div class="name">发�?�邮�?/div><div class="desc">�?��后打�?�?��应用</div>
+          <div class="icon"></div><div class="name">?/div><div class="desc">@</div>
         </div>
         <div class="template-card" onclick="fillTemplate('wifi','WIFI:T:WPA;S:')">
-          <div class="icon">📶</div><div class="name">WiFi 连接</div><div class="desc">�?���?���?WiFi</div>
+          <div class="icon"></div><div class="name">WiFi </div><div class="desc">K?WiFi</div>
         </div>
         <div class="template-card" onclick="fillTemplate('sms','sms:')">
-          <div class="icon">💬</div><div class="name">发�?�短�?/div><div class="desc">预填收件人和内�?</div>
+          <div class="icon"></div><div class="name">?/div><div class="desc"></div>
         </div>
         <div class="template-card" onclick="fillTemplate('geo','geo:')">
-          <div class="icon">📍</div><div class="name">地理位置</div><div class="desc">显示地图位置</div>
+          <div class="icon"></div><div class="name"></div><div class="desc"></div>
         </div>
         <div class="template-card" onclick="fillTemplate('calendar','BEGIN:VEVENT')">
-          <div class="icon">📅</div><div class="name">日历事件</div><div class="desc">添加日历事件</div>
+          <div class="icon"></div><div class="name"></div><div class="desc"></div>
         </div>
         <div class="template-card" onclick="fillTemplate('pay','https://qr.alipay.com/')">
-          <div class="icon">💰</div><div class="name">�?��宝收�?/div><div class="desc">�?��宝转账码</div>
+          <div class="icon"></div><div class="name">?/div><div class="desc"></div>
         </div>
       </div>
     </div>
 
-    <!-- WiFi 详细配置 -->
+    <!-- WiFi  -->
     <div class="card" style="margin-top:16px;" id="wifiPanel">
-      <h2 style="font-size:16px;margin-bottom:12px;">📶 WiFi 连接配置</h2>
+      <h2 style="font-size:16px;margin-bottom:12px;"> WiFi </h2>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
         <div class="vcard-field">
-          <label>WiFi 名称（SSID�?/label>
+          <label>WiFi SSID?/label>
           <input type="text" id="wifiSsid" placeholder="MyWiFi" oninput="buildWifi()">
         </div>
         <div class="vcard-field">
-          <label>密码</label>
+          <label></label>
           <input type="text" id="wifiPass" placeholder="12345678" oninput="buildWifi()">
         </div>
         <div class="vcard-field">
-          <label>加密类型</label>
+          <label></label>
           <select id="wifiType" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;" onchange="buildWifi()">
             <option value="WPA">WPA/WPA2</option>
             <option value="WEP">WEP</option>
-            <option value="">无密�?/option>
+            <option value="">?/option>
           </select>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ============ vCard 名片 ============ -->
+  <!-- ============ vCard  ============ -->
   <div id="tab-vcard" class="tab-panel">
     <div class="card">
-      <h2 style="font-size:16px;margin-bottom:4px;">📇 vCard 3.0 名片信息</h2>
-      <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">�?��完成后自动生成名片二维码，扫描后直接存入通�?�?/p>
+      <h2 style="font-size:16px;margin-bottom:4px;"> vCard 3.0 </h2>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">G?/p>
 
       <div class="vcard-grid">
         <div class="vcard-field">
-          <label>姓名 *</label>
-          <input type="text" id="vcName" placeholder="张三" oninput="buildVCard()">
+          <label> *</label>
+          <input type="text" id="vcName" placeholder="" oninput="buildVCard()">
         </div>
         <div class="vcard-field">
-          <label>�?��</label>
-          <input type="text" id="vcOrg" placeholder="XX科技有限�?��" oninput="buildVCard()">
+          <label></label>
+          <input type="text" id="vcOrg" placeholder="XX" oninput="buildVCard()">
         </div>
         <div class="vcard-field">
-          <label>职位</label>
-          <input type="text" id="vcTitle" placeholder="产品经理" oninput="buildVCard()">
+          <label></label>
+          <input type="text" id="vcTitle" placeholder="" oninput="buildVCard()">
         </div>
         <div class="vcard-field">
-          <label>部门</label>
-          <input type="text" id="vcDept" placeholder="产品�? oninput="buildVCard()">
+          <label></label>
+          <input type="text" id="vcDept" placeholder="? oninput="buildVCard()">
         </div>
         <div class="vcard-field">
-          <label>手机</label>
+          <label></label>
           <input type="tel" id="vcTel" placeholder="13800138000" oninput="buildVCard()">
         </div>
         <div class="vcard-field">
-          <label>电话</label>
+          <label></label>
           <input type="tel" id="vcPhone" placeholder="010-12345678" oninput="buildVCard()">
         </div>
         <div class="vcard-field">
-          <label>�??</label>
+          <label></label>
           <input type="email" id="vcEmail" placeholder="zhangsan@company.com" oninput="buildVCard()">
         </div>
         <div class="vcard-field">
-          <label>网址</label>
+          <label></label>
           <input type="url" id="vcUrl" placeholder="https://company.com" oninput="buildVCard()">
         </div>
         <div class="vcard-field" style="grid-column:1/-1;">
-          <label>地址</label>
-          <input type="text" id="vcAddr" placeholder="北京市朝阳区建国�?8�? oninput="buildVCard()">
+          <label></label>
+          <input type="text" id="vcAddr" placeholder="?8? oninput="buildVCard()">
         </div>
         <div class="vcard-field">
-          <label>备注</label>
-          <input type="text" id="vcNote" placeholder="备注信息" oninput="buildVCard()">
+          <label></label>
+          <input type="text" id="vcNote" placeholder="" oninput="buildVCard()">
         </div>
         <div class="vcard-field">
-          <label>生日</label>
+          <label></label>
           <input type="date" id="vcBday" oninput="buildVCard()">
         </div>
       </div>
 
       <div style="margin-top:16px;padding:12px;background:#f8fafc;border-radius:8px;">
-        <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">vCard 预�?�?/div>
-        <pre id="vcardPreview" style="font-size:12px;color:#334155;white-space:pre-wrap;word-break:break-all;max-height:100px;overflow:auto;">请填写上方信�?..</pre>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">vCard ?/div>
+        <pre id="vcardPreview" style="font-size:12px;color:#334155;white-space:pre-wrap;word-break:break-all;max-height:100px;overflow:auto;">?..</pre>
       </div>
     </div>
 
@@ -331,60 +331,60 @@
       <div class="card" style="display:flex;flex-direction:column;align-items:center;min-height:400px;">
         <div id="vcardQr" style="display:flex;align-items:center;justify-content:center;min-height:300px;flex:1;width:100%;">
           <div style="text-align:center;color:var(--text-muted);">
-            <div style="font-size:48px;margin-bottom:8px;">📇</div>
-            <p style="font-size:13px;">�?��信息后自动生�?/p>
+            <div style="font-size:48px;margin-bottom:8px;"></div>
+            <p style="font-size:13px;">G?/p>
           </div>
         </div>
         <div id="vcardActions" style="margin-top:12px;width:100%;">
-          <button class="btn btn-primary" style="width:100%;" onclick="downloadVCardPNG()">�?下载 PNG</button>
+          <button class="btn btn-primary" style="width:100%;" onclick="downloadVCardPNG()">? PNG</button>
           </div>
 
   <div class="card" style="border-left:4px solid #10b981;">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
       <span style="font-size:20px;">??</span>
-      <span style="font-size:15px;font-weight:700;color:#10b981;">��ӭ�ύʹ�÷���</span>
+      <span style="font-size:15px;font-weight:700;color:#10b981;"></span>
     </div>
-    <p style="font-size:14px;color:#64748b;margin:0 0 10px 0;">�����?���?bug���й��ܽ��飬��ʹ�����������⣬��ӭ���·����ۿ��ύ��</p>
-    <p style="font-size:13px;color:#94a3b8;margin:0;">?? �������ҳ��ײ�����д���۱������ύ����л��ķ�����?/p>
+    <p style="font-size:14px;color:#64748b;margin:0 0 10px 0;">?bug</p>
+    <p style="font-size:13px;color:#94a3b8;margin:0;">?? ?/p>
   </div>
 
   <div class="card"><div class="card">
-        <h3 style="font-size:14px;margin-bottom:12px;">📋 使用说明</h3>
+        <h3 style="font-size:14px;margin-bottom:12px;"> </h3>
         <ul style="font-size:13px;color:#334155;padding-left:20px;line-height:2;">
-          <li>用微�?�?���?手机相机�?��二维�?/li>
-          <li>�?��后会提示"�?��保存到�?��?�?</li>
-          <li>点击�??，信�?��动填充到联系�?/li>
-          <li>比手动输入更方便，不易出�?/li>
-          <li>商务场合�?��印在名片背面</li>
+          <li>??@?/li>
+          <li>@"S?</li>
+          <li>b?/li>
+          <li>?/li>
+          <li></li>
         </ul>
         <div style="margin-top:16px;padding:12px;background:#eff6ff;border-radius:8px;font-size:13px;">
-          💡 <b>小技巧：</b>�?��下方"基�?生成"标�?页中，自定义二维码�?色和样式
+           <b></b>""
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ============ LOGO 嵌入 ============ -->
+  <!-- ============ LOGO  ============ -->
   <div id="tab-logo" class="tab-panel">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;" class="grid-stack">
       <div class="card">
-        <h2 style="font-size:16px;margin-bottom:16px;">🏷�?LOGO 设置</h2>
+        <h2 style="font-size:16px;margin-bottom:16px;">?LOGO </h2>
 
         <div class="logo-upload" id="logoUpload" onclick="document.getElementById('logoInput').click()">
           <input type="file" id="logoInput" accept="image/*" hidden onchange="loadLogo(this)">
           <div id="logoPlaceholder">
-            <div style="font-size:32px;margin-bottom:8px;">🖼�?/div>
-            <div style="font-size:14px;font-weight:600;">点击上传 LOGO 图片</div>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">�?�� PNG/JPG/WebP，建�?���?200KB</div>
+            <div style="font-size:32px;margin-bottom:8px;">?/div>
+            <div style="font-size:14px;font-weight:600;"> LOGO </div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">k PNG/JPG/WebP?200KB</div>
           </div>
           <div id="logoImgWrap">
             <img id="logoPreviewImg" class="logo-preview">
-            <button class="logo-remove" onclick="event.stopPropagation();removeLogo()">×</button>
+            <button class="logo-remove" onclick="event.stopPropagation();removeLogo()"></button>
           </div>
         </div>
 
         <div style="margin-top:16px;">
-          <label style="font-size:14px;color:var(--text-muted);display:block;margin-bottom:8px;">LOGO 大小（二维码的百分比�?/label>
+          <label style="font-size:14px;color:var(--text-muted);display:block;margin-bottom:8px;">LOGO ?/label>
           <div style="display:flex;gap:8px;align-items:center;">
             <input type="range" id="logoSize" min="10" max="30" value="20"
               style="flex:1;" oninput="document.getElementById('logoSizeVal').textContent=this.value+'%';debounceGenerate()">
@@ -393,7 +393,7 @@
         </div>
 
         <div style="margin-top:12px;">
-          <label style="font-size:14px;color:var(--text-muted);display:block;margin-bottom:8px;">LOGO 边�?</label>
+          <label style="font-size:14px;color:var(--text-muted);display:block;margin-bottom:8px;">LOGO </label>
           <div style="display:flex;gap:8px;align-items:center;">
             <input type="range" id="logoBorder" min="0" max="8" value="4"
               style="flex:1;" oninput="document.getElementById('logoBorderVal').textContent=this.value+'px';debounceGenerate()">
@@ -402,75 +402,75 @@
         </div>
 
         <div style="margin-top:16px;">
-          <label style="font-size:14px;color:var(--text-muted);display:block;margin-bottom:8px;">内�?输入</label>
-          <textarea id="logoContent" placeholder="输入二维码内容（网址/文字�?.."
+          <label style="font-size:14px;color:var(--text-muted);display:block;margin-bottom:8px;"></label>
+          <textarea id="logoContent" placeholder="/?.."
             style="width:100%;min-height:100px;padding:12px;border:1px solid var(--border);border-radius:8px;
                    font-size:14px;resize:vertical;outline:none;"
             oninput="debounceGenerate()"></textarea>
         </div>
 
-        <button class="btn btn-primary" style="width:100%;margin-top:14px;" onclick="generateLogoQR()">🔄 生成�?LOGO 的二维码</button>
+        <button class="btn btn-primary" style="width:100%;margin-top:14px;" onclick="generateLogoQR()"> ?LOGO </button>
 
         <div class="platform-note" style="margin-top:12px;">
-          ⚠️ LOGO 会占用二维码部分信息区域，建�??错等级�?�择"�?�?�?�?，确保扫码成功率�?        </div>
+           LOGO "????        </div>
       </div>
 
       <div class="card" style="display:flex;flex-direction:column;align-items:center;min-height:480px;">
         <div id="logoQrPreview" style="display:flex;align-items:center;justify-content:center;flex:1;width:100%;">
           <div style="text-align:center;color:var(--text-muted);">
-            <div style="font-size:64px;margin-bottom:12px;">🏷�?/div>
-            <p style="font-size:14px;">上传 LOGO 并输入内容后<br>即可生成�?LOGO 的二维码</p>
+            <div style="font-size:64px;margin-bottom:12px;">?/div>
+            <p style="font-size:14px;"> LOGO <br>?LOGO </p>
           </div>
         </div>
         <div id="logoActions" style="margin-top:16px;width:100%;">
-          <button class="btn btn-primary" style="width:100%;" onclick="downloadLogoPNG()">�?下载 PNG</button>
+          <button class="btn btn-primary" style="width:100%;" onclick="downloadLogoPNG()">? PNG</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ============ 平台专用 ============ -->
+  <!-- ============  ============ -->
   <div id="tab-platform" class="tab-panel">
     <div class="template-grid">
       <div class="template-card" onclick="switchTab('vcard');setTimeout(()=>document.getElementById('vcName').focus(),100)">
-        <div class="icon">📱</div><div class="name">�?���?��</div><div class="desc">生成�?��二维码（�?在微�?pp内生成，或粘贴个人收款码�?/div>
+        <div class="icon"></div><div class="name"></div><div class="desc">pp?/div>
       </div>
       <div class="template-card" onclick="fillPlatform('alipay')">
-        <div class="icon">💰</div><div class="name">�?��宝收�?/div><div class="desc">粘贴�?��宝收款码链接</div>
+        <div class="icon"></div><div class="name">?/div><div class="desc"></div>
       </div>
       <div class="template-card" onclick="fillPlatform('wechatpay')">
-        <div class="icon">💵</div><div class="name">�?���?��</div><div class="desc">粘贴�?���?��二维码内�?/div>
+        <div class="icon"></div><div class="name"></div><div class="desc">?/div>
       </div>
       <div class="template-card" onclick="switchTab('vcard')">
-        <div class="icon">🏢</div><div class="name">企业�?��</div><div class="desc">在企业微�?pp生成二维码，用名片功�?/div>
+        <div class="icon"></div><div class="name"></div><div class="desc">pp?/div>
       </div>
     </div>
 
     <div class="card" style="margin-top:16px;">
-      <h2 style="font-size:16px;margin-bottom:12px;">📋 各平台二维码要求</h2>
+      <h2 style="font-size:16px;margin-bottom:12px;"> </h2>
       <div style="font-size:13px;line-height:2;color:#334155;">
-        <p><b>�?���?/b>�?���?��二维码需要在�?��App�?�?�?设置 �?二维码名�?生成，�?三方生成的微信码无法直接添加好友。可用本工具生成收�?码链接�?/p>
-        <p><b>�?��宝：</b>在支付宝App�?���?"收�?"�?�?��"页面，点击二维码图标获取收�?链接，粘贴到上方输入框生成�?/p>
-        <p><b>QQ�?/b>QQ二维码需要在QQ客户�?��成（设置 �?�?��资料 �?二维码），手机QQ�?���?��能支持扫描�?/p>
-        <p><b>通用建�?�?/b>不同平台对二维码格式有兼容�?��?求，建�?使用标准文字/网址格式二维码，通用性最强�?/p>
+        <p><b>?/b>App??? ???/p>
+        <p><b></b>App""?"?/p>
+        <p><b>QQ?/b>QQQQi ? ?QQV?/p>
+        <p><b>?/b>/?/p>
       </div>
     </div>
   </div>
 </main>
 
 <footer class="footer">
-  <p>© 2026 在线工具�?· �?有文件仅在浏览器�?��处理，不会上传到服务�?/p>
+  <p> 2026   </p>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <script>
-// ==================== 全局状�?====================
+// ==================== ?====================
 let currentDataURL = null;
 let logoImg = null;
 let qrLevel = 'M';
 let qrStyle = 'default';
 
-// ==================== Tab 切换 ====================
+// ==================== Tab  ====================
 function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -478,7 +478,7 @@ function switchTab(name) {
   document.getElementById('tab-' + name).classList.add('active');
 }
 
-// ==================== 基�?二维�?====================
+// ==================== ?====================
 const qrContent = document.getElementById('qrContent');
 qrContent.addEventListener('input', () => {
   document.getElementById('charCount').textContent = qrContent.value.length;
@@ -518,7 +518,7 @@ function applyStyle(style, el) {
     document.getElementById('fgText').value = '#ffffff';
     document.getElementById('bgText').value = '#000000';
   } else if (style === 'transparent') {
-    bg.value = '#ffffff'; // 实际透明�?要PNG+alpha处理
+    bg.value = '#ffffff'; // PNG+alpha
     document.getElementById('bgText').value = '#ffffff';
   } else {
     fg.value = '#000000'; bg.value = '#ffffff';
@@ -533,8 +533,8 @@ function generateQR() {
   if (!content) {
     document.getElementById('qrPreview').innerHTML = `
       <div style="text-align:center;color:var(--text-muted);">
-        <div style="font-size:64px;margin-bottom:12px;">📱</div>
-        <p style="font-size:14px;">输入内�?后点�?生成二维�?</p>
+        <div style="font-size:64px;margin-bottom:12px;"></div>
+        <p style="font-size:14px;">??</p>
       </div>`;
     return;
   }
@@ -554,7 +554,7 @@ function generateQR() {
 
   QRCode.toCanvas(content, opts, (err, canvas) => {
     if (err) {
-      preview.innerHTML = `<div style="text-align:center;color:#dc2626;"><div style="font-size:48px;margin-bottom:8px;">⚠️</div><p style="font-size:14px;">${err.message || '内�?过长，�?减少字�?数量'}</p></div>`;
+      preview.innerHTML = `<div style="text-align:center;color:#dc2626;"><div style="font-size:48px;margin-bottom:8px;"></div><p style="font-size:14px;">${err.message || ''}</p></div>`;
       return;
     }
     document.getElementById('qrCanvasWrap').appendChild(canvas);
@@ -584,7 +584,7 @@ function downloadJPG() {
     type: 'image/jpeg',
     quality: 0.95
   }, (err, url) => {
-    if (err) { alert('生成失败�? + err.message); return; }
+    if (err) { alert('? + err.message); return; }
     const a = document.createElement('a');
     a.href = url;
     a.download = 'qrcode_' + Date.now() + '.jpg';
@@ -604,7 +604,7 @@ function downloadSVG() {
     color: { dark: fg, light: bg },
     errorCorrectionLevel: qrLevel
   }, (err, svg) => {
-    if (err) { alert('SVG 生成失败'); return; }
+    if (err) { alert('SVG '); return; }
     const blob = new Blob([svg], { type: 'image/svg+xml' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -617,7 +617,7 @@ function downloadSVG() {
 function downloadPDF() {
   const content = qrContent.value.trim();
   if (!currentDataURL) return;
-  // �?�?PDF：图片嵌�?  const size = parseInt(document.getElementById('qrSize').value);
+  // ?PDF?  const size = parseInt(document.getElementById('qrSize').value);
   const pdfContent = `%PDF-1.4
 1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj
 2 0 obj<</Type/Pages/Kids[3 0 R]/Resources<</XObject<</Im0 4 0 R>>>>/MediaBox[0 0 ${size+40} ${size+40}]>>endobj
@@ -634,9 +634,9 @@ trailer<</Size 6/Root 1 0 R>>
 startxref
 ${pdfContent.indexOf('endstream') + 'endstream'.length + 10}
 %%EOF`;
-  // �?化：直接下载PNG，用户可�??�?��PDF
+  // PNGPDF
   downloadPNG();
-  alert('已下�?PNG 格式。�?�? PDF，可用在线工具转�?��https://smallpdf.com/png-to-pdf');
+  alert('?PNG  PDFhttps://smallpdf.com/png-to-pdf');
 }
 
 async function copyToClipboard() {
@@ -647,20 +647,20 @@ async function copyToClipboard() {
     await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
     const btn = event.target;
     const orig = btn.textContent;
-    btn.textContent = '�?已�?�?;
-    setTimeout(() => btn.textContent = '📋 复制', 1500);
+    btn.textContent = '??;
+    setTimeout(() => btn.textContent = ' ', 1500);
   } catch {
-    alert('复制失败，�?右键图片另存�?);
+    alert('?);
   }
 }
 
-// ==================== �?��模板 ====================
+// ====================  ====================
 function fillTemplate(type, prefix) {
   switchTab('basic');
   const prefixes = {
     url: 'https://', tel: 'tel:', email: 'mailto:',
     sms: 'sms:?body=', geo: 'geo:37.7749,-122.4194?q=',
-    calendar: 'BEGIN:VEVENT\nDTSTART:20260425T090000Z\nDTEND:20260425T100000Z\nSUMMARY:会�?\nEND:VEVENT',
+    calendar: 'BEGIN:VEVENT\nDTSTART:20260425T090000Z\nDTEND:20260425T100000Z\nSUMMARY:\nEND:VEVENT',
     pay: ''
   };
   qrContent.value = prefixes[type] || '';
@@ -702,19 +702,19 @@ function buildWifi() {
 function buildVCard() {
   const name = document.getElementById('vcName').value.trim();
   if (!name) {
-    document.getElementById('vcardPreview').textContent = '请填写上方信�?..';
-    document.getElementById('vcardQr').innerHTML = `<div style="text-align:center;color:var(--text-muted);"><div style="font-size:48px;margin-bottom:8px;">📇</div><p style="font-size:13px;">�?��信息后自动生�?/p></div>`;
+    document.getElementById('vcardPreview').textContent = '?..';
+    document.getElementById('vcardQr').innerHTML = `<div style="text-align:center;color:var(--text-muted);"><div style="font-size:48px;margin-bottom:8px;"></div><p style="font-size:13px;">G?/p></div>`;
     return;
   }
   const parts = [`BEGIN:VCARD`, `VERSION:3.0`, `PRODID:-//OnlineToolbox//CN`, `REV:${new Date().toISOString().replace(/[-:]/g,'').split('.')[0]}Z`];
-  // FN: 全名（必�?���?HARSET�?���?��兼�?�?  parts.push(`FN;CHARSET=UTF-8:${name}`);
-  // N: �?�?格式，中文�?名智能分�?  let lastName = name, firstName = '';
+  // FN: tHARSET?  parts.push(`FN;CHARSET=UTF-8:${name}`);
+  // N: ???  let lastName = name, firstName = '';
   if (name.includes(' ')) {
     const np = name.split(' ');
     firstName = np.slice(1).join(' ');
     lastName = np[0];
   } else {
-    // �?��名默认�?�?�?��为�?，其余为�?    lastName = name.charAt(0);
+    // ?    lastName = name.charAt(0);
     firstName = name.slice(1);
   }
   parts.push(`N;CHARSET=UTF-8:${lastName};${firstName};;;`);
@@ -748,7 +748,7 @@ function generateVCardQR(vcard) {
   const qrEl = document.getElementById('vcardQr');
   qrEl.innerHTML = `<div id="vcardWrap" style="padding:16px;background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.1);"></div>`;
   QRCode.toCanvas(vcard, { width: 300, margin: 2, errorCorrectionLevel: 'H' }, (err, canvas) => {
-    if (err) { qrEl.innerHTML = `<div style="color:#dc2626;text-align:center;padding:20px;">⚠️ ${err.message}</div>`; return; }
+    if (err) { qrEl.innerHTML = `<div style="color:#dc2626;text-align:center;padding:20px;"> ${err.message}</div>`; return; }
     document.getElementById('vcardWrap').appendChild(canvas);
     // vcardActions always visible
   });
@@ -763,7 +763,7 @@ function downloadVCardPNG() {
   a.click();
 }
 
-// ==================== LOGO 嵌入 ====================
+// ==================== LOGO  ====================
 function loadLogo(input) {
   const file = input.files[0];
   if (!file) return;
@@ -792,8 +792,8 @@ function removeLogo() {
 
 function generateLogoQR() {
   const content = document.getElementById('logoContent').value.trim();
-  if (!content) return alert('请输入二维码内�?');
-  if (!logoImg) return alert('请先上传 LOGO 图片');
+  if (!content) return alert('');
+  if (!logoImg) return alert(' LOGO ');
 
   const logoPct = parseInt(document.getElementById('logoSize').value) / 100;
   const logoBorder = parseInt(document.getElementById('logoBorder').value);
@@ -807,24 +807,24 @@ function generateLogoQR() {
     errorCorrectionLevel: 'H'
   }, (err, canvas) => {
     if (err) {
-      preview.innerHTML = `<div style="color:#dc2626;text-align:center;padding:20px;">⚠️ ${err.message}</div>`;
+      preview.innerHTML = `<div style="color:#dc2626;text-align:center;padding:20px;"> ${err.message}</div>`;
       return;
     }
 
-    // 在二维码上画 LOGO
+    //  LOGO
     const ctx = canvas.getContext('2d');
     const qrSize = canvas.width;
     const logoSize = qrSize * logoPct;
     const logoX = (qrSize - logoSize) / 2;
     const logoY = (qrSize - logoSize) / 2;
 
-    // 画白色边�?    if (logoBorder > 0) {
+    // ?    if (logoBorder > 0) {
       ctx.fillStyle = '#ffffff';
       const borderSize = logoSize + logoBorder * 2;
       ctx.fillRect((qrSize - borderSize) / 2, (qrSize - borderSize) / 2, borderSize, borderSize);
     }
 
-    // �?LOGO
+    // ?LOGO
     ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
 
     document.getElementById('logoCanvasWrap').appendChild(canvas);

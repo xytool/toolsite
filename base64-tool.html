@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="免费在线Base64编码解码工具 - �?��文本/文件Base64互转、URL编码、Unicode�?��、MIME类型�?测，实时预�?�?>
-  <title>Base64 编码解码 - 在线工具�?/title>
+  <meta name="description" content="Base64 - k/Base64URLUnicodeMIME?>
+  <title>Base64  - ?/title>
   <link rel="stylesheet" href="css/style.css">
   <style>
     body { font-family: 'Segoe UI', system-ui, sans-serif; }
@@ -23,7 +23,7 @@
     .action-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
     .label { font-size: 14px; font-weight: 600; min-width: 100px; }
 
-    /* 文件预�? */
+    /*  */
     .file-preview {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 8px 14px; background: #f8fafc; border: 1px solid var(--border);
@@ -52,67 +52,67 @@
 <body>
 
 <header class="navbar">
-  <a href="index.html" class="logo"><span>🧰</span> 在线工具�?/a>
+  <a href="index.html" class="logo"><span></span> ?/a>
   <nav>
-    <a href="image-compressor.html">图片压缩</a>
-    <a href="qr-generator.html">二维�?/a>
-    <a href="json-formatter.html">JSON工具</a>
-    <a href="password-generator.html">密码生成</a>
-    <a href="timestamp-converter.html">时间�?/a>
+    <a href="image-compressor.html"></a>
+    <a href="qr-generator.html">?/a>
+    <a href="json-formatter.html">JSON</a>
+    <a href="password-generator.html"></a>
+    <a href="timestamp-converter.html">?/a>
     <a href="base64-tool.html" class="active">Base64</a>
   </nav>
 </header>
 
 <main class="container">
   <div class="tool-header">
-    <h1>🔤 Base64 编码解码工具</h1>
-    <p>文本/文件 Base64 互转、URL 编码、Unicode �?��，实时�?理，完全�?��运�?�?/p>
+    <h1> Base64 </h1>
+    <p>/ Base64 URL Unicode </p>
   </div>
   
   <div class="tutorial-box">
-    <h3>📖 使用教程</h3>
+    <h3> </h3>
     <ol>
-      <li><strong>选择模式</strong> - 文本编码、文件编码�?�URL编码、Unicode�?��</li>
-      <li><strong>输入内�?</strong> - 粘贴文本或拖拽文�?/li>
-      <li><strong>处理�?��</strong> - 点击编码/解码按钮执�?�?��</li>
-      <li><strong>复制结果</strong> - �?�??制到�?���?/li>
+      <li><strong></strong> - URLUnicode</li>
+      <li><strong></strong> - ?/li>
+      <li><strong>H</strong> - /H</li>
+      <li><strong></strong> - ?/li>
     </ol>
-    <div class="tip"><strong>💡 提示�?/strong>�?��文件拖拽，自动�?取文件内容并编码�?/div>
+    <div class="tip"><strong> ?/strong>k?/div>
   </div>
   
   <!-- Tab -->
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('text')">📝 文本编码</button>
-    <button class="tab-btn" onclick="switchTab('file')">📎 文件编码</button>
-    <button class="tab-btn" onclick="switchTab('url')">🌍 URL编码</button>
-    <button class="tab-btn" onclick="switchTab('unicode')">✏️ Unicode</button>
+    <button class="tab-btn active" onclick="switchTab('text')"> </button>
+    <button class="tab-btn" onclick="switchTab('file')"> </button>
+    <button class="tab-btn" onclick="switchTab('url')"> URL</button>
+    <button class="tab-btn" onclick="switchTab('unicode')"> Unicode</button>
   </div>
 
-  <!-- ========== 文本 Base64 ========== -->
+  <!-- ==========  Base64 ========== -->
   <div id="tab-text" class="tab-panel active">
     <div class="action-bar">
-      <button class="btn btn-primary" onclick="b64Encode()">🔐 Base64 编码</button>
-      <button class="btn btn-outline" onclick="b64Decode()">🔓 Base64 解码</button>
-      <button class="btn btn-outline" onclick="swapText()">�?交换两侧</button>
-      <button class="btn btn-outline" onclick="clearText()">🗑�?清空</button>
+      <button class="btn btn-primary" onclick="b64Encode()"> Base64 </button>
+      <button class="btn btn-outline" onclick="b64Decode()"> Base64 </button>
+      <button class="btn btn-outline" onclick="swapText()">?</button>
+      <button class="btn btn-outline" onclick="clearText()">?</button>
     </div>
 
     <div class="editor-grid">
       <div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-          <span style="font-weight:600;font-size:14px;">📥 输入</span>
-          <div class="info-item"><span class="key">字�?:</span><span class="val" id="inChars">0</span></div>
+          <span style="font-weight:600;font-size:14px;"> </span>
+          <div class="info-item"><span class="key">:</span><span class="val" id="inChars">0</span></div>
         </div>
-        <textarea id="textInput" placeholder="输入要编码或解码的文�?.."
+        <textarea id="textInput" placeholder="?.."
           oninput="document.getElementById('inChars').textContent=this.value.length"
           spellcheck="false"></textarea>
       </div>
       <div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-          <span style="font-weight:600;font-size:14px;">📤 输出</span>
-          <div class="info-item"><span class="key">字�?:</span><span class="val" id="outChars">0</span></div>
+          <span style="font-weight:600;font-size:14px;"> </span>
+          <div class="info-item"><span class="key">:</span><span class="val" id="outChars">0</span></div>
         </div>
-        <textarea id="textOutput" placeholder="结果将在此显�?.."
+        <textarea id="textOutput" placeholder="?.."
           spellcheck="false"></textarea>
       </div>
     </div>
@@ -121,77 +121,77 @@
   
 
  class="info-box">
-      <div class="info-item"><span class="key">原�?字节:</span><span class="val" id="origBytes">0</span></div>
-      <div class="info-item"><span class="key">Base64�?</span><span class="val" id="b64Bytes">0</span></div>
-      <div class="info-item"><span class="key">膨胀�?</span><span class="val" id="b64Ratio">�?/span></div>
+      <div class="info-item"><span class="key">:</span><span class="val" id="origBytes">0</span></div>
+      <div class="info-item"><span class="key">Base64?</span><span class="val" id="b64Bytes">0</span></div>
+      <div class="info-item"><span class="key">?</span><span class="val" id="b64Ratio">?/span></div>
     </div>
   </div>
 
-  <!-- ========== 文件 Base64 ========== -->
+  <!-- ==========  Base64 ========== -->
   <div id="tab-file" class="tab-panel">
     <div class="action-bar">
-      <button class="btn btn-primary" onclick="fileToBase64()">🔐 文件 �?Base64</button>
-      <button class="btn btn-outline" onclick="base64ToFile()">🔓 Base64 �?文件</button>
-      <button class="btn btn-outline" onclick="clearFile()">🗑�?清空</button>
+      <button class="btn btn-primary" onclick="fileToBase64()">  ?Base64</button>
+      <button class="btn btn-outline" onclick="base64ToFile()"> Base64 ?</button>
+      <button class="btn btn-outline" onclick="clearFile()">?</button>
     </div>
 
     <div class="card" style="margin-bottom:16px;">
-      <div style="font-weight:600;font-size:14px;margin-bottom:8px;">📎 上传文件（编码为 Base64�?/div>
+      <div style="font-weight:600;font-size:14px;margin-bottom:8px;">  Base64?/div>
       <input type="file" id="fileInput" style="display:none;" onchange="previewFile(this)">
       <div class="upload-area" onclick="document.getElementById('fileInput').click()" id="fileUploadArea"
         style="border:2px dashed var(--border);border-radius:12px;padding:32px;text-align:center;cursor:pointer;">
-        <div style="font-size:36px;margin-bottom:8px;">📁</div>
-        <p style="font-size:14px;">点击上传任意文件</p>
-        <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">图片/音�?/视�?/任意文件均可</p>
+        <div style="font-size:36px;margin-bottom:8px;"></div>
+        <p style="font-size:14px;"></p>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">///</p>
       </div>
       <div id="filePreviewArea" style="margin-top:12px;display:none;">  </div>
 
   <div class="card" style="border-left:4px solid #10b981;">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
       <span style="font-size:20px;">??</span>
-      <span style="font-size:15px;font-weight:700;color:#10b981;">��ӭ�ύʹ�÷���</span>
+      <span style="font-size:15px;font-weight:700;color:#10b981;"></span>
     </div>
-    <p style="font-size:14px;color:#64748b;margin:0 0 10px 0;">�����?���?bug���й��ܽ��飬��ʹ�����������⣬��ӭ���·����ۿ��ύ��</p>
-    <p style="font-size:13px;color:#94a3b8;margin:0;">?? �������ҳ��ײ�����д���۱������ύ����л��ķ�����?/p>
+    <p style="font-size:14px;color:#64748b;margin:0 0 10px 0;">?bug</p>
+    <p style="font-size:13px;color:#94a3b8;margin:0;">?? ?/p>
   </div>
 
   <div class="card"><div class="card">
-      <div style="font-weight:600;font-size:14px;margin-bottom:8px;">📄 Base64 内�?</div>
-      <textarea id="fileB64" placeholder="粘贴 Base64 字�?串（将还原为文件�?.."
+      <div style="font-weight:600;font-size:14px;margin-bottom:8px;"> Base64 </div>
+      <textarea id="fileB64" placeholder=" Base64 ?.."
         style="min-height:200px;background:#f8fafc;"
         spellcheck="false"></textarea>
       <div id="b64FileInfo" class="info-box" style="display:none;"></div>
     </div>
 
     <div class="card" style="margin-top:16px;background:#fef3c7;border-color:#fcd34d;">
-      <div style="font-weight:600;font-size:14px;margin-bottom:8px;">💡 使用说明</div>
+      <div style="font-weight:600;font-size:14px;margin-bottom:8px;"> </div>
       <ul style="font-size:13px;line-height:2;color:#92400e;padding-left:18px;">
-        <li><b>编码�?/b>上传任意文件，自动生�?Base64 字�?串，�?��贴到代码�?���?data URI</li>
-        <li><b>解码�?/b>粘贴 Base64 字�?串，点击"Base64 �?文件"，自动下载还原后的原文件</li>
-        <li><b>Data URI�?/b>编码后可生成 <code style="background:#fff;padding:1px 4px;border-radius:3px;">data:image/png;base64,...</code> 格式</li>
-        <li><b>适用场景�?/b>CSS/HTML 内嵌小图片�?�小音�?，减�?HTTP 请求</li>
+        <li><b>?/b>?Base64 ?data URI</li>
+        <li><b>?/b> Base64 "Base64 ?"</li>
+        <li><b>Data URI?/b> <code style="background:#fff;padding:1px 4px;border-radius:3px;">data:image/png;base64,...</code> </li>
+        <li><b>?/b>CSS/HTML ?HTTP </li>
       </ul>
     </div>
   </div>
 
-  <!-- ========== URL 编码 ========== -->
+  <!-- ========== URL  ========== -->
   <div id="tab-url" class="tab-panel">
     <div class="action-bar">
-      <button class="btn btn-primary" onclick="urlEncode()">🌍 URL 编码</button>
-      <button class="btn btn-outline" onclick="urlDecode()">🌐 URL 解码</button>
-      <button class="btn btn-outline" onclick="urlEncodeAll()">🔐 编码全部字�?</button>
-      <button class="btn btn-outline" onclick="swapText()">�?交换两侧</button>
+      <button class="btn btn-primary" onclick="urlEncode()"> URL </button>
+      <button class="btn btn-outline" onclick="urlDecode()"> URL </button>
+      <button class="btn btn-outline" onclick="urlEncodeAll()"> </button>
+      <button class="btn btn-outline" onclick="swapText()">?</button>
     </div>
     <div class="editor-grid">
       <div>
-        <div style="font-weight:600;font-size:14px;margin-bottom:6px;">📥 输入 URL / 字�?�?/div>
-        <textarea id="urlInput" placeholder="输入包含特殊字�?�?URL 或字符串..."
+        <div style="font-weight:600;font-size:14px;margin-bottom:6px;">  URL / ?/div>
+        <textarea id="urlInput" placeholder="?URL ..."
           oninput="document.getElementById('inChars').textContent=this.value.length"
           spellcheck="false"></textarea>
       </div>
       <div>
-        <div style="font-weight:600;font-size:14px;margin-bottom:6px;">📤 结果</div>
-        <textarea id="urlOutput" placeholder="结果..."
+        <div style="font-weight:600;font-size:14px;margin-bottom:6px;"> </div>
+        <textarea id="urlOutput" placeholder="..."
           oninput="document.getElementById('outChars').textContent=this.value.length"
           spellcheck="false"></textarea>
       </div>
@@ -201,45 +201,45 @@
   <!-- ========== Unicode ========== -->
   <div id="tab-unicode" class="tab-panel">
     <div class="action-bar">
-      <button class="btn btn-primary" onclick="unicodeEncode()">✏️ 文本 �?Unicode</button>
-      <button class="btn btn-outline" onclick="unicodeDecode()">📖 Unicode �?文本</button>
-      <button class="btn btn-outline" onclick="unicodeNrEncode()">🔢 数字格式 (\u4e2d)</button>
+      <button class="btn btn-primary" onclick="unicodeEncode()">  ?Unicode</button>
+      <button class="btn btn-outline" onclick="unicodeDecode()"> Unicode ?</button>
+      <button class="btn btn-outline" onclick="unicodeNrEncode()">  (\u4e2d)</button>
     </div>
     <div class="editor-grid">
       <div>
-        <div style="font-weight:600;font-size:14px;margin-bottom:6px;">📥 文本</div>
-        <textarea id="uniInput" placeholder="输入�?��或其�?Unicode 字�?..."
+        <div style="font-weight:600;font-size:14px;margin-bottom:6px;"> </div>
+        <textarea id="uniInput" placeholder="?Unicode ..."
           spellcheck="false"></textarea>
       </div>
       <div>
-        <div style="font-weight:600;font-size:14px;margin-bottom:6px;">📤 Unicode 结果</div>
-        <textarea id="uniOutput" placeholder="结果..."
+        <div style="font-weight:600;font-size:14px;margin-bottom:6px;"> Unicode </div>
+        <textarea id="uniOutput" placeholder="..."
           spellcheck="false"></textarea>
       </div>
     </div>
 
     <div class="card" style="margin-top:16px;">
-      <div style="font-weight:700;font-size:14px;margin-bottom:8px;">📋 常用 Unicode 字�?</div>
+      <div style="font-weight:700;font-size:14px;margin-bottom:8px;">  Unicode </div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;">
-        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u00a9')">© 版权</button>
-        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u00ae')">® 注册</button>
-        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2122')">�?商标</button>
-        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2022')">�?圆点</button>
-        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2014')">�?破折�?/button>
-        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u201c\u201d')">"" 引号</button>
-        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2190\u2191\u2192\u2193')">←↑→↓ �?��</button>
-        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2605\u2606')">★☆ �?/button>
-        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2665\u2666\u2663\u2660')">♥♦♣♠ 花色</button>
-        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u00b0')">° �?/button>
-        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u00b2\u00b3')">²³ 上标</button>
-        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2192')">�?右�?�?/button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u00a9')"> </button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u00ae')"> </button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2122')">?</button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2022')">?</button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2014')">??/button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u201c\u201d')">"" </button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2190\u2191\u2192\u2193')"> </button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2605\u2606')"> ?/button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2665\u2666\u2663\u2660')"> </button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u00b0')"> ?/button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u00b2\u00b3')"> </button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2192')">??/button>
       </div>
     </div>
   </div>
 </main>
 
 <footer class="footer">
-  <p>© 2026 在线工具�?· �?有文件仅在浏览器�?��处理，不会上传到服务�?/p>
+  <p> 2026   </p>
 </footer>
 
 <script>
@@ -251,28 +251,28 @@ function switchTab(name) {
   document.getElementById('tab-' + name).classList.add('active');
 }
 
-// ============ Base64 文本 ============
+// ============ Base64  ============
 function b64Encode() {
   const text = document.getElementById('textInput').value;
-  if (!text) return alert('请输入文�?);
+  if (!text) return alert('?);
   try {
     const encoded = btoa(unescape(encodeURIComponent(text)));
     document.getElementById('textOutput').value = encoded;
     updateB64Stats(text, encoded);
   } catch(e) {
-    alert('编码失败�? + e.message);
+    alert('? + e.message);
   }
 }
 
 function b64Decode() {
   const text = document.getElementById('textInput').value;
-  if (!text) return alert('请输�?Base64 字�?�?);
+  if (!text) return alert('?Base64 ?);
   try {
     const decoded = decodeURIComponent(escape(atob(text)));
     document.getElementById('textOutput').value = decoded;
     updateB64Stats(decoded, text);
   } catch(e) {
-    alert('解码失败�? + e.message);
+    alert('? + e.message);
   }
 }
 
@@ -301,10 +301,10 @@ function clearText() {
   document.getElementById('outChars').textContent = '0';
   document.getElementById('origBytes').textContent = '0';
   document.getElementById('b64Bytes').textContent = '0';
-  document.getElementById('b64Ratio').textContent = '�?;
+  document.getElementById('b64Ratio').textContent = '?;
 }
 
-// ============ 文件 Base64 ============
+// ============  Base64 ============
 let currentFileName = '';
 let currentFileMime = '';
 
@@ -316,7 +316,7 @@ function previewFile(input) {
 
   const isImage = file.type.startsWith('image/');
   let previewHtml = `<div class="file-preview">
-    <span class="mime-tag ${isImage ? 'mime-img' : 'mime-txt'}">${escHtml(file.type || '�?��')}</span>
+    <span class="mime-tag ${isImage ? 'mime-img' : 'mime-txt'}">${escHtml(file.type || '')}</span>
     <span>${escHtml(file.name)}</span>
     <span style="color:var(--text-muted);">(${(file.size/1024).toFixed(1)} KB)</span>
   </div>`;
@@ -330,7 +330,7 @@ function previewFile(input) {
   document.getElementById('fileUploadArea').style.display = 'none';
   document.getElementById('filePreviewArea').style.display = 'block';
 
-  // �?��编码
+  // 
   fileToBase64_single(file);
 }
 
@@ -341,10 +341,10 @@ function fileToBase64_single(file) {
     document.getElementById('fileB64').value = b64;
     document.getElementById('b64FileInfo').style.display = 'flex';
     document.getElementById('b64FileInfo').innerHTML = `
-      <div class="info-item"><span class="key">文件�?</span><span class="val">${escHtml(file.name)}</span></div>
+      <div class="info-item"><span class="key">?</span><span class="val">${escHtml(file.name)}</span></div>
       <div class="info-item"><span class="key">MIME:</span><span class="val">${escHtml(file.type)}</span></div>
-      <div class="info-item"><span class="key">大小:</span><span class="val">${(file.size/1024).toFixed(1)} KB</span></div>
-      <div class="info-item"><span class="key">Base64:</span><span class="val">${b64.length} 字�?</span></div>
+      <div class="info-item"><span class="key">:</span><span class="val">${(file.size/1024).toFixed(1)} KB</span></div>
+      <div class="info-item"><span class="key">Base64:</span><span class="val">${b64.length} </span></div>
       <div class="info-item"><span class="key">Data URI:</span><span class="val" style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">data:${file.type};base64,...</span></div>
     `;
     currentFileMime = file.type;
@@ -361,11 +361,11 @@ function fileToBase64() {
 
 function base64ToFile() {
   const b64 = document.getElementById('fileB64').value.trim();
-  if (!b64) return alert('请先粘贴 Base64 字�?�?);
-  // 尝试从内容推�?mime type
+  if (!b64) return alert(' Base64 ?);
+  // ?mime type
   let mime = currentFileMime || 'application/octet-stream';
-  // �?单�?�?  if (b64.match(/^[A-Za-z0-9+/=]{20,}$/)) {
-    // 看起来是�?base64
+  // ?  if (b64.match(/^[A-Za-z0-9+/=]{20,}$/)) {
+    // ?base64
   }
   try {
     const binStr = atob(b64);
@@ -379,7 +379,7 @@ function base64ToFile() {
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 5000);
   } catch(e) {
-    alert('解码失败�? + e.message);
+    alert('? + e.message);
   }
 }
 
@@ -393,33 +393,33 @@ function clearFile() {
   currentFileMime = '';
 }
 
-// ============ URL 编码 ============
+// ============ URL  ============
 function urlEncode() {
   const text = document.getElementById('urlInput').value;
-  if (!text) return alert('请输入文�?);
+  if (!text) return alert('?);
   document.getElementById('urlOutput').value = encodeURIComponent(text);
 }
 
 function urlDecode() {
   const text = document.getElementById('urlInput').value;
-  if (!text) return alert('请输�?URL 编码字�?�?);
+  if (!text) return alert('?URL ?);
   try {
     document.getElementById('urlOutput').value = decodeURIComponent(text);
   } catch(e) {
-    document.getElementById('urlOutput').value = '�?解码失败�? + e.message;
+    document.getElementById('urlOutput').value = '?? + e.message;
   }
 }
 
 function urlEncodeAll() {
   const text = document.getElementById('urlInput').value;
-  if (!text) return alert('请输入文�?);
+  if (!text) return alert('?);
   document.getElementById('urlOutput').value = encodeURI(text);
 }
 
 // ============ Unicode ============
 function unicodeEncode() {
   const text = document.getElementById('uniInput').value;
-  if (!text) return alert('请输入文�?);
+  if (!text) return alert('?);
   let result = '';
   for (const ch of text) {
     result += '\\u' + ch.charCodeAt(0).toString(16).padStart(4, '0');
@@ -429,18 +429,18 @@ function unicodeEncode() {
 
 function unicodeDecode() {
   const text = document.getElementById('uniInput').value;
-  if (!text) return alert('请输�?Unicode 字�?�?);
+  if (!text) return alert('?Unicode ?);
   try {
     const result = text.replace(/\\u([0-9a-fA-F]{4})/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
     document.getElementById('uniOutput').value = result;
   } catch(e) {
-    document.getElementById('uniOutput').value = '�?解码失败';
+    document.getElementById('uniOutput').value = '?';
   }
 }
 
 function unicodeNrEncode() {
   const text = document.getElementById('uniInput').value;
-  if (!text) return alert('请输入文�?);
+  if (!text) return alert('?);
   let result = '';
   for (const ch of text) {
     result += ch.charCodeAt(0).toString(16).padStart(4, '0');

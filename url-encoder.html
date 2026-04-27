@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="免费在线URL编码解码工具 - URL编码/解码，HTML实体编码，Base64，Unicode�?��，纯浏�?器本地�?理�??>
-  <meta name="keywords" content="URL编码,URL解码,urlencode,urldecode,HTML实体,在线编码工具">
-  <title>URL 编码解码工具 - 在线工具�?/title>
+  <meta name="description" content="URL - URL/HTMLBase64Unicode?>
+  <meta name="keywords" content="URL,URL,urlencode,urldecode,HTML,">
+  <title>URL  - ?/title>
   <link rel="stylesheet" href="css/style.css">
   <style>
     .dual-pane { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
@@ -54,89 +54,89 @@
 <body>
 
 <header class="navbar">
-  <a href="index.html" class="logo"><span>🧰</span> 在线工具�?/a>
+  <a href="index.html" class="logo"><span></span> ?/a>
   <nav>
-    <a href="image-watermark.html">图片水印</a>
-    <a href="text-dedup.html">文本去重</a>
-    <a href="base-converter.html">进制�?��</a>
-    <a href="url-encoder.html" class="active">URL编码</a>
+    <a href="image-watermark.html"></a>
+    <a href="text-dedup.html"></a>
+    <a href="base-converter.html">H</a>
+    <a href="url-encoder.html" class="active">URL</a>
   </nav>
 </header>
 
 <main class="container">
   <div class="tool-header">
-    <h1>🔗 URL 编码解码工具</h1>
-    <p>URL编码/解码，HTML实体编码，Unicode�?��，�?种格式互�?���?��览器�?��处理</p>
+    <h1> URL </h1>
+    <p>URL/HTMLUnicodeN</p>
   </div>
 
   <div class="tutorial-box">
-    <h3>📖 使用教程</h3>
+    <h3> </h3>
     <ol>
-      <li><strong>选择编码类型</strong> - URL编码/URL Component/HTML实体/Unicode/Base64</li>
-      <li><strong>选择方向</strong> - 点击「编码�?�或「解码�?�按�?/li>
-      <li><strong>输入文本</strong> - 在左侧输入�?粘贴或输入内�?/li>
-      <li><strong>复制结果</strong> - 结果实时显示在右侧，点击复制即可</li>
+      <li><strong></strong> - URL/URL Component/HTML/Unicode/Base64</li>
+      <li><strong></strong> - ?/li>
+      <li><strong></strong> - ?/li>
+      <li><strong></strong> - </li>
     </ol>
-    <div class="tip"><strong>💡 提示�?/strong>URL编码保留结构字�?，URL Component编码�?有特殊字符，适合不同场景�?/div>
+    <div class="tip"><strong> ?/strong>URLURL Component?/div>
   </div>
 
   
 
   <div class="card">
-    <!-- 编码类型 -->
+    <!--  -->
     <div class="encode-tabs">
-      <div class="enc-tab active" onclick="setEncType('url')">URL 编码</div>
+      <div class="enc-tab active" onclick="setEncType('url')">URL </div>
       <div class="enc-tab" onclick="setEncType('urlcomponent')">URL Component</div>
-      <div class="enc-tab" onclick="setEncType('html')">HTML 实体</div>
-      <div class="enc-tab" onclick="setEncType('unicode')">Unicode �?��</div>
+      <div class="enc-tab" onclick="setEncType('html')">HTML </div>
+      <div class="enc-tab" onclick="setEncType('unicode')">Unicode </div>
       <div class="enc-tab" onclick="setEncType('base64')">Base64</div>
     </div>
 
-    <!-- 方向 -->
+    <!--  -->
     <div class="direction-row">
-      <div class="dir-btn active" onclick="setDir('encode')">🔒 编码 �?/div>
-      <div class="dir-btn" onclick="setDir('decode')">🔓 �?解码</div>
+      <div class="dir-btn active" onclick="setDir('encode')">  ?/div>
+      <div class="dir-btn" onclick="setDir('decode')"> ?</div>
     </div>
 
-    <!-- 输入输出 -->
+    <!--  -->
     <div class="dual-pane">
       <div class="pane">
-        <label>📥 输入�?/label>
-        <textarea id="inputText" placeholder="输入要编�?解码的文�?.." oninput="convert()"></textarea>
+        <label> ?/label>
+        <textarea id="inputText" placeholder="??.." oninput="convert()"></textarea>
       </div>
       <div class="pane">
-        <label>📤 结果�?span id="resultInfo" style="font-size:12px;color:var(--text-muted);font-weight:400;"></span></label>
-        <textarea id="outputText" readonly placeholder="结果将在此显�?.."></textarea>
+        <label> ?span id="resultInfo" style="font-size:12px;color:var(--text-muted);font-weight:400;"></span></label>
+        <textarea id="outputText" readonly placeholder="?.."></textarea>
       </div>
     </div>
 
     <div class="info-box" id="infoBox">
-      当前模式：URL 编码 (encodeURIComponent) �?将特殊字符转�?�� %XX 格式，�?�合URL参数值编�?    </div>
+      URL  (encodeURIComponent) ? %XX URL?    </div>
 
-    <!-- �?��示例 -->
+    <!--  -->
     <div>
-      <label style="font-size:13px;color:var(--text-muted);">�?��示例�?/label>
+      <label style="font-size:13px;color:var(--text-muted);">?/label>
       <div class="quick-samples">
-        <div class="sample-btn" onclick="loadSample('url')">URL参数</div>
-        <div class="sample-btn" onclick="loadSample('chinese')">�?��字�?</div>
-        <div class="sample-btn" onclick="loadSample('emoji')">Emoji表情</div>
-        <div class="sample-btn" onclick="loadSample('html')">HTML标�?</div>
-        <div class="sample-btn" onclick="loadSample('special')">特殊符号</div>
+        <div class="sample-btn" onclick="loadSample('url')">URL</div>
+        <div class="sample-btn" onclick="loadSample('chinese')"></div>
+        <div class="sample-btn" onclick="loadSample('emoji')">Emoji</div>
+        <div class="sample-btn" onclick="loadSample('html')">HTML</div>
+        <div class="sample-btn" onclick="loadSample('special')"></div>
       </div>
     </div>
 
-    <!-- 操作按钮 -->
+    <!--  -->
     <div style="display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap;">
-      <button class="btn btn-primary" onclick="convert()">🔄 �?��</button>
-      <button class="btn btn-outline" onclick="copyResult()">📋 复制结果</button>
-      <button class="btn btn-outline" onclick="swapPane()">🔁 互换</button>
-      <button class="btn btn-outline" onclick="clearAll()">🗑�?清空</button>
+      <button class="btn btn-primary" onclick="convert()"> H</button>
+      <button class="btn btn-outline" onclick="copyResult()"> </button>
+      <button class="btn btn-outline" onclick="swapPane()"> </button>
+      <button class="btn btn-outline" onclick="clearAll()">?</button>
     </div>
   </div>
 </main>
 
 <footer class="footer">
-  <p>© 2026 在线工具�?· �?有文件仅在浏览器�?��处理，不会上传到服务�?/p>
+  <p> 2026 ? N?/p>
 </footer>
 
 <script>
@@ -161,22 +161,22 @@ function setDir(dir) {
 
 function updateInfoBox() {
   const typeNames = {
-    url: 'URL 编码 (encodeURI)',
-    urlcomponent: 'URL Component 编码 (encodeURIComponent)',
-    html: 'HTML 实体编码',
-    unicode: 'Unicode �?�� (\\uXXXX)',
-    base64: 'Base64 编码'
+    url: 'URL  (encodeURI)',
+    urlcomponent: 'URL Component  (encodeURIComponent)',
+    html: 'HTML ',
+    unicode: 'Unicode  (\\uXXXX)',
+    base64: 'Base64 '
   };
-  const dirNames = { encode: '编码', decode: '解码' };
+  const dirNames = { encode: '', decode: '' };
   const descs = {
-    url: '保留URL结构字�?(:/?=&�?，编码空格为%20，�?�合编码完整URL',
-    urlcomponent: '编码�?有特殊字符，空格变为%20，�?�合编码URL参数�?,
-    html: '�?<�?�?、\"、\' �?���?HTML 实体，防�?SS注入',
-    unicode: '将非ASCII字�?�?���?\\uXXXX 格式，常用于JSON/JS',
-    base64: '将文�?��码为Base64格式，常用于数据传输'
+    url: 'URL(:/?=&?%20URL',
+    urlcomponent: '%20URL?,
+    html: '?<??\"\' H?HTML SS',
+    unicode: 'ASCIIH?\\uXXXX JSON/JS',
+    base64: 'aBase64'
   };
   document.getElementById('infoBox').textContent =
-    `当前模式�?{typeNames[encType]} ${dirNames[direction]} �?${descs[encType]}`;
+    `?{typeNames[encType]} ${dirNames[direction]} ?${descs[encType]}`;
 }
 
 function convert() {
@@ -210,10 +210,10 @@ function convert() {
 
     output.value = result;
     const diff = result.length - input.length;
-    info.textContent = `${result.length} 字�? (${diff >= 0 ? '+' : ''}${diff})`;
+    info.textContent = `${result.length}  (${diff >= 0 ? '+' : ''}${diff})`;
   } catch (e) {
-    output.value = '�?' + e.message;
-    info.textContent = '错�?';
+    output.value = '?' + e.message;
+    info.textContent = '';
   }
 }
 
@@ -241,10 +241,10 @@ function unicodeDecode(s) {
 
 function loadSample(type) {
   const samples = {
-    url: 'https://example.com/search?q=hello world&lang=�?��&page=1',
-    chinese: '你好世界！这�?��文测�?🎉',
-    emoji: '😀🎉🔥💯🌟🌈🚀💻🎯�?,
-    html: '<scr' + 'ipt>alert("XSS")</scr' + 'ipt><b>粗体</b>&"引号"',
+    url: 'https://example.com/search?q=hello world&lang=&page=1',
+    chinese: '|k?',
+    emoji: '?,
+    html: '<scr' + 'ipt>alert("XSS")</scr' + 'ipt><b></b>&""',
     special: 'a@b#c$d%e^f&g*h(i)j=+[]{}|;:,.<>?/'
   };
   document.getElementById('inputText').value = samples[type];
@@ -255,7 +255,7 @@ function copyResult() {
   navigator.clipboard.writeText(document.getElementById('outputText').value).then(() => {
     const btn = event.target;
     const orig = btn.textContent;
-    btn.textContent = '�?已�?�?;
+    btn.textContent = '??;
     setTimeout(() => btn.textContent = orig, 1500);
   });
 }

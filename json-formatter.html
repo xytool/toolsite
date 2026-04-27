@@ -1,15 +1,15 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="免费在线JSON工具�?- JSON美化、压缩�?�校验�?�格式化、树形�?图�?��?比�?�表格�?�查�?���?��大文件�?>
-  <title>JSON 工具�?- 在线工具�?/title>
+  <meta name="description" content="JSON?- JSONѹУ顢ʽͼȡ񡢲kļ?>
+  <title>JSON ?- ߹?/title>
   <link rel="stylesheet" href="css/style.css">
   <style>
     body { font-family: 'Segoe UI', system-ui, sans-serif; }
 
-    /* Tab 导航 */
+    /* Tab  */
     .tab-bar { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
     .tab-btn {
       padding: 8px 18px; border: none; border-radius: 8px; cursor: pointer;
@@ -22,7 +22,7 @@
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* 编辑�?*/
+    /* ༭?*/
     .editor-wrap { position: relative; }
     .line-nums {
       position: absolute; left: 0; top: 0; bottom: 0; width: 44px;
@@ -34,7 +34,7 @@
     }
     textarea.with-lines { padding-left: 52px !important; border-radius: 0 8px 8px 0 !important; }
 
-    /* 高亮 */
+    /*  */
     #outputArea .k{color:#7c3aed;font-weight:700}
     #outputArea .s{color:#059669}
     #outputArea .n{color:#d97706}
@@ -42,7 +42,7 @@
     #outputArea .nu{color:#94a3b8}
     #outputArea .p{color:#64748b}
 
-    /* 树�?�?*/
+    /* ?*/
     .tree-node { padding-left: 20px; user-select: none; }
     .tree-toggle { cursor: pointer; display: inline-block; width: 16px; font-size: 12px; color: #94a3b8; }
     .tree-toggle.empty { cursor: default; }
@@ -60,18 +60,18 @@
     .diff-chg { background: #fef3c7; color: #92400e; }
     .diff-section { margin: 4px 0; padding: 2px 8px; border-radius: 4px; font-family: monospace; font-size: 13px; }
 
-    /* 表格 */
+    /*  */
     table.json-table { width: 100%; border-collapse: collapse; font-size: 13px; }
     table.json-table th { background: #f1f5f9; padding: 8px 12px; text-align: left; border: 1px solid #e2e8f0; font-weight: 700; }
     table.json-table td { padding: 8px 12px; border: 1px solid #e2e8f0; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     table.json-table tr:hover td { background: #f8fafc; }
     .json-table-wrap { max-height: 500px; overflow: auto; border: 1px solid var(--border); border-radius: 8px; }
 
-    /* 查�? */
+    /*  */
     .query-result { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; margin-top: 12px; }
     .query-error { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 16px; margin-top: 12px; color: #dc2626; }
 
-    /* 历史记录 */
+    /* ʷ¼ */
     .history-item {
       display: flex; justify-content: space-between; align-items: center;
       padding: 8px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer;
@@ -83,7 +83,7 @@
     .history-item .del:hover { color: #dc2626; }
     .history-list { max-height: 300px; overflow-y: auto; }
 
-    /* 文件上传 */
+    /* ļϴ */
     .file-hint { font-size: 12px; color: #94a3b8; margin-top: 4px; }
     .upload-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
 
@@ -96,55 +96,55 @@
 <body>
 
 <header class="navbar">
-  <a href="index.html" class="logo"><span>🧰</span> 在线工具�?/a>
+  <a href="index.html" class="logo"><span></span> ߹?/a>
   <nav>
-    <a href="index.html">首页</a>
-    <a href="image-compressor.html">图片压缩</a>
-    <a href="qr-generator.html">二维�?/a>
-    <a href="json-formatter.html" class="active">JSON工具</a>
+    <a href="index.html">ҳ</a>
+    <a href="image-compressor.html">ͼƬѹ</a>
+    <a href="qr-generator.html">ά?/a>
+    <a href="json-formatter.html" class="active">JSON</a>
   </nav>
 </header>
 
 <main class="container">
   <div class="tool-header">
-    <h1>📋 JSON 工具�?/h1>
-    <p>美化 · 压缩 · 校验 · 树形视图 · 对比 · �?���?· 查�? �?全功能本地�?理，大文件无压力�?/p>
+    <h1> JSON ?/h1>
+    <p>美化 · 压缩 · 校验 · 树形视图 · 对比 · 表格 · 查询 全功能本地处理，大文件无压力</p>
   </div>
   
   <div class="tutorial-box">
-    <h3>📖 使用教程</h3>
+    <h3> ʹý̳</h3>
     <ol>
-      <li><strong>输入JSON</strong> - 粘贴、拖拽文件或点击“打�?文件”，�?��150+种格�?/li>
-      <li><strong>选择功能</strong> - 美化(格式�?、压�?�?小化)、校�?�?查错�?、树视图(�??�?</li>
-      <li><strong>高级功能</strong> - 对比两�?JSON�?��、转表格预�?、JSONPath查�?</li>
-      <li><strong>导出结果</strong> - 复制到剪贴板或下载为文件</li>
+      <li><strong>JSON</strong> - ճקļļk150+ָ?/li>
+      <li><strong>ѡ</strong> - (ʽ?ѹ?С)У??ͼ(?</li>
+      <li><strong>߼</strong> - ԱJSONתԤJSONPath</li>
+      <li><strong></strong> - ƵΪļ</li>
     </ol>
-    <div class="tip"><strong>💡 提示�?/strong>历史记录�?��保存�?�?0条，�?��“历史�?�标签页查看和恢复�?/div>
+    <div class="tip"><strong> ʾ?/strong>ʷ¼?0ʷǩҳ鿴ͻָ?/div>
   </div>
   
-  <!-- Tab 切换 -->
+  <!-- Tab л -->
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('beautify')">�?美化</button>
-    <button class="tab-btn" onclick="switchTab('tree')">🌳 树�?�?/button>
-    <button class="tab-btn" onclick="switchTab('diff')">�?对比</button>
-    <button class="tab-btn" onclick="switchTab('table')">📊 �?���?/button>
-    <button class="tab-btn" onclick="switchTab('query')">🔍 查�?</button>
-    <button class="tab-btn" onclick="switchTab('history')">📂 历史</button>
+    <button class="tab-btn active" onclick="switchTab('beautify')">?</button>
+    <button class="tab-btn" onclick="switchTab('tree')"> ?/button>
+    <button class="tab-btn" onclick="switchTab('diff')">?Ա</button>
+    <button class="tab-btn" onclick="switchTab('table')"> \?/button>
+    <button class="tab-btn" onclick="switchTab('query')"> </button>
+    <button class="tab-btn" onclick="switchTab('history')"> ʷ</button>
   </div>
 
-  <!-- ============ 美化 Tab ============ -->
+  <!-- ============  Tab ============ -->
   <div id="tab-beautify" class="tab-panel active">
     <div class="upload-row">
       <div style="flex:1">
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
-          <button class="btn btn-primary" onclick="beautify()">�?美化</button>
-          <button class="btn btn-outline" onclick="minify()">🗜�?压缩</button>
-          <button class="btn btn-outline" onclick="sortJSON()">�?排序</button>
-          <button class="btn btn-outline" onclick="encodeURI()">🌍 URL编码</button>
-          <button class="btn btn-outline" onclick="validate()">�?校验</button>
-          <button class="btn btn-outline" onclick="clearAll()">🗑�?清空</button>
-          <button class="btn btn-outline" onclick="copyResult()">📋 复制</button>
-          <button class="btn btn-outline" onclick="sampleJSON()">📝 示例</button>
+          <button class="btn btn-primary" onclick="beautify()">?</button>
+          <button class="btn btn-outline" onclick="minify()">?ѹ</button>
+          <button class="btn btn-outline" onclick="sortJSON()">?</button>
+          <button class="btn btn-outline" onclick="encodeURI()"> URL</button>
+          <button class="btn btn-outline" onclick="validate()">?У</button>
+          <button class="btn btn-outline" onclick="clearAll()">?</button>
+          <button class="btn btn-outline" onclick="copyResult()"> </button>
+          <button class="btn btn-outline" onclick="sampleJSON()"> ʾ</button>
         </div>
       </div>
     </div>
@@ -153,23 +153,23 @@
   
 
  style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" class="grid-stack">
-      <!-- 输入 -->
+      <!--  -->
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-          <span style="font-weight:600;font-size:14px;">📥 输入 JSON</span>
+          <span style="font-weight:600;font-size:14px;">  JSON</span>
           <div style="display:flex;gap:8px;align-items:center;">
             <label style="font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px;">
               <input type="file" id="fileInput" accept=".json,.txt,.js,.ts,.jsx,.tsx,.vue,.svelte,.py,.rb,.php,.java,.kt,.swift,.dart,.c,.cpp,.cs,.go,.rs,.lua,.sh,.bash,.zsh,.fish,.ps1,.bat,.cmd,.sql,.graphql,.gql,.proto,.html,.htm,.css,.scss,.sass,.less,.styl,.xml,.xaml,.svg,.csv,.tsv,.yaml,.yml,.toml,.ini,.cfg,.conf,.properties,.env,.gitignore,.editorconfig,.prettierrc,.prettierrc.json,.prettierrc.yaml,.prettierrc.toml,.eslintrc,.eslintrc.json,.babelrc,.babelrc.json,.babel.config.json,.webpack.config.js,.vite.config.js,.rollup.config.js,.nuxt.config.js,.next.config.js,.nest-cli.json,.package.json,.tsconfig.json,.compile_commands.json,.gradle,.gradle.kts,.maven,.pom.xml,.makefile,.cmake,.dockerfile,.dockerignore,.nginx,.htaccess,.lock,.jsonl,.ndjson,.jsonc,.json5,.geojson,.topojson,.har,.reqwest,.raml,.openapi,.asyncapi,.graphqlrc,.graphql.config.json" onchange="loadFile(this)" style="display:none;">
-              <span style="background:#e2e8f0;padding:4px 10px;border-radius:6px;font-size:12px;">📂 打开文件</span>
+              <span style="background:#e2e8f0;padding:4px 10px;border-radius:6px;font-size:12px;"> ļ</span>
             </label>
-            <span style="font-size:11px;color:#94a3b8;">�?�� 150+ 种格�?/span>
+            <span style="font-size:11px;color:#94a3b8;">k 150+ ָ?/span>
             <span id="inputInfo" style="font-size:12px;color:var(--text-muted);"></span>
           </div>
         </div>
         <div class="editor-wrap">
           <div class="line-nums" id="lineNums1">1</div>
           <textarea id="inputJSON"
-            placeholder="粘贴或输�?JSON 内�?...&#10;�?��拖拽 150+ 种格式（代码/配置/数据/证书等）"
+            placeholder="ճ?JSON ...&#10;kק 150+ ָʽ///֤ȣ"
             style="width:100%;min-height:380px;padding:14px 14px 14px 52px;border:1px solid var(--border);border-radius:8px;
                    font-family:'Cascadia Code','Fira Code',Consolas,monospace;font-size:13px;line-height:1.65;
                    resize:vertical;outline:none;background:#fafbff;
@@ -179,10 +179,10 @@
         <div id="inputError" style="margin-top:8px;font-size:13px;color:#dc2626;display:none;"></div>
       </div>
 
-      <!-- 输出 -->
+      <!--  -->
       <div class="card" style="background:#f8fafc;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-          <span style="font-weight:600;font-size:14px;">📤 结果</span>
+          <span style="font-weight:600;font-size:14px;"> </span>
           <span id="outputInfo" style="font-size:12px;color:var(--text-muted);"></span>
         </div>
         <div id="outputArea"
@@ -190,36 +190,36 @@
                  font-family:'Cascadia Code','Fira Code',Consolas,monospace;font-size:13px;line-height:1.65;
                  white-space:pre-wrap;word-break:break-all;overflow:auto;
                  background:#fff;color:#334155;">
-          结果将在此显�?..
+          ڴ?..
         </div>
         <div id="outputError" style="margin-top:8px;font-size:13px;color:#dc2626;display:none;"></div>
       </div>
     </div>
 
-    <!-- 统�? -->
+    <!-- ͳ -->
     <div id="statsArea" style="margin-top:16px;display:none;">
       <div class="card" style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;">
-        <div class="stat-item"><div class="value" id="statLines">�?/div><div class="label">行数</div></div>
-        <div class="stat-item"><div class="value" id="statChars">�?/div><div class="label">字�?�?/div></div>
-        <div class="stat-item"><div class="value" id="statKeys">�?/div><div class="label">�?���?/div></div>
-        <div class="stat-item"><div class="value" id="statSize">�?/div><div class="label">原�?</div></div>
-        <div class="stat-item"><div class="value" id="statSaved">�?/div><div class="label">节省</div></div>
+        <div class="stat-item"><div class="value" id="statLines">?/div><div class="label"></div></div>
+        <div class="stat-item"><div class="value" id="statChars">?/div><div class="label">?/div></div>
+        <div class="stat-item"><div class="value" id="statKeys">?/div><div class="label">?/div></div>
+        <div class="stat-item"><div class="value" id="statSize">?/div><div class="label">ԭ</div></div>
+        <div class="stat-item"><div class="value" id="statSaved">?/div><div class="label">ʡ</div></div>
       </div>
     </div>
   </div>
 
-  <!-- ============ 树�?�?Tab ============ -->
+  <!-- ============ ?Tab ============ -->
   <div id="tab-tree" class="tab-panel">
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-      <button class="btn btn-primary" onclick="buildTree()">🌳 生成树�?�?/button>
-      <button class="btn btn-outline" onclick="expandAll()">�?全部展开</button>
-      <button class="btn btn-outline" onclick="collapseAll()">�?全部折叠</button>
-      <button class="btn btn-outline" onclick="copyTreeResult()">📋 复制</button>
+      <button class="btn btn-primary" onclick="buildTree()"> ?/button>
+      <button class="btn btn-outline" onclick="expandAll()">?ȫչ</button>
+      <button class="btn btn-outline" onclick="collapseAll()">?ȫ۵</button>
+      <button class="btn btn-outline" onclick="copyTreeResult()"> </button>
     </div>
     <div class="card">
       <div id="treeInputWrap" style="margin-bottom:12px;">
         <textarea id="treeInput"
-          placeholder="粘贴 JSON 内�?..."
+          placeholder="ճ JSON ..."
           style="width:100%;min-height:120px;padding:12px;border:1px solid var(--border);border-radius:8px;
                  font-family:monospace;font-size:13px;resize:vertical;outline:none;background:#fafbff;"
           oninput="onTreeInput()"></textarea>
@@ -227,28 +227,28 @@
       </div>
       <div id="treeStats" style="margin-bottom:12px;font-size:13px;color:var(--text-muted);"></div>
       <div id="treeView" style="font-family:monospace;font-size:14px;line-height:1.8;min-height:200px;overflow:auto;">
-        输入 JSON 后点�?生成树�?�?
+         JSON ??
       </div>
     </div>
   </div>
 
-  <!-- ============ 对比 Tab ============ -->
+  <!-- ============ Ա Tab ============ -->
   <div id="tab-diff" class="tab-panel">
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-      <button class="btn btn-primary" onclick="runDiff()">�?执�?对比</button>
-      <button class="btn btn-outline" onclick="clearDiff()">🗑�?清空</button>
+      <button class="btn btn-primary" onclick="runDiff()">?ִԱ</button>
+      <button class="btn btn-outline" onclick="clearDiff()">?</button>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" class="grid-stack">
       <div class="card">
-        <div style="font-weight:600;font-size:14px;margin-bottom:8px;">📥 JSON A（原始）</div>
-        <textarea id="diffA" placeholder="粘贴�?���?JSON..."
+        <div style="font-weight:600;font-size:14px;margin-bottom:8px;"> JSON Aԭʼ</div>
+        <textarea id="diffA" placeholder="ճ?JSON..."
           style="width:100%;min-height:280px;padding:12px;border:1px solid var(--border);border-radius:8px;
                  font-family:monospace;font-size:13px;resize:vertical;outline:none;background:#fafbff;"
           spellcheck="false"></textarea>
       </div>
       <div class="card">
-        <div style="font-weight:600;font-size:14px;margin-bottom:8px;">📥 JSON B（�?比）</div>
-        <textarea id="diffB" placeholder="粘贴�?���?JSON..."
+        <div style="font-weight:600;font-size:14px;margin-bottom:8px;"> JSON Bȣ</div>
+        <textarea id="diffB" placeholder="ճ?JSON..."
           style="width:100%;min-height:280px;padding:12px;border:1px solid var(--border);border-radius:8px;
                  font-family:monospace;font-size:13px;resize:vertical;outline:none;background:#fafbff;"
           spellcheck="false"></textarea>
@@ -256,24 +256,24 @@
     </div>
     <div id="diffSummary" style="margin-top:12px;display:none;">
       <div class="card" style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;">
-        <div class="stat-item"><div class="value" id="diffAdd" style="color:#166534">0</div><div class="label">🟢 新�?</div></div>
-        <div class="stat-item"><div class="value" id="diffDel" style="color:#991b1b">0</div><div class="label">🔴 删除</div></div>
-        <div class="stat-item"><div class="value" id="diffChg" style="color:#92400e">0</div><div class="label">🟡 变更</div></div>
-        <div class="stat-item"><div class="value" id="diffSame" style="color:#334155">0</div><div class="label">�?相同</div></div>
+        <div class="stat-item"><div class="value" id="diffAdd" style="color:#166534">0</div><div class="label"> </div></div>
+        <div class="stat-item"><div class="value" id="diffDel" style="color:#991b1b">0</div><div class="label"> ɾ</div></div>
+        <div class="stat-item"><div class="value" id="diffChg" style="color:#92400e">0</div><div class="label"> </div></div>
+        <div class="stat-item"><div class="value" id="diffSame" style="color:#334155">0</div><div class="label">?ͬ</div></div>
       </div>
     </div>
     <div id="diffResult" style="margin-top:12px;"></div>
   </div>
 
-  <!-- ============ �?���?Tab ============ -->
+  <!-- ============ \?Tab ============ -->
   <div id="tab-table" class="tab-panel">
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-      <button class="btn btn-primary" onclick="jsonToTable()">📊 生成表格</button>
-      <button class="btn btn-outline" onclick="document.getElementById('tableInput').value='';document.getElementById('tableResult').innerHTML='请先输入 JSON 数组'">🗑�?清空</button>
+      <button class="btn btn-primary" onclick="jsonToTable()"> ɱ</button>
+      <button class="btn btn-outline" onclick="document.getElementById('tableInput').value='';document.getElementById('tableResult').innerHTML=' JSON '">?</button>
     </div>
     <div class="card" style="margin-bottom:16px;">
-      <div style="font-weight:600;font-size:14px;margin-bottom:8px;">📥 JSON 输入（数组格式，�?[&#123;&#125;, &#123;&#125;]�?/div>
-      <textarea id="tableInput" placeholder='示例�?#10;[&#10;  &#123;"name":"张三","age":28,"city":"北京"&#125;,&#10;  &#123;"name":"李四","age":35,"city":"上海"&#125;&#10;]'
+      <div style="font-weight:600;font-size:14px;margin-bottom:8px;"> JSON 루ʽ?[&#123;&#125;, &#123;&#125;]?/div>
+      <textarea id="tableInput" placeholder='ʾ?#10;[&#10;  &#123;"name":"","age":28,"city":""&#125;,&#10;  &#123;"name":"","age":35,"city":"Ϻ"&#125;&#10;]'
         style="width:100%;min-height:160px;padding:12px;border:1px solid var(--border);border-radius:8px;
                font-family:monospace;font-size:13px;resize:vertical;outline:none;background:#fafbff;"
         oninput="onTableInput()"></textarea>
@@ -282,45 +282,45 @@
   <div class="card" style="border-left:4px solid #10b981;">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
       <span style="font-size:20px;">??</span>
-      <span style="font-size:15px;font-weight:700;color:#10b981;">��ӭ�ύʹ�÷���</span>
+      <span style="font-size:15px;font-weight:700;color:#10b981;"></span>
     </div>
-    <p style="font-size:14px;color:#64748b;margin:0 0 10px 0;">�����?���?bug���й��ܽ��飬��ʹ�����������⣬��ӭ���·����ۿ��ύ��</p>
-    <p style="font-size:13px;color:#94a3b8;margin:0;">?? �������ҳ��ײ�����д���۱������ύ����л��ķ�����?/p>
+    <p style="font-size:14px;color:#64748b;margin:0 0 10px 0;">?bug</p>
+    <p style="font-size:13px;color:#94a3b8;margin:0;">?? է?/p>
   </div>
 
   <div class="card"><div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <span style="font-weight:600;font-size:14px;">📊 表格结果</span>
-        <button class="btn btn-outline" style="font-size:13px;" onclick="copyTable()">📋 复制表格</button>
+        <span style="font-weight:600;font-size:14px;"> </span>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="copyTable()"> Ʊ</button>
       </div>
       <div id="tableResult" style="font-family:monospace;font-size:13px;">
-        输入 JSON 数组后点�?生成表格"
+         JSON ?ɱ"
       </div>
     </div>
   </div>
 
-  <!-- ============ 查�? Tab ============ -->
+  <!-- ============  Tab ============ -->
   <div id="tab-query" class="tab-panel">
     <div class="card" style="margin-bottom:16px;">
-      <div style="font-weight:600;font-size:14px;margin-bottom:8px;">📥 JSON 数据</div>
+      <div style="font-weight:600;font-size:14px;margin-bottom:8px;"> JSON </div>
       <textarea id="queryInput"
-        placeholder="粘贴要查询的 JSON 数据...&#10;�?��拖拽 150+ 种文件格�?
+        placeholder="ճҪѯ JSON ...&#10;kק 150+ ļ?
         style="width:100%;min-height:200px;padding:12px;border:1px solid var(--border);border-radius:8px;
                font-family:monospace;font-size:13px;resize:vertical;outline:none;background:#fafbff;"
         oninput="onQueryInput()"></textarea>
       <div id="queryInputError" style="margin-top:6px;font-size:13px;color:#dc2626;display:none;"></div>
     </div>
     <div class="card" style="margin-bottom:16px;">
-      <div style="font-weight:600;font-size:14px;margin-bottom:8px;">🔍 JSONPath 查�?</div>
+      <div style="font-weight:600;font-size:14px;margin-bottom:8px;"> JSONPath </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;">
         <input type="text" id="queryPath"
-          placeholder="输入�?��，�? data[0].name �?$[0].title"
+          placeholder="S data[0].name ?$[0].title"
           style="flex:1;min-width:200px;padding:10px 14px;border:1px solid var(--border);border-radius:8px;
                  font-family:monospace;font-size:14px;outline:none;">
-        <button class="btn btn-primary" onclick="runQuery()">🔍 查�?</button>
+        <button class="btn btn-primary" onclick="runQuery()"> </button>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:6px;">
-        <span style="font-size:12px;color:var(--text-muted);">常用�?���?/span>
+        <span style="font-size:12px;color:var(--text-muted);">S?/span>
         <button style="font-size:12px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:3px 10px;cursor:pointer;" onclick="setQuery('$.')">$.</button>
         <button style="font-size:12px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:3px 10px;cursor:pointer;" onclick="setQuery('$.length')">$.length</button>
         <button style="font-size:12px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:3px 10px;cursor:pointer;" onclick="setQuery('$.keys()')">$.keys()</button>
@@ -331,34 +331,34 @@
   <div class="card" style="border-left:4px solid #10b981;">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
       <span style="font-size:20px;">??</span>
-      <span style="font-size:15px;font-weight:700;color:#10b981;">��ӭ�ύʹ�÷���</span>
+      <span style="font-size:15px;font-weight:700;color:#10b981;"></span>
     </div>
-    <p style="font-size:14px;color:#64748b;margin:0 0 10px 0;">�����?���?bug���й��ܽ��飬��ʹ�����������⣬��ӭ���·����ۿ��ύ��</p>
-    <p style="font-size:13px;color:#94a3b8;margin:0;">?? �������ҳ��ײ�����д���۱������ύ����л��ķ�����?/p>
+    <p style="font-size:14px;color:#64748b;margin:0 0 10px 0;">?bug</p>
+    <p style="font-size:13px;color:#94a3b8;margin:0;">?? է?/p>
   </div>
 
   <div class="card"><div class="card">
-      <div style="font-weight:600;font-size:14px;margin-bottom:8px;">📖 JSONPath �?��参�?/div>
+      <div style="font-weight:600;font-size:14px;margin-bottom:8px;"> JSONPath ڿ?/div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;font-size:13px;">
-        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$.name</code> �?根�?象的 name �?/div>
-        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$.data[0]</code> �?data 数组�?���?���?/div>
-        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$.items[*].name</code> �?�?�?items �?name</div>
-        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$..key</code> �?递归查找�?�?key</div>
-        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$.data[?(@.age>18)]</code> �?过滤 age>18</div>
-        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$.length</code> �?数组长度</div>
+        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$.name</code> ? name ?/div>
+        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$.data[0]</code> ?data ́B?/div>
+        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$.items[*].name</code> ??items ?name</div>
+        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$..key</code> ?ݹ?key</div>
+        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$.data[?(@.age>18)]</code> ? age>18</div>
+        <div style="background:#f8fafc;padding:8px 12px;border-radius:6px;"><code style="color:#7c3aed">$.length</code> ?鳤</div>
       </div>
     </div>
   </div>
 
-  <!-- ============ 历史记录 Tab ============ -->
+  <!-- ============ ʷ¼ Tab ============ -->
   <div id="tab-history" class="tab-panel">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-      <span style="font-size:14px;color:var(--text-muted);">�?�?20 条�?录（存储在本地，不会上传�?/span>
-      <button class="btn btn-outline" style="font-size:13px;" onclick="clearHistory()">🗑�?清空历史</button>
+      <span style="font-size:14px;color:var(--text-muted);">?20 ¼洢ڱأϴ?/span>
+      <button class="btn btn-outline" style="font-size:13px;" onclick="clearHistory()">?ʷ</button>
     </div>
     <div class="card">
       <div class="history-list" id="historyList">
-        <div style="text-align:center;color:#94a3b8;padding:40px;">暂无历史记录</div>
+        <div style="text-align:center;color:#94a3b8;padding:40px;">ʷ¼</div>
       </div>
     </div>
   </div>
@@ -366,11 +366,11 @@
 </main>
 
 <footer class="footer">
-  <p>© 2026 在线工具�?· �?有文件仅在浏览器�?��处理，不会上传到服务�?/p>
+  <p>© 2026 在线工具箱 · 所有文件仅在浏览器本地处理，不会上传到服务器</p>
 </footer>
 
 <script>
-// ==================== 核心功能 ====================
+// ==================== Ĺ ====================
 
 function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -401,7 +401,7 @@ function parseJSON(text) {
     if (m) {
       const pos = parseInt(m[1]);
       const lines = text.substring(0, pos).split('\n');
-      err = `�?${lines.length} 行�? ${lines[lines.length-1].length+1} 列：${e.message}`;
+      err = `?${lines.length}  ${lines[lines.length-1].length+1} У${e.message}`;
     }
     return { ok: false, error: err };
   }
@@ -410,16 +410,16 @@ function parseJSON(text) {
 function onInputChange() {
   const text = document.getElementById('inputJSON').value;
   updateLineNums('lineNums1', text);
-  document.getElementById('inputInfo').textContent = text.length + ' 字�?';
+  document.getElementById('inputInfo').textContent = text.length + ' ';
   if (!text.trim()) {
     document.getElementById('inputError').style.display = 'none';
-    document.getElementById('outputArea').innerHTML = '结果将在此显�?..';
+    document.getElementById('outputArea').innerHTML = 'ڴ?..';
     // statsArea always visible
     return;
   }
   const r = parseJSON(text);
   if (!r.ok) {
-    document.getElementById('inputError').textContent = '⚠️ ' + r.error;
+    document.getElementById('inputError').textContent = ' ' + r.error;
     document.getElementById('inputError').style.display = 'block';
   } else {
     document.getElementById('inputError').style.display = 'none';
@@ -433,42 +433,42 @@ function updateLineNums(id, text) {
 
 function beautify() {
   const text = document.getElementById('inputJSON').value.trim();
-  if (!text) return alert('请先输入 JSON');
+  if (!text) return alert(' JSON');
   const r = parseJSON(text);
-  if (!r.ok) { showOutputError('�?' + r.error); return; }
+  if (!r.ok) { showOutputError('?' + r.error); return; }
   const fmt = JSON.stringify(r.data, null, 2);
   document.getElementById('outputArea').innerHTML = highlight(fmt);
-  document.getElementById('outputInfo').textContent = fmt.length + ' 字�?';
+  document.getElementById('outputInfo').textContent = fmt.length + ' ';
   document.getElementById('outputError').style.display = 'none';
   showStats(text, fmt);
-  saveHistory(text, '美化');
+  saveHistory(text, '');
 }
 
 function minify() {
   const text = document.getElementById('inputJSON').value.trim();
-  if (!text) return alert('请先输入 JSON');
+  if (!text) return alert(' JSON');
   const r = parseJSON(text);
-  if (!r.ok) { showOutputError('�?' + r.error); return; }
+  if (!r.ok) { showOutputError('?' + r.error); return; }
   const min = JSON.stringify(r.data);
   document.getElementById('outputArea').innerHTML = min;
   document.getElementById('outputArea').style.color = '#334155';
-  document.getElementById('outputInfo').textContent = min.length + ' 字�?（已压缩�?;
+  document.getElementById('outputInfo').textContent = min.length + ' ֣ѹ?;
   document.getElementById('outputError').style.display = 'none';
   showStats(text, min);
-  saveHistory(text, '压缩');
+  saveHistory(text, 'ѹ');
 }
 
 function sortJSON() {
   const text = document.getElementById('inputJSON').value.trim();
-  if (!text) return alert('请先输入 JSON');
+  if (!text) return alert(' JSON');
   const r = parseJSON(text);
-  if (!r.ok) { showOutputError('�?' + r.error); return; }
+  if (!r.ok) { showOutputError('?' + r.error); return; }
   const sorted = JSON.stringify(sortObj(r.data), null, 2);
   document.getElementById('outputArea').innerHTML = highlight(sorted);
-  document.getElementById('outputInfo').textContent = '已排�?;
+  document.getElementById('outputInfo').textContent = '?;
   document.getElementById('outputError').style.display = 'none';
   showStats(text, sorted);
-  saveHistory(text, '排序');
+  saveHistory(text, '');
 }
 
 function sortObj(v) {
@@ -481,25 +481,25 @@ function sortObj(v) {
 
 function encodeURI() {
   const text = document.getElementById('inputJSON').value.trim();
-  if (!text) return alert('请先输入 JSON');
+  if (!text) return alert(' JSON');
   const r = parseJSON(text);
-  if (!r.ok) { showOutputError('�?' + r.error); return; }
+  if (!r.ok) { showOutputError('?' + r.error); return; }
   document.getElementById('outputArea').innerText = encodeURIComponent(text);
-  document.getElementById('outputInfo').textContent = 'URL 编码';
+  document.getElementById('outputInfo').textContent = 'URL ';
   document.getElementById('outputError').style.display = 'none';
-  saveHistory(text, 'URL编码');
+  saveHistory(text, 'URL');
 }
 
 function validate() {
   const text = document.getElementById('inputJSON').value.trim();
-  if (!text) return alert('请先输入 JSON');
+  if (!text) return alert(' JSON');
   const r = parseJSON(text);
   if (r.ok) {
-    document.getElementById('outputArea').innerHTML = '<span style="color:#16a34a;font-size:16px;">�?JSON 格式正确�?/span>';
+    document.getElementById('outputArea').innerHTML = '<span style="color:#16a34a;font-size:16px;">?JSON ʽȷ?/span>';
     document.getElementById('outputError').style.display = 'none';
-    document.getElementById('outputInfo').textContent = '校验通过';
+    document.getElementById('outputInfo').textContent = 'Уͨ';
   } else {
-    showOutputError('�?' + r.error);
+    showOutputError('?' + r.error);
   }
 }
 
@@ -525,7 +525,7 @@ function showStats(original, result) {
 
 function clearAll() {
   document.getElementById('inputJSON').value = '';
-  document.getElementById('outputArea').innerHTML = '结果将在此显�?..';
+  document.getElementById('outputArea').innerHTML = 'ڴ?..';
   document.getElementById('outputArea').style.color = '#334155';
   document.getElementById('inputError').style.display = 'none';
   document.getElementById('outputError').style.display = 'none';
@@ -537,8 +537,8 @@ function clearAll() {
 
 function copyResult() {
   const t = document.getElementById('outputArea').innerText;
-  if (!t||t==='结果将在此显�?..') return alert('没有�??制的内�?');
-  navigator.clipboard.writeText(t).then(() => flashBtn('复制结果'));
+  if (!t||t==='ڴ?..') return alert('ûƵ');
+  navigator.clipboard.writeText(t).then(() => flashBtn('ƽ'));
 }
 
 function flashBtn(name) {
@@ -546,18 +546,18 @@ function flashBtn(name) {
   const btn = btns.find(b=>b.textContent.includes(name));
   if (!btn) return;
   const orig = btn.textContent;
-  btn.textContent = '�?已�?�?;
+  btn.textContent = '??;
   setTimeout(()=>btn.textContent=orig,1500);
 }
 
 function sampleJSON() {
   const sample = {
-    "site":"在线工具�?,"version":"2.0","tools":[
-      {"name":"图片压缩","type":"media","rating":4.8,"uses":12800},
-      {"name":"二维码生�?,"type":"utility","rating":4.7,"uses":9400},
-      {"name":"JSON工具�?,"type":"dev","rating":4.9,"uses":15200}
+    "site":"߹?,"version":"2.0","tools":[
+      {"name":"ͼƬѹ","type":"media","rating":4.8,"uses":12800},
+      {"name":"ά?,"type":"utility","rating":4.7,"uses":9400},
+      {"name":"JSON?,"type":"dev","rating":4.9,"uses":15200}
     ],
-    "features":["完全免费","无需注册","�?��处理","隐�?安全"],
+    "features":["ȫ","ע","N","ȫ"],
     "stats":{"dailyUsers":3200,"monthlyIncome":1250,"rating":4.8}
   };
   document.getElementById('inputJSON').value = JSON.stringify(sample, null, 2);
@@ -572,38 +572,38 @@ function loadFile(input) {
   reader.onload = e => {
     document.getElementById('inputJSON').value = e.target.result;
     onInputChange();
-    document.getElementById('inputInfo').textContent = '已加�? ' + file.name;
+    document.getElementById('inputInfo').textContent = 'Ѽ? ' + file.name;
   };
-  reader.onerror = () => alert('文件读取失败');
+  reader.onerror = () => alert('ļȡʧ');
   reader.readAsText(file);
 }
 
-// ==================== 树�?�?====================
+// ==================== ?====================
 let treeData = null;
 let treeState = {};
 
 function onTreeInput() {
   const text = document.getElementById('treeInput').value;
   const errEl = document.getElementById('treeInputError');
-  if (!text.trim()) { errEl.style.display='none'; document.getElementById('treeView').innerHTML='输入 JSON 后点�?生成树�?�?'; return; }
+  if (!text.trim()) { errEl.style.display='none'; document.getElementById('treeView').innerHTML=' JSON ??'; return; }
   const r = parseJSON(text);
-  if (!r.ok) { errEl.textContent='⚠️ '+r.error; errEl.style.display='block'; return; }
+  if (!r.ok) { errEl.textContent=' '+r.error; errEl.style.display='block'; return; }
   errEl.style.display='none';
 }
 
 function buildTree() {
   const text = document.getElementById('treeInput').value.trim();
-  if (!text) return alert('请先输入 JSON');
+  if (!text) return alert(' JSON');
   const r = parseJSON(text);
-  if (!r.ok) { document.getElementById('treeInputError').textContent='⚠️ '+r.error; document.getElementById('treeInputError').style.display='block'; return; }
+  if (!r.ok) { document.getElementById('treeInputError').textContent=' '+r.error; document.getElementById('treeInputError').style.display='block'; return; }
   treeData = r.data;
   treeState = {};
   document.getElementById('treeInputError').style.display='none';
   const html = renderNode('root', treeData, true);
   document.getElementById('treeView').innerHTML = html;
   const nodeCount = countNodes(treeData);
-  document.getElementById('treeStats').textContent = `�?${nodeCount.nodes} �?��点，${nodeCount.keys} �?��，深�?${nodeCount.depth}`;
-  saveHistory(text, '树�?�?);
+  document.getElementById('treeStats').textContent = `?${nodeCount.nodes} ϵ㣬${nodeCount.keys} ң?${nodeCount.depth}`;
+  saveHistory(text, '?);
 }
 
 function renderNode(key, val, isRoot) {
@@ -614,8 +614,8 @@ function renderNode(key, val, isRoot) {
   let toggle = '', preview = '', children = '';
   if (isObj) {
     const count = Array.isArray(val) ? val.length : Object.keys(val).length;
-    preview = `<span class="tree-preview">[${count} 项]</span>`;
-    toggle = `<span class="tree-toggle" onclick="toggleNode('${id}',this)">�?/span>`;
+    preview = `<span class="tree-preview">[${count} ]</span>`;
+    toggle = `<span class="tree-toggle" onclick="toggleNode('${id}',this)">?/span>`;
     children = `<div class="tree-node" id="node-${id}" style="display:none;">`;
     if (Array.isArray(val)) {
       val.forEach((item, i) => { children += renderNode(i, item, false); });
@@ -642,22 +642,22 @@ function toggleNode(id, el) {
   if (!node) return;
   if (node.style.display === 'none') {
     node.style.display = 'block';
-    el.textContent = '�?;
+    el.textContent = '?;
   } else {
     node.style.display = 'none';
-    el.textContent = '�?;
+    el.textContent = '?;
   }
 }
 
 function expandAll() {
   if (!treeData) return;
   document.querySelectorAll('.tree-node').forEach(n => n.style.display = 'block');
-  document.querySelectorAll('.tree-toggle:not(.empty)').forEach(t => t.textContent = '�?);
+  document.querySelectorAll('.tree-toggle:not(.empty)').forEach(t => t.textContent = '?);
 }
 
 function collapseAll() {
   document.querySelectorAll('.tree-node').forEach(n => n.style.display = 'none');
-  document.querySelectorAll('.tree-toggle:not(.empty)').forEach(t => t.textContent = '�?);
+  document.querySelectorAll('.tree-toggle:not(.empty)').forEach(t => t.textContent = '?);
 }
 
 function countNodes(val, d=0) {
@@ -680,18 +680,18 @@ function escHtml(s) {
 
 function copyTreeResult() {
   const text = document.getElementById('treeView').innerText;
-  if (!text||text==='输入 JSON 后点�?生成树�?�?') return alert('没有�??制的内�?');
-  navigator.clipboard.writeText(text).then(()=>flashBtn('复制'));
+  if (!text||text===' JSON ??') return alert('ûƵ');
+  navigator.clipboard.writeText(text).then(()=>flashBtn(''));
 }
 
-// ==================== JSON 对比 ====================
+// ==================== JSON Ա ====================
 function runDiff() {
   const a = document.getElementById('diffA').value.trim();
   const b = document.getElementById('diffB').value.trim();
-  if (!a||!b) return alert('请输入两�?JSON');
+  if (!a||!b) return alert('?JSON');
   const ra = parseJSON(a), rb = parseJSON(b);
-  if (!ra.ok) return alert('JSON A 格式错�?�?+ra.error);
-  if (!rb.ok) return alert('JSON B 格式错�?�?+rb.error);
+  if (!ra.ok) return alert('JSON A ʽ?+ra.error);
+  if (!rb.ok) return alert('JSON B ʽ?+rb.error);
 
   const result = { added: [], removed: [], changed: [], same: [] };
   diffRec('', ra.data, rb.data, result);
@@ -708,21 +708,21 @@ function runDiff() {
 
   let html = '';
   if (result.added.length) {
-    html += `<div style="margin-top:12px;font-weight:600;font-size:14px;color:#166534;">🟢 新�?（仅�?B �?���?��</div><div class="card">`;
+    html += `<div style="margin-top:12px;font-weight:600;font-size:14px;color:#166534;"> £?B Ј[</div><div class="card">`;
     result.added.forEach(([path, val]) => { html += `<div class="diff-section diff-add"><span style="opacity:.6">${escHtml(path)}</span> ${escHtml(truncate(JSON.stringify(val),100))}</div>`; });
     html += '</div>';
   }
   if (result.removed.length) {
-    html += `<div style="margin-top:12px;font-weight:600;font-size:14px;color:#991b1b;">🔴 删除（仅�?A �?���?��</div><div class="card">`;
+    html += `<div style="margin-top:12px;font-weight:600;font-size:14px;color:#991b1b;"> ɾ?A Ј[</div><div class="card">`;
     result.removed.forEach(([path, val]) => { html += `<div class="diff-section diff-del"><span style="opacity:.6">${escHtml(path)}</span> ${escHtml(truncate(JSON.stringify(val),100))}</div>`; });
     html += '</div>';
   }
   if (result.changed.length) {
-    html += `<div style="margin-top:12px;font-weight:600;font-size:14px;color:#92400e;">🟡 变更（�?�不同）</div><div class="card">`;
-    result.changed.forEach(([path, aVal, bVal]) => { html += `<div class="diff-section diff-chg"><span style="opacity:.6">${escHtml(path)}</span> <span style="color:#991b1b">${escHtml(truncate(JSON.stringify(aVal),60))}</span> �?<span style="color:#166534">${escHtml(truncate(JSON.stringify(bVal),60))}</span></div>`; });
+    html += `<div style="margin-top:12px;font-weight:600;font-size:14px;color:#92400e;"> ֵͬ</div><div class="card">`;
+    result.changed.forEach(([path, aVal, bVal]) => { html += `<div class="diff-section diff-chg"><span style="opacity:.6">${escHtml(path)}</span> <span style="color:#991b1b">${escHtml(truncate(JSON.stringify(aVal),60))}</span> ?<span style="color:#166534">${escHtml(truncate(JSON.stringify(bVal),60))}</span></div>`; });
     html += '</div>';
   }
-  if (!html) html = '<div class="card" style="text-align:center;color:#16a34a;">�?两个 JSON 完全相同�?/div>';
+  if (!html) html = '<div class="card" style="text-align:center;color:#16a34a;">? JSON ȫͬ?/div>';
   document.getElementById('diffResult').innerHTML = html;
 }
 
@@ -755,7 +755,7 @@ function diffRec(path, a, b, r) {
 }
 
 function truncate(s, max) {
-  return s.length > max ? s.substring(0, max) + '�? : s;
+  return s.length > max ? s.substring(0, max) + '? : s;
 }
 
 function clearDiff() {
@@ -765,36 +765,36 @@ function clearDiff() {
   document.getElementById('diffResult').innerHTML = '';
 }
 
-// ==================== �?���?====================
+// ==================== \?====================
 function onTableInput() {
   const text = document.getElementById('tableInput').value;
   const errEl = document.getElementById('tableInputError');
   if (!text.trim()) { errEl.style.display='none'; return; }
   const r = parseJSON(text);
-  if (!r.ok) { errEl.textContent='⚠️ '+r.error; errEl.style.display='block'; return; }
+  if (!r.ok) { errEl.textContent=' '+r.error; errEl.style.display='block'; return; }
   errEl.style.display='none';
 }
 
 function jsonToTable() {
   const text = document.getElementById('tableInput').value.trim();
-  if (!text) return alert('请输�?JSON 数组');
+  if (!text) return alert('?JSON ');
   const r = parseJSON(text);
-  if (!r.ok) { document.getElementById('tableInputError').textContent='⚠️ '+r.error; document.getElementById('tableInputError').style.display='block'; return; }
+  if (!r.ok) { document.getElementById('tableInputError').textContent=' '+r.error; document.getElementById('tableInputError').style.display='block'; return; }
   const data = r.data;
   document.getElementById('tableInputError').style.display='none';
 
   if (!Array.isArray(data)) {
-    // 如果不是数组，尝试提取数组字�?    const arrKey = Object.keys(data).find(k => Array.isArray(data[k]));
+    // 飬ȡ?    const arrKey = Object.keys(data).find(k => Array.isArray(data[k]));
     if (arrKey) {
       return jsonToTable_data(data[arrKey]);
     }
-    return alert('请输�?JSON 数组格式，例�?[{}, {}, ...]');
+    return alert('?JSON ʽ?[{}, {}, ...]');
   }
   jsonToTable_data(data);
 }
 
 function jsonToTable_data(data) {
-  if (data.length === 0) return document.getElementById('tableResult').innerHTML = '<div style="color:#94a3b8;text-align:center;padding:20px;">数组为空</div>';
+  if (data.length === 0) return document.getElementById('tableResult').innerHTML = '<div style="color:#94a3b8;text-align:center;padding:20px;">Ϊ</div>';
   const cols = [...new Set(data.flatMap(d => Object.keys(d||{})))];
   let html = `<div class="json-table-wrap"><table class="json-table"><thead><tr>`;
   cols.forEach(c => { html += `<th>${escHtml(c)}</th>`; });
@@ -808,9 +808,9 @@ function jsonToTable_data(data) {
     html += '</tr>';
   });
   html += '</tbody></table></div>';
-  html += `<p style="margin-top:12px;font-size:13px;color:var(--text-muted);">�?${data.length} 行，${cols.length} �?/p>`;
+  html += `<p style="margin-top:12px;font-size:13px;color:var(--text-muted);">?${data.length} У${cols.length} ?/p>`;
   document.getElementById('tableResult').innerHTML = html;
-  saveHistory(JSON.stringify(data), '�?���?);
+  saveHistory(JSON.stringify(data), '\?);
 }
 
 function valToHtml(v) {
@@ -822,17 +822,17 @@ function valToHtml(v) {
 function copyTable() {
   const el = document.getElementById('tableResult');
   const text = el.innerText;
-  if (!text || text==='输入 JSON 数组后点�?生成表格"') return alert('没有�??制的内�?');
-  navigator.clipboard.writeText(text).then(()=>flashBtn('复制表格'));
+  if (!text || text===' JSON ?ɱ"') return alert('ûƵ');
+  navigator.clipboard.writeText(text).then(()=>flashBtn('Ʊ'));
 }
 
-// ==================== 查�? ====================
+// ====================  ====================
 function onQueryInput() {
   const text = document.getElementById('queryInput').value;
   const errEl = document.getElementById('queryInputError');
   if (!text.trim()) { errEl.style.display='none'; return; }
   const r = parseJSON(text);
-  if (!r.ok) { errEl.textContent='⚠️ '+r.error; errEl.style.display='block'; return; }
+  if (!r.ok) { errEl.textContent=' '+r.error; errEl.style.display='block'; return; }
   errEl.style.display='none';
 }
 
@@ -844,27 +844,27 @@ function setQuery(path) {
 function runQuery() {
   const text = document.getElementById('queryInput').value.trim();
   const path = document.getElementById('queryPath').value.trim();
-  if (!text) return alert('请先输入 JSON 数据');
-  if (!path) return alert('请输入查询路�?);
+  if (!text) return alert(' JSON ');
+  if (!path) return alert('ѯ·?);
 
   const r = parseJSON(text);
-  if (!r.ok) { document.getElementById('queryInputError').textContent='⚠️ '+r.error; document.getElementById('queryInputError').style.display='block'; return; }
+  if (!r.ok) { document.getElementById('queryInputError').textContent=' '+r.error; document.getElementById('queryInputError').style.display='block'; return; }
   document.getElementById('queryInputError').style.display='none';
 
   const result = jsonPathQuery(r.data, path);
   const el = document.getElementById('queryResult');
   if (result.found) {
-    el.innerHTML = `<div class="query-result"><b style="color:#166534">�?找到 ${result.count} �?���?/b><pre style="margin-top:8px;background:#fff;padding:12px;border-radius:6px;overflow:auto;max-height:400px;font-size:13px;line-height:1.6;">${highlight(JSON.stringify(result.values,null,2))}</pre></div>`;
+    el.innerHTML = `<div class="query-result"><b style="color:#166534">?ҵ ${result.count} ?/b><pre style="margin-top:8px;background:#fff;padding:12px;border-radius:6px;overflow:auto;max-height:400px;font-size:13px;line-height:1.6;">${highlight(JSON.stringify(result.values,null,2))}</pre></div>`;
   } else {
-    el.innerHTML = `<div class="query-error">�?�?��到匹配项�?{escHtml(result.error)}</div>`;
+    el.innerHTML = `<div class="query-error">?еƥ?{escHtml(result.error)}</div>`;
   }
 }
 
-// �?化的 JSONPath 实现
+// 򻯵 JSONPath ʵ
 function jsonPathQuery(obj, path) {
   try {
     let current = obj;
-    // 移除�?头的 $ �?$.
+    // Ƴͷ $ ?$.
     const cleanPath = path.replace(/^\$\.?/, '');
     if (!cleanPath) return { found: true, count: 1, values: [obj] };
 
@@ -872,10 +872,10 @@ function jsonPathQuery(obj, path) {
     for (const part of parts) {
       if (part.type === 'root') { current = obj; continue; }
       if (part.type === 'key') {
-        if (typeof current !== 'object' || current === null) return { found: false, error: `"${part.key}" 在非对象类型上` };
+        if (typeof current !== 'object' || current === null) return { found: false, error: `"${part.key}" ڷǶ` };
         current = current[part.key];
       } else if (part.type === 'index') {
-        if (!Array.isArray(current)) return { found: false, error: `索引 ${part.index} 用于非数组` };
+        if (!Array.isArray(current)) return { found: false, error: ` ${part.index} ڷ` };
         if (part.index < 0) current = current[current.length + part.index];
         else current = current[part.index];
       } else if (part.type === 'wildcard') {
@@ -891,7 +891,7 @@ function jsonPathQuery(obj, path) {
           return { found: true, count: results.length, values: results };
         }
       } else if (part.type === 'recursive') {
-        // 递归下降 $..
+        // ݹ½ $..
         const results = [];
         collectRecursive(current, part.key, results);
         return { found: true, count: results.length, values: results };
@@ -916,7 +916,7 @@ function parsePath(str) {
     else if (match[3] !== undefined) parts.push({ type: 'index', index: parseInt(match[3]) });
     else if (match[0] === '[*]') parts.push({ type: 'wildcard' });
   }
-  // 如果没有匹配�?parts，尝试整�?��符串作为 key
+  // ûƥ?partsзΪ key
   if (parts.length === 0 && str) {
     parts.push({ type: 'key', key: str });
   }
@@ -943,7 +943,7 @@ function collectRecursive(obj, key, results) {
   }
 }
 
-// ==================== 历史记录 ====================
+// ==================== ʷ¼ ====================
 const HIST_KEY = 'json_tool_history';
 
 function getHistory() {
@@ -961,14 +961,14 @@ function saveHistory(text, action) {
 function renderHistory() {
   const h = getHistory();
   const el = document.getElementById('historyList');
-  if (!h.length) { el.innerHTML = '<div style="text-align:center;color:#94a3b8;padding:40px;">暂无历史记录</div>'; return; }
+  if (!h.length) { el.innerHTML = '<div style="text-align:center;color:#94a3b8;padding:40px;">ʷ¼</div>'; return; }
   el.innerHTML = h.map((item, i) => `
     <div class="history-item" onclick="loadHistory(${i})">
       <div>
-        <div class="name">${escHtml(item.text.substring(0,50))}${item.text.length>50?'�?:''}</div>
-        <div class="meta">${item.action} · ${item.time}</div>
+        <div class="name">${escHtml(item.text.substring(0,50))}${item.text.length>50?'?:''}</div>
+        <div class="meta">${item.action}  ${item.time}</div>
       </div>
-      <span class="del" onclick="event.stopPropagation();delHistory(${i})">×</span>
+      <span class="del" onclick="event.stopPropagation();delHistory(${i})"></span>
     </div>
   `).join('');
 }
@@ -989,12 +989,12 @@ function delHistory(i) {
 }
 
 function clearHistory() {
-  if (!confirm('�?��清空�?有历史�?录？')) return;
+  if (!confirm('ȷʷ¼')) return;
   localStorage.removeItem(HIST_KEY);
   renderHistory();
 }
 
-// ==================== 拖拽文件�?�� ====================
+// ==================== קļk ====================
 const dropZone = document.getElementById('inputJSON');
 
 dropZone.addEventListener('dragover', (e) => {
@@ -1020,28 +1020,28 @@ dropZone.addEventListener('drop', (e) => {
   const file = files[0];
   const ext = file.name.split('.').pop().toLowerCase();
   const supportedExts = [
-    // 代码
+    // 
     'js','mjs','cjs','ts','tsx','jsx','mts','cts','vue','svelte',
     'py','pyw','rb','php','java','kt','swift','dart','scala','groovy',
     'c','cpp','h','hpp','cs','go','rs',
     'lua','r','R','rmd','jl','pl','pm','sh','bash','zsh','fish','ps1','bat','cmd',
     'ex','exs','erl','hrl','clj','cljs','fs','fsx','ml','hs','nim','v','vh','vhd','sql',
     'graphql','gql','proto',
-    // 前�?
+    // ǰ
     'html','htm','css','scss','sass','less',
     'svg','wasm','wat',
-    // 数据/配置
+    // /
     'json','jsonl','ndjson','geojson','json5','yaml','yml','toml','ini','cfg','conf',
     'xml','xsd','plist','properties','env','env.local','gitignore','gitattributes',
     'editorconfig','prettierrc','eslintrc','babelrc','webpack','nginx',
-    // 文档/文本
+    // ĵ/ı
     'txt','md','rst','adoc','tex','latex','log','err',
-    // 其他
+    // 
     'csv','tsv','diff','patch','pem','crt','key','pub','lock','build','gradle','kts','dockerfile','makefile',
   ];
   
   if (!supportedExts.includes(ext)) {
-    alert('不支持的文件格式: .' + ext + '\n�?��: ' + supportedExts.join(', '));
+    alert('ֵ֧ļʽ: .' + ext + '\nk: ' + supportedExts.join(', '));
     return;
   }
   
@@ -1049,13 +1049,13 @@ dropZone.addEventListener('drop', (e) => {
   reader.onload = ev => {
     document.getElementById('inputJSON').value = ev.target.result;
     onInputChange();
-    document.getElementById('inputInfo').textContent = '已加�? ' + file.name;
+    document.getElementById('inputInfo').textContent = 'Ѽ? ' + file.name;
   };
-  reader.onerror = () => alert('文件读取失败');
+  reader.onerror = () => alert('ļȡʧ');
   reader.readAsText(file);
 });
 
-// ==================== 通用拖拽�?��（所有textarea�?===================
+// ==================== ͨקktextarea?===================
 function setupDropZone(textareaId, callback) {
   const el = document.getElementById(textareaId);
   if (!el) return;
@@ -1083,28 +1083,28 @@ function setupDropZone(textareaId, callback) {
     const file = files[0];
     const ext = file.name.split('.').pop().toLowerCase();
     const supportedExts = [
-      // 代码
+      // 
       'js','mjs','cjs','ts','tsx','jsx','mts','cts','vue','svelte',
       'py','pyw','rb','php','java','kt','swift','dart','scala','groovy',
       'c','cpp','h','hpp','cs','go','rs',
       'lua','r','R','rmd','jl','pl','pm','sh','bash','zsh','fish','ps1','bat','cmd',
       'ex','exs','erl','hrl','clj','cljs','fs','fsx','ml','hs','nim','v','vh','vhd','sql',
       'graphql','gql','proto',
-      // 前�?
+      // ǰ
       'html','htm','css','scss','sass','less',
       'svg','wasm','wat',
-      // 数据/配置
+      // /
       'json','jsonl','ndjson','geojson','json5','yaml','yml','toml','ini','cfg','conf',
       'xml','xsd','plist','properties','env','env.local','gitignore','gitattributes',
       'editorconfig','prettierrc','eslintrc','babelrc','webpack','nginx',
-      // 文档/文本
+      // ĵ/ı
       'txt','md','rst','adoc','tex','latex','log','err',
-      // 其他
+      // 
       'csv','tsv','diff','patch','pem','crt','key','pub','lock','build','gradle','kts','dockerfile','makefile',
     ];
     
     if (!supportedExts.includes(ext)) {
-      alert('不支持的文件格式: .' + ext);
+      alert('ֵ֧ļʽ: .' + ext);
       return;
     }
     
@@ -1113,18 +1113,18 @@ function setupDropZone(textareaId, callback) {
       el.value = ev.target.result;
       if (callback) callback();
     };
-    reader.onerror = () => alert('文件读取失败');
+    reader.onerror = () => alert('ļȡʧ');
     reader.readAsText(file);
   });
 }
 
-// 为所有输入�?设置拖拽
+// Ϊק
 setupDropZone('diffA');
 setupDropZone('diffB');
 setupDropZone('tableInput', onTableInput);
 setupDropZone('queryInput', onQueryInput);
 
-// 初�?�?updateLineNums('lineNums1', '');
+// ?updateLineNums('lineNums1', '');
 </script>
 
 </body>
