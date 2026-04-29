@@ -20,6 +20,216 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="工具箱">
   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  
+  <style>
+    /* ===== 新布局样式 ===== */
+    .page-wrapper {
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
+      gap: 20px;
+      padding: 0 16px;
+    }
+    .main-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .sidebar {
+      width: 300px;
+      flex-shrink: 0;
+    }
+    
+    /* 广告位 */
+    .ad-banner {
+      background: #f1f5f9;
+      border: 1px dashed #cbd5e1;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+    .ad-banner::before {
+      content: "📢 广告位";
+      display: block;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .ad-sidebar {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 13px;
+      margin-bottom: 16px;
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .ad-sidebar::before {
+      content: "📢 侧边广告";
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    /* 小图标工具卡片 */
+    .tools-grid-compact {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .tool-card-sm {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      transition: all .2s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .tool-card-sm:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,.08);
+      border-color: var(--primary);
+    }
+    .tool-card-sm .icon {
+      font-size: 24px;
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f1f5f9;
+      border-radius: 8px;
+    }
+    .tool-card-sm .info {
+      flex: 1;
+      min-width: 0;
+    }
+    .tool-card-sm h3 {
+      font-size: 14px;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tool-card-sm p {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .tool-card-sm .badge {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 1px 8px;
+      border-radius: 99px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    
+    /* 分类标题 */
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 24px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    /* 网站链接 */
+    .links-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .links-section h4 {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    .links-section a {
+      display: block;
+      padding: 6px 0;
+      font-size: 13px;
+      color: var(--text-muted);
+      border-bottom: 1px solid #f1f5f9;
+      transition: color .2s;
+    }
+    .links-section a:hover {
+      color: var(--primary);
+    }
+    .links-section a:last-child {
+      border-bottom: none;
+    }
+    
+    /* 统计卡片 */
+    .stats-bar {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      padding: 16px;
+      background: linear-gradient(135deg,#4f46e5,#7c3aed);
+      color: #fff;
+      border-radius: 10px;
+      margin-top: 24px;
+    }
+    .stats-bar .stat {
+      text-align: center;
+    }
+    .stats-bar .stat .num {
+      font-size: 24px;
+      font-weight: 800;
+    }
+    .stats-bar .stat .label {
+      font-size: 12px;
+      opacity: .8;
+    }
+    
+    /* 响应式 */
+    @media (max-width: 900px) {
+      .page-wrapper {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        order: 2;
+      }
+      .main-content {
+        order: 1;
+      }
+      .tools-grid-compact {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      }
+    }
+    @media (max-width: 640px) {
+      .tools-grid-compact {
+        grid-template-columns: 1fr;
+      }
+      .tool-card-sm {
+        padding: 12px;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -34,374 +244,396 @@
   </nav>
 </header>
 
-<main class="container">
-  <section class="hero">
-    <h1>🧰 免费在线工具箱</h1>
-    <p>23 大实用工具，全部本地处理不上传服务器。<br>无需安装，打开即用，完全免费。</p>
-    <div style="margin-top:16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
-      <span style="background:#f0fdf4;color:#16a34a;padding:6px 16px;border-radius:99px;font-size:13px;font-weight:600;">🔒 完全免费</span>
-      <span style="background:#eff6ff;color:#2563eb;padding:6px 16px;border-radius:99px;font-size:13px;font-weight:600;">🛡️ 本地处理</span>
-      <span style="background:#fef3c7;color:#ca8a04;padding:6px 16px;border-radius:99px;font-size:13px;font-weight:600;">📱 响应式布局</span>
-      <span style="background:#fdf2f8;color:#db2777;padding:6px 16px;border-radius:99px;font-size:13px;font-weight:600;">⚡ 无需注册</span>
-    </div>
-  </section>
-
-  <!-- 访问统计 -->
-  <div style="text-align:center;padding:16px;color:#6b7280;font-size:14px;">
-    <span id="busuanzi_container_site_pv">总访问量 <span id="busuanzi_value_site_pv"></span> 次</span>
-    &nbsp;|&nbsp;
-    <span id="busuanzi_container_site_uv">访客数 <span id="busuanzi_value_site_uv"></span> 人</span>
+<!-- 顶部横幅广告 -->
+<div class="container" style="padding-top:16px;padding-bottom:0;">
+  <div class="ad-banner" style="margin-bottom:16px;">
+    728×90 横幅广告位 - 等待接入
   </div>
+</div>
 
-  <!-- 图片处理 -->
-  <div style="margin-top:32px;">
-    <h2 style="font-size:18px;font-weight:700;margin-bottom:12px;">🖼️ 图片处理</h2>
-    <div class="tools-grid">
-      <a href="pdf-merge-split.html" class="tool-card">
+<div class="page-wrapper">
+  <!-- 主内容区 -->
+  <div class="main-content">
+    
+    <section class="hero" style="padding:32px 0 16px;">
+      <h1>🧰 免费在线工具箱</h1>
+      <p>23 大实用工具，全部本地处理不上传服务器。<br>无需安装，打开即用，完全免费。</p>
+      <div style="margin-top:12px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
+        <span style="background:#f0fdf4;color:#16a34a;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600;">🔒 完全免费</span>
+        <span style="background:#eff6ff;color:#2563eb;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600;">🛡️ 本地处理</span>
+        <span style="background:#fef3c7;color:#ca8a04;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600;">📱 响应式布局</span>
+        <span style="background:#fdf2f8;color:#db2777;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600;">⚡ 无需注册</span>
+      </div>
+    </section>
+
+    <!-- 访问统计 -->
+    <div style="text-align:center;padding:12px;color:#6b7280;font-size:13px;">
+      <span id="busuanzi_container_site_pv">总访问量 <span id="busuanzi_value_site_pv"></span> 次</span>
+      &nbsp;|&nbsp;
+      <span id="busuanzi_container_site_uv">访客数 <span id="busuanzi_value_site_uv"></span> 人</span>
+    </div>
+
+    <!-- 图片处理 -->
+    <h2 class="section-title">🖼️ 图片处理</h2>
+    <div class="tools-grid-compact">
+      <a href="pdf-merge-split.html" class="tool-card-sm">
         <div class="icon">📄</div>
-        <h3>PDF 合并/拆分</h3>
-        <p>合并多个PDF、拆分页面、提取指定页，拖拽排序，页面预览。</p>
-        <span class="badge badge-hot">🔥 最热门</span>
+        <div class="info">
+          <h3>PDF 合并/拆分</h3>
+          <p>合并多个PDF、拆分页面、提取指定页，拖拽排序。</p>
+          <span class="badge badge-hot">🔥 热门</span>
+        </div>
       </a>
-      <a href="image-compressor.html" class="tool-card">
+      <a href="image-compressor.html" class="tool-card-sm">
         <div class="icon">🖼️</div>
-        <h3>图片压缩 & 格式转换</h3>
-        <p>JPG/PNG/WebP 互转，批量处理，质量实时预览对比，EXIF去除。</p>
-        <span class="badge badge-hot">🔥 最热门</span>
+        <div class="info">
+          <h3>图片压缩转换</h3>
+          <p>JPG/PNG/WebP 互转，批量处理，质量预览。</p>
+          <span class="badge badge-hot">🔥 热门</span>
+        </div>
       </a>
-      <a href="image-format-converter.html" class="tool-card">
+      <a href="image-format-converter.html" class="tool-card-sm">
         <div class="icon">🔄</div>
-        <h3>图片格式批量转换</h3>
-        <p>JPG/PNG/WebP 批量互转，调整尺寸，画质控制，一键全部下载。</p>
-        <span class="badge badge-hot">🔥 最热门</span>
+        <div class="info">
+          <h3>图片格式批量转换</h3>
+          <p>批量互转，调整尺寸，画质控制，一键下载。</p>
+          <span class="badge badge-hot">🔥 热门</span>
+        </div>
       </a>
-
-      <a href="qr-generator.html" class="tool-card">
+      <a href="qr-generator.html" class="tool-card-sm">
         <div class="icon">📱</div>
-        <h3>二维码生成器</h3>
-        <p>LOGO嵌入、vCard名片、WiFi/日历模板，多格式导出。</p>
-        <span class="badge badge-hot">🔥 最热门</span>
+        <div class="info">
+          <h3>二维码生成器</h3>
+          <p>LOGO嵌入、vCard名片、WiFi模板，多格式导出。</p>
+          <span class="badge badge-hot">🔥 热门</span>
+        </div>
       </a>
-      <a href="color-converter.html" class="tool-card">
+      <a href="color-converter.html" class="tool-card-sm">
         <div class="icon">🎨</div>
-        <h3>颜色转换器</h3>
-        <p>HEX/RGB/HSL/HSV/CMYK 互转，调色板，CSS渐变生成器。</p>
-        <span class="badge badge-new">🆕 全新上线</span>
+        <div class="info">
+          <h3>颜色转换器</h3>
+          <p>HEX/RGB/HSL/HSV/CMYK 互转，调色板，渐变生成。</p>
+          <span class="badge badge-new">🆕 新</span>
+        </div>
       </a>
-      <a href="screenshot-annotator.html" class="tool-card">
+      <a href="screenshot-annotator.html" class="tool-card-sm">
         <div class="icon">📸</div>
-        <h3>图文教程制作器</h3>
-        <p>截图标注、箭头、步骤编号、马赛克、文字说明，导出PNG/PDF。</p>
-        <span class="badge badge-hot">🔥 最热门</span>
+        <div class="info">
+          <h3>图文教程制作器</h3>
+          <p>截图标注、箭头、步骤编号、马赛克，导出PNG/PDF。</p>
+          <span class="badge badge-hot">🔥 热门</span>
+        </div>
       </a>
-      <a href="image-processor.html" class="tool-card">
-        <div class="icon">🖼️</div>
-        <h3>图片处理器</h3>
-        <p>裁剪·旋转·调整尺寸·去背景·添加水印，全部本地处理不上传。</p>
-        <span class="badge badge-new">🆕 全新上线</span>
+      <a href="image-processor.html" class="tool-card-sm">
+        <div class="icon">✂️</div>
+        <div class="info">
+          <h3>图片处理器</h3>
+          <p>裁剪·旋转·调整尺寸·去背景·添加水印。</p>
+          <span class="badge badge-new">🆕 新</span>
+        </div>
       </a>
     </div>
-  </div>
 
-  <!-- 文字处理 -->
-  <div style="margin-top:32px;">
-    <h2 style="font-size:18px;font-weight:700;margin-bottom:12px;">📝 文字处理</h2>
-    <div class="tools-grid">
-      <a href="json-formatter.html" class="tool-card">
+    <!-- 文字处理 -->
+    <h2 class="section-title">📝 文字处理</h2>
+    <div class="tools-grid-compact">
+      <a href="json-formatter.html" class="tool-card-sm">
         <div class="icon">📋</div>
-        <h3>JSON 工具箱</h3>
-        <p>美化·压缩·校验·树形视图·对比·转表格·查询·历史记录。</p>
-        <span class="badge badge-dev">👨‍💻 开发者</span>
+        <div class="info">
+          <h3>JSON 工具箱</h3>
+          <p>美化·压缩·校验·树形视图·对比·转表格。</p>
+          <span class="badge badge-dev">💻 开发</span>
+        </div>
       </a>
-      <a href="text-dedup.html" class="tool-card">
+      <a href="text-dedup.html" class="tool-card-sm">
         <div class="icon">🧹</div>
-        <h3>文本去重排序</h3>
-        <p>去除重复行，7种排序方式，重复计数统计，多分隔符支持。</p>
-        <span class="badge badge-new">🆕 全新上线</span>
+        <div class="info">
+          <h3>文本去重排序</h3>
+          <p>去除重复行，7种排序方式，重复计数统计。</p>
+          <span class="badge badge-new">🆕 新</span>
+        </div>
       </a>
-      <a href="text-diff-tool.html" class="tool-card">
+      <a href="text-diff-tool.html" class="tool-card-sm">
         <div class="icon">🔍</div>
-        <h3>文本对比工具</h3>
-        <p>两段文本差异高亮，按行/按词/按字符三种模式，双视图。</p>
-        <span class="badge badge-dev">👨‍💻 开发者</span>
+        <div class="info">
+          <h3>文本对比工具</h3>
+          <p>差异高亮，按行/按词/按字符三种模式。</p>
+          <span class="badge badge-dev">💻 开发</span>
+        </div>
       </a>
-      <a href="word-counter.html" class="tool-card">
+      <a href="word-counter.html" class="tool-card-sm">
         <div class="icon">📊</div>
-        <h3>字数统计工具</h3>
-        <p>中英文字数/字符数/行数统计，阅读时间，词频分析，关键词密度。</p>
-        <span class="badge badge-new">🆕 全新上线</span>
+        <div class="info">
+          <h3>字数统计工具</h3>
+          <p>中英文字数/字符数/行数，阅读时间，词频分析。</p>
+          <span class="badge badge-new">🆕 新</span>
+        </div>
       </a>
-      <a href="lorem-generator.html" class="tool-card">
+      <a href="lorem-generator.html" class="tool-card-sm">
         <div class="icon">✍️</div>
-        <h3>Lorem Ipsum 生成器</h3>
-        <p>英文Lorem/中文乱文/自定义词库，HTML/Markdown/纯文本输出。</p>
-        <span class="badge badge-new">🆕 全新上线</span>
+        <div class="info">
+          <h3>Lorem Ipsum 生成器</h3>
+          <p>英文Lorem/中文乱文/自定义词库，多格式输出。</p>
+          <span class="badge badge-new">🆕 新</span>
+        </div>
       </a>
-      <a href="writing-assistant.html" class="tool-card">
+      <a href="writing-assistant.html" class="tool-card-sm">
         <div class="icon">🖋️</div>
-        <h3>写作助手</h3>
-        <p>拼写检查、字数统计、可读性评分、写作模板、文本格式化。</p>
-        <span class="badge badge-new">🆕 全新上线</span>
+        <div class="info">
+          <h3>写作助手</h3>
+          <p>拼写检查、字数统计、可读性评分、写作模板。</p>
+          <span class="badge badge-new">🆕 新</span>
+        </div>
       </a>
     </div>
-  </div>
 
-  <!-- 编码转换 -->
-  <div style="margin-top:32px;">
-    <h2 style="font-size:18px;font-weight:700;margin-bottom:12px;">🔀 编码转换</h2>
-    <div class="tools-grid">
-      <a href="base64-tool.html" class="tool-card">
+    <!-- 编码转换 -->
+    <h2 class="section-title">🔀 编码转换</h2>
+    <div class="tools-grid-compact">
+      <a href="base64-tool.html" class="tool-card-sm">
         <div class="icon">🔤</div>
-        <h3>Base64 编码解码</h3>
-        <p>文本/文件 Base64 互转，URL编码，Unicode转义。</p>
-        <span class="badge badge-dev">👨‍💻 开发者</span>
+        <div class="info">
+          <h3>Base64 编码解码</h3>
+          <p>文本/文件 Base64 互转，URL编码，Unicode转义。</p>
+          <span class="badge badge-dev">💻 开发</span>
+        </div>
       </a>
-      <a href="url-encoder.html" class="tool-card">
+      <a href="url-encoder.html" class="tool-card-sm">
         <div class="icon">🔗</div>
-        <h3>URL 编码解码</h3>
-        <p>URL编码/解码，HTML实体编码，Unicode转义，Base64，5种模式互转。</p>
-        <span class="badge badge-new">🆕 全新上线</span>
+        <div class="info">
+          <h3>URL 编码解码</h3>
+          <p>URL编码/解码，HTML实体，Unicode，Base64。</p>
+          <span class="badge badge-new">🆕 新</span>
+        </div>
       </a>
-      <a href="base-converter.html" class="tool-card">
+      <a href="base-converter.html" class="tool-card-sm">
         <div class="icon">🔢</div>
-        <h3>进制转换器</h3>
-        <p>二/八/十/十六/三十二/三十六进制互转，位运算，ASCII对照表。</p>
-        <span class="badge badge-new">🆕 全新上线</span>
+        <div class="info">
+          <h3>进制转换器</h3>
+          <p>二/八/十/十六/三十二/三十六进制互转，位运算。</p>
+          <span class="badge badge-new">🆕 新</span>
+        </div>
       </a>
-      <a href="hash-generator.html" class="tool-card">
+      <a href="hash-generator.html" class="tool-card-sm">
         <div class="icon">🔏</div>
-        <h3>哈希校验工具</h3>
-        <p>SHA-1/SHA-256/SHA-512 计算，文件哈希，完整性验证。</p>
-        <span class="badge badge-dev">👨‍💻 开发者</span>
+        <div class="info">
+          <h3>哈希校验工具</h3>
+          <p>SHA-1/SHA-256/SHA-512 计算，文件哈希验证。</p>
+          <span class="badge badge-dev">💻 开发</span>
+        </div>
       </a>
     </div>
-  </div>
 
-  <!-- 开发工具 -->
-  <div style="margin-top:32px;">
-    <h2 style="font-size:18px;font-weight:700;margin-bottom:12px;">🛠️ 开发工具</h2>
-    <div class="tools-grid">
-      <a href="regex-tester.html" class="tool-card">
+    <!-- 开发工具 -->
+    <h2 class="section-title">🛠️ 开发工具</h2>
+    <div class="tools-grid-compact">
+      <a href="regex-tester.html" class="tool-card-sm">
         <div class="icon">🔧</div>
-        <h3>正则表达式测试</h3>
-        <p>实时匹配高亮，分组捕获，替换预览，12个常用模板，速查表。</p>
-        <span class="badge badge-dev">👨‍💻 开发者</span>
+        <div class="info">
+          <h3>正则表达式测试</h3>
+          <p>实时匹配高亮，分组捕获，替换预览，12个模板。</p>
+          <span class="badge badge-dev">💻 开发</span>
+        </div>
       </a>
-      <a href="markdown-editor.html" class="tool-card">
+      <a href="markdown-editor.html" class="tool-card-sm">
         <div class="icon">📝</div>
-        <h3>Markdown 编辑器</h3>
-        <p>实时预览，代码高亮，工具栏快捷操作，导出HTML，本地自动保存。</p>
-        <span class="badge badge-dev">👨‍💻 开发者</span>
+        <div class="info">
+          <h3>Markdown 编辑器</h3>
+          <p>实时预览，代码高亮，工具栏快捷，导出HTML。</p>
+          <span class="badge badge-dev">💻 开发</span>
+        </div>
       </a>
-      <a href="password-generator.html" class="tool-card">
+      <a href="password-generator.html" class="tool-card-sm">
         <div class="icon">🔐</div>
-        <h3>密码生成器</h3>
-        <p>高强度随机密码，批量生成，历史记录，强度实时检测。</p>
-        <span class="badge badge-new">🆕 全新上线</span>
+        <div class="info">
+          <h3>密码生成器</h3>
+          <p>高强度随机密码，批量生成，历史记录，强度检测。</p>
+          <span class="badge badge-new">🆕 新</span>
+        </div>
       </a>
-      <a href="code-formatter.html" class="tool-card">
+      <a href="code-formatter.html" class="tool-card-sm">
         <div class="icon">💻</div>
-        <h3>代码格式化工具</h3>
-        <p>代码美化、语法检测、格式化输出，支持 JS/HTML/CSS/Python/JSON/SQL。</p>
-        <span class="badge badge-new">🆕 全新上线</span>
+        <div class="info">
+          <h3>代码格式化工具</h3>
+          <p>美化、语法检测，支持 JS/HTML/CSS/Python/JSON/SQL。</p>
+          <span class="badge badge-new">🆕 新</span>
+        </div>
       </a>
     </div>
-  </div>
 
-  <!-- 生活工具 -->
-  <div style="margin-top:32px;">
-    <h2 style="font-size:18px;font-weight:700;margin-bottom:12px;">⏱️ 通用工具</h2>
-    <div class="tools-grid">
-      <a href="unit-converter.html" class="tool-card">
+    <!-- 通用工具 -->
+    <h2 class="section-title">⏱️ 通用工具</h2>
+    <div class="tools-grid-compact">
+      <a href="unit-converter.html" class="tool-card-sm">
         <div class="icon">🧮</div>
-        <h3>单位换算器</h3>
-        <p>长度/重量/温度/面积/体积/速度/数据/时间/压力/功率，10大类全面换算。</p>
-        <span class="badge badge-new">🆕 全新上线</span>
+        <div class="info">
+          <h3>单位换算器</h3>
+          <p>长度/重量/温度/面积/体积/速度/数据/时间等10大类。</p>
+          <span class="badge badge-new">🆕 新</span>
+        </div>
       </a>
-      <a href="timestamp-converter.html" class="tool-card">
+      <a href="timestamp-converter.html" class="tool-card-sm">
         <div class="icon">🕐</div>
-        <h3>时间戳转换器</h3>
-        <p>Unix时间戳与日期互转，多时区对照，农历转换，日期计算。</p>
-        <span class="badge badge-dev">👨‍💻 开发者</span>
+        <div class="info">
+          <h3>时间戳转换器</h3>
+          <p>Unix时间戳与日期互转，多时区，农历，日期计算。</p>
+          <span class="badge badge-dev">💻 开发</span>
+        </div>
       </a>
     </div>
-  </div>
 
+    <!-- 中间广告位 -->
+    <div class="ad-banner" style="margin-top:24px;">
+      自适应广告位 - 等待接入
+    </div>
 
-  <!-- 添加到桌面指南 -->
-  <div class="card" style="margin-top:40px;padding:32px;background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:1px solid #86efac;">
-    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;text-align:center;">📲 一键添加到桌面，像APP一样使用</h3>
-    <p style="color:#64748b;margin-bottom:20px;text-align:center;">把工具箱添加到桌面后，无需打开浏览器，点一下图标就能直接使用全部23个工具！</p>
-    
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;max-width:700px;margin:0 auto;">
-      <!-- 电脑 Chrome/Edge -->
-      <div style="background:#fff;padding:20px;border-radius:12px;border:1px solid #e2e8f0;">
-        <div style="font-size:28px;margin-bottom:8px;">💻</div>
-        <h4 style="font-size:15px;font-weight:700;margin-bottom:8px;">电脑 Chrome / Edge</h4>
-        <ol style="font-size:13px;color:#475569;padding-left:20px;line-height:2;">
-          <li>点击地址栏右侧的 <b>安装图标</b> 📥</li>
-          <li>或点击右上角 <b>⋮</b> → <b>"安装应用"</b></li>
-          <li>点击 <b>"安装"</b> 即可</li>
-        </ol>
-        <p style="font-size:12px;color:#94a3b8;margin-top:8px;">提示：地址栏没有安装图标时，请刷新页面重试</p>
-      </div>
-
-      <!-- 安卓手机 -->
-      <div style="background:#fff;padding:20px;border-radius:12px;border:1px solid #e2e8f0;">
-        <div style="font-size:28px;margin-bottom:8px;">🤖</div>
-        <h4 style="font-size:15px;font-weight:700;margin-bottom:8px;">安卓手机 Chrome</h4>
-        <ol style="font-size:13px;color:#475569;padding-left:20px;line-height:2;">
-          <li>点击右上角 <b>⋮</b> 菜单</li>
-          <li>选择 <b>"添加到主屏幕"</b></li>
-          <li>点击 <b>"添加"</b> 即可</li>
-        </ol>
-        <p style="font-size:12px;color:#94a3b8;margin-top:8px;">添加后桌面会出现工具箱图标，点一下直接打开</p>
-      </div>
-
-      <!-- 苹果手机 -->
-      <div style="background:#fff;padding:20px;border-radius:12px;border:1px solid #e2e8f0;">
-        <div style="font-size:28px;margin-bottom:8px;">🍎</div>
-        <h4 style="font-size:15px;font-weight:700;margin-bottom:8px;">苹果手机 Safari</h4>
-        <ol style="font-size:13px;color:#475569;padding-left:20px;line-height:2;">
-          <li>点击底部 <b>"分享"按钮</b> ⬆️</li>
-          <li>向下滑动找到 <b>"添加到主屏幕"</b></li>
-          <li>点击右上角 <b>"添加"</b></li>
-        </ol>
-        <p style="font-size:12px;color:#94a3b8;margin-top:8px;">Safari 浏览器操作，其他浏览器不支持此功能</p>
-      </div>
-
-      <!-- 电脑 其他浏览器 -->
-      <div style="background:#fff;padding:20px;border-radius:12px;border:1px solid #e2e8f0;">
-        <div style="font-size:28px;margin-bottom:8px;">🌐</div>
-        <h4 style="font-size:15px;font-weight:700;margin-bottom:8px;">通用方法（所有浏览器）</h4>
-        <ol style="font-size:13px;color:#475569;padding-left:20px;line-height:2;">
-          <li>打开工具箱网站</li>
-          <li><b>右键点击</b>网页空白处</li>
-          <li>选择 <b>"创建快捷方式"</b> → 勾选 <b>"打开方式"</b></li>
-        </ol>
-        <p style="font-size:12px;color:#94a3b8;margin-top:8px;">适合没有安装按钮的浏览器，窗口会独立显示</p>
+    <!-- 添加到桌面指南 -->
+    <div class="card" style="margin-top:24px;padding:24px;background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:1px solid #86efac;">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;text-align:center;">📲 添加到桌面，像APP一样使用</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+        <div style="background:#fff;padding:16px;border-radius:10px;border:1px solid #e2e8f0;">
+          <div style="font-size:20px;margin-bottom:6px;">💻</div>
+          <h4 style="font-size:13px;font-weight:700;margin-bottom:6px;">电脑 Chrome/Edge</h4>
+          <p style="font-size:12px;color:#64748b;line-height:1.6;">地址栏右侧 📥 安装图标，或 ⋮ → "安装应用"</p>
+        </div>
+        <div style="background:#fff;padding:16px;border-radius:10px;border:1px solid #e2e8f0;">
+          <div style="font-size:20px;margin-bottom:6px;">🤖</div>
+          <h4 style="font-size:13px;font-weight:700;margin-bottom:6px;">安卓 Chrome</h4>
+          <p style="font-size:12px;color:#64748b;line-height:1.6;">⋮ 菜单 → "添加到主屏幕" → "添加"</p>
+        </div>
+        <div style="background:#fff;padding:16px;border-radius:10px;border:1px solid #e2e8f0;">
+          <div style="font-size:20px;margin-bottom:6px;">🍎</div>
+          <h4 style="font-size:13px;font-weight:700;margin-bottom:6px;">苹果 Safari</h4>
+          <p style="font-size:12px;color:#64748b;line-height:1.6;">分享按钮 ⬆️ → "添加到主屏幕" → "添加"</p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- 反馈区域 -->
-  <div class="card" style="margin-top:40px;padding:32px;background:#f8fafc;border:1px dashed #94a3b8;">
-    <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;text-align:center;">💬 意见反馈</h3>
-    <p style="color:#64748b;margin-bottom:16px;text-align:center;">使用过程中发现问题或有改进建议？欢迎留言告诉我们！</p>
-    
-    <!-- 留言表单 -->
-    <div id="commentForm" style="max-width:500px;margin:0 auto;">
-      <div style="margin-bottom:12px;">
-        <input type="text" id="commentName" placeholder="昵称（选填）" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;box-sizing:border-box;">
+    <!-- 反馈区域 -->
+    <div class="card" style="margin-top:24px;padding:24px;background:#f8fafc;border:1px dashed #94a3b8;">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:8px;text-align:center;">💬 意见反馈</h3>
+      <div id="commentForm" style="max-width:480px;margin:0 auto;">
+        <input type="text" id="commentName" placeholder="昵称（选填）" style="width:100%;padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;margin-bottom:8px;box-sizing:border-box;">
+        <input type="text" id="commentTool" placeholder="反馈的工具名称（选填）" style="width:100%;padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;margin-bottom:8px;box-sizing:border-box;">
+        <textarea id="commentContent" placeholder="请输入您的反馈内容..." rows="3" style="width:100%;padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;resize:vertical;margin-bottom:8px;box-sizing:border-box;"></textarea>
+        <div style="text-align:center;">
+          <button onclick="submitComment()" style="background:#4f46e5;color:#fff;padding:10px 28px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">提交留言</button>
+        </div>
       </div>
-      <div style="margin-bottom:12px;">
-        <input type="text" id="commentTool" placeholder="反馈的工具名称（选填）" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;box-sizing:border-box;">
+      <div id="commentList" style="max-width:480px;margin:16px auto 0;"></div>
+    </div>
+
+    <!-- 统计 -->
+    <div class="stats-bar">
+      <div class="stat">
+        <div class="num">23</div>
+        <div class="label">在线工具</div>
       </div>
-      <div style="margin-bottom:12px;">
-        <textarea id="commentContent" placeholder="请输入您的反馈内容..." rows="4" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;resize:vertical;box-sizing:border-box;"></textarea>
+      <div class="stat">
+        <div class="num">100%</div>
+        <div class="label">免费使用</div>
       </div>
-      <div style="text-align:center;">
-        <button onclick="submitComment()" style="background:#4f46e5;color:#fff;padding:12px 32px;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s;"
-                onmouseover="this.style.background='#4338ca'" 
-                onmouseout="this.style.background='#4f46e5'">
-          提交留言
-        </button>
+      <div class="stat">
+        <div class="num">0</div>
+        <div class="label">上传服务器</div>
       </div>
     </div>
-    
-    <!-- 留言列表 -->
-    <div id="commentList" style="max-width:500px;margin:24px auto 0;"></div>
+
   </div>
 
-  <script>
-    // 加载留言
-    function loadComments() {
-      const comments = JSON.parse(localStorage.getItem('toolbox_comments') || '[]');
-      const list = document.getElementById('commentList');
-      if (comments.length === 0) {
-        list.innerHTML = '<p style="text-align:center;color:#94a3b8;font-size:14px;">暂无留言，期待您的第一条反馈！</p>';
-        return;
-      }
-      list.innerHTML = comments.reverse().map(function(c) {
-        return '<div style="background:#fff;padding:16px;border-radius:8px;margin-bottom:12px;border:1px solid #e2e8f0;">' +
-               '<div style="display:flex;justify-content:space-between;margin-bottom:8px;">' +
-               '<strong style="color:#4f46e5;">' + (c.name || '匿名用户') + '</strong>' +
-               '<span style="font-size:12px;color:#94a3b8;">' + c.tool + '</span>' +
-               '</div>' +
-               '<p style="margin:0;font-size:14px;color:#374151;line-height:1.6;">' + c.content.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</p>' +
-               '<div style="margin-top:8px;font-size:12px;color:#94a3b8;">' + c.time + '</div>' +
-               '</div>';
-      }).join('');
-    }
-
-    // 提交留言
-    function submitComment() {
-      var name = document.getElementById('commentName').value.trim();
-      var tool = document.getElementById('commentTool').value.trim();
-      var content = document.getElementById('commentContent').value.trim();
-      
-      if (!content) {
-        alert('请输入反馈内容');
-        return;
-      }
-      
-      var comments = JSON.parse(localStorage.getItem('toolbox_comments') || '[]');
-      var now = new Date();
-      comments.push({
-        name: name,
-        tool: tool,
-        content: content,
-        time: now.getFullYear() + '-' + 
-              String(now.getMonth() + 1).padStart(2, '0') + '-' + 
-              String(now.getDate()).padStart(2, '0') + ' ' + 
-              String(now.getHours()).padStart(2, '0') + ':' + 
-              String(now.getMinutes()).padStart(2, '0')
-      });
-      
-      localStorage.setItem('toolbox_comments', JSON.stringify(comments));
-      
-      // 清空表单
-      document.getElementById('commentName').value = '';
-      document.getElementById('commentTool').value = '';
-      document.getElementById('commentContent').value = '';
-      
-      // 重新加载
-      loadComments();
-    }
-
-    // 页面加载时显示留言
-    loadComments();
-  </script>
-
-  <!-- 统计 -->
-  <div class="card" style="margin-top:40px;text-align:center;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;">
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding:24px 0;">
-      <div>
-        <div style="font-size:36px;font-weight:800;">23</div>
-        <div style="font-size:14px;opacity:.8;">在线工具</div>
-      </div>
-      <div>
-        <div style="font-size:36px;font-weight:800;">100%</div>
-        <div style="font-size:14px;opacity:.8;">免费使用</div>
-      </div>
-      <div>
-        <div style="font-size:36px;font-weight:800;">0</div>
-        <div style="font-size:14px;opacity:.8;">上传服务器</div>
-      </div>
+  <!-- 侧边栏 -->
+  <aside class="sidebar">
+    <!-- 侧边广告1 -->
+    <div class="ad-sidebar">
+      300×250 广告位<br>等待接入
     </div>
-    <p style="font-size:14px;opacity:.7;">所有工具在浏览器本地处理完成，您的文件永远不会上传到任何服务器。</p>
-  </div>
-</main>
+    
+    <!-- 网站链接 -->
+    <div class="links-section">
+      <h4>🔗 相关工具站</h4>
+      <a href="https://tool.lu/" target="_blank">🔧 在线工具 - 程序员工具箱</a>
+      <a href="https://www.toolfk.com/" target="_blank">🛠️ 工具客栈 - 在线工具集合</a>
+      <a href="https://www.bejson.com/" target="_blank">📋 BeJSON - JSON在线工具</a>
+      <a href="https://www.sojson.com/" target="_blank">🔍 SOJSON - 在线JSON解析</a>
+      <a href="https://www.matools.com/" target="_blank">🧮 码工具 - 开发工具大全</a>
+    </div>
+    
+    <!-- 侧边广告2 -->
+    <div class="ad-sidebar" style="min-height:200px;">
+      300×250 广告位<br>等待接入
+    </div>
+    
+    <!-- 常用推荐 -->
+    <div class="links-section">
+      <h4>⭐ 常用推荐</h4>
+      <a href="https://github.com/" target="_blank">🐙 GitHub - 代码托管平台</a>
+      <a href="https://stackoverflow.com/" target="_blank">💬 Stack Overflow - 技术问答</a>
+      <a href="https://developer.mozilla.org/" target="_blank">📖 MDN - Web开发文档</a>
+      <a href="https://caniuse.com/" target="_blank">✅ Can I Use - 浏览器兼容性</a>
+      <a href="https://www.iconfont.cn/" target="_blank">🎨 阿里巴巴矢量图标库</a>
+    </div>
+    
+    <!-- 侧边广告3 -->
+    <div class="ad-sidebar" style="min-height:120px;">
+      300×100 广告位<br>等待接入
+    </div>
+  </aside>
+</div>
 
-<footer class="footer">
+<footer class="footer" style="margin-top:32px;">
   <p>© 2026 在线工具箱 · 所有文件仅在浏览器本地处理，不会上传到服务器</p>
+  <p style="margin-top:8px;font-size:12px;">
+    <a href="https://xytool.github.io/toolsite/" style="margin:0 8px;">首页</a> |
+    <a href="https://github.com/xytool/toolsite" target="_blank" style="margin:0 8px;">GitHub</a> |
+    <a href="sitemap.xml" style="margin:0 8px;">站点地图</a>
+  </p>
 </footer>
 
-
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(function(){});
+<script>
+  // 加载留言
+  function loadComments() {
+    const comments = JSON.parse(localStorage.getItem('toolbox_comments') || '[]');
+    const list = document.getElementById('commentList');
+    if (comments.length === 0) {
+      list.innerHTML = '<p style="text-align:center;color:#94a3b8;font-size:13px;">暂无留言，期待您的第一条反馈！</p>';
+      return;
     }
-  </script>
+    list.innerHTML = comments.reverse().map(function(c) {
+      return '<div style="background:#fff;padding:12px;border-radius:8px;margin-bottom:8px;border:1px solid #e2e8f0;">' +
+             '<div style="display:flex;justify-content:space-between;margin-bottom:4px;">' +
+             '<strong style="color:#4f46e5;font-size:13px;">' + (c.name || '匿名用户') + '</strong>' +
+             '<span style="font-size:11px;color:#94a3b8;">' + c.tool + '</span>' +
+             '</div>' +
+             '<p style="margin:0;font-size:13px;color:#374151;line-height:1.5;">' + c.content.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</p>' +
+             '<div style="margin-top:4px;font-size:11px;color:#94a3b8;">' + c.time + '</div>' +
+             '</div>';
+    }).join('');
+  }
+
+  function submitComment() {
+    var name = document.getElementById('commentName').value.trim();
+    var tool = document.getElementById('commentTool').value.trim();
+    var content = document.getElementById('commentContent').value.trim();
+    if (!content) { alert('请输入反馈内容'); return; }
+    var comments = JSON.parse(localStorage.getItem('toolbox_comments') || '[]');
+    var now = new Date();
+    comments.push({
+      name: name, tool: tool, content: content,
+      time: now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0')
+    });
+    localStorage.setItem('toolbox_comments', JSON.stringify(comments));
+    document.getElementById('commentName').value = '';
+    document.getElementById('commentTool').value = '';
+    document.getElementById('commentContent').value = '';
+    loadComments();
+  }
+  loadComments();
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  }
+</script>
 </body>
 </html>
