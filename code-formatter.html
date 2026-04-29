@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>代码格式化工具 - 在线工具箱</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+body{font-family:'Cascadia Code','Fira Code','Consolas',monospace;font-size:13px;}
+textarea{width:100%;min-height:300px;padding:14px;border:1px solid var(--border);border-radius:8px;font-family:'Cascadia Code','Fira Code','Consolas',monospace;font-size:13px;line-height:1.6;resize:vertical;outline:none;background:#1e1e1e;color:#d4d4d4;tab-size:2;box-sizing:border-box;transition:border-color .2s;}
+textarea:focus{border-color:var(--primary);}
+.code-wrap{position:relative;}
+.code-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px;z-index:10;}
+.lang-select{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+select{padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;outline:none;background:#fff;}
+.lang-btn{padding:6px 16px;border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;background:#fff;transition:all .2s;}
+.lang-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.lang-btn:hover:not(.active){border-color:var(--primary);}
+.error-line{border-left:3px solid #dc2626!important;padding-left:8px;margin-left:4px;}
+.warn-line{border-left:3px solid #ca8a04!important;}
+.diff-add{background:#1c3a1c!important;color:#4ade80!important;}
+.diff-remove{background:#3a1c1c!important;color:#f87171!important;text-decoration:line-through;}
+.error-panel{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin:12px 0;font-size:13px;}
+.error-panel .err-title{color:#dc2626;font-weight:700;margin-bottom:6px;}
+.error-panel .err-msg{color:#991b1b;font-family:monospace;font-size:12px;}
+.error-panel .err-suggest{color:#92400e;margin-top:6px;}
+.success-panel{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin:12px 0;font-size:13px;color:#166534;}
+</style>
+</head>
+<body>
+<header class="navbar">
+<a href="index.html" class="logo"><span>🧰</span> 在线工具箱</a>
+<nav>
+<a href="writing-assistant.html">写作助手</a>
+<a href="image-processor.html">图片处理</a>
+<a href="text-diff-tool.html">文本对比</a>
+</nav>
+</header>
+<main class="container">
+<div class="tool-header">
+<h1>💻 代码格式化工具</h1>
+<p>代码美化、语法检测、格式化输出。支持 JS/HTML/CSS/Python/JSON 等语言。</p>
+</div>
+
+<div class="tutorial-box">
+<h3>📖 使用教程</h3>
+<ol>
+<li><strong>粘贴代码</strong> - 将待处理的代码粘贴到左侧输入框</li>
+<li><strong>选择语言</strong> - 选择代码对应的编程语言</li>
+<li><strong>一键美化</strong> - 点击「美化代码」自动格式化缩进和对齐</li>
+<li><strong>语法检测</strong> - 点击「语法检测」查找代码错误并显示行号</li>
+<li><strong>导出结果</strong> - 处理完成后复制或下载结果</li>
+</ol>
+<div class="tip"><strong>⚠️ 注意：</strong>AI代码补全/Bug修复需要调用外部API，本工具仅提供本地格式化功能。如需AI功能请使用专业的IDE工具。</div>
+</div>
+
+<div class="card">
+<div class="lang-select">
+<span style="font-weight:600;font-size:14px;">语言：</span>
+<button class="lang-btn active" onclick="setLang('js')" id="lang-js">JavaScript</button>
+<button class="lang-btn" onclick="setLang('html')" id="lang-html">HTML</button>
+<button class="lang-btn" onclick="setLang('css')" id="lang-css">CSS</button>
+<button class="lang-btn" onclick="setLang('py')" id="lang-py">Python</button>
+<button class="lang-btn" onclick="setLang('json')" id="lang-json">JSON</button>
+<button class="lang-btn" onclick="setLang('sql')" id="lang-sql">SQL</button>
+</div>
+<textarea id="inputCode" placeholder="粘贴你的代码..." spellcheck="false"></textarea>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;">
+<button class="btn btn-primary" onclick="beautify()">✨ 美化代码</button>
+<button class="btn btn-outline" onclick="minify()">🗜️ 压缩代码</button>
+<button class="btn btn-outline" onclick="checkSyntax()">🔍 语法检测</button>
+<button class="btn btn-outline" onclick="clearCode()">🗑️ 清空</button>
+<button class="btn btn-outline" onclick="loadSample()">📝 示例代码</button>
+</div>
+<div id="resultPanel"></div>
+<div id="syntaxResult"></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+<button class="btn btn-primary" onclick="copyCode()">📋 复制代码</button>
+<button class="btn btn-outline" onclick="downloadCode()">💾 下载代码</button>
+</div>
+</div>
+
+<div class="card">
+<h3 style="font-size:15px;font-weight:700;margin-bottom:12px;">📚 代码片段模板</h3>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;">
+<button class="btn btn-outline" style="font-size:13px;text-align:left;" onclick="loadTemplate('fn')">📄 JavaScript函数</button>
+<button class="btn btn-outline" style="font-size:13px;text-align:left;" onclick="loadTemplate('arr')">📄 数组处理</button>
+<button class="btn btn-outline" style="font-size:13px;text-align:left;" onclick="loadTemplate('fetch')">📄 Fetch请求</button>
+<button class="btn btn-outline" style="font-size:13px;text-align:left;" onclick="loadTemplate('class')">📄 ES6类</button>
+<button class="btn btn-outline" style="font-size:13px;text-align:left;" onclick="loadTemplate('pyfn')">📄 Python函数</button>
+<button class="btn btn-outline" style="font-size:13px;text-align:left;" onclick="loadTemplate('htmlpage')">📄 HTML页面</button>
+</div>
+</div>
+</div>
+</main>
+<footer class="footer">
+<p>© 2026 在线工具箱 · 代码格式化工具 · 本地处理，不上传任何数据</p>
+</footer>
+<script>
+var currentLang='js';
+
+function setLang(lang){
+  currentLang=lang;
+  document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('lang-'+lang).classList.add('active');
+}
+
+function beautify(){
+  var code=document.getElementById('inputCode').value;
+  if(!code.trim()){alert('请先输入代码');return;}
+  var result=document.getElementById('resultPanel');
+  try{
+    var beautified;
+    switch(currentLang){
+      case 'js': beautified=beautifyJS(code);break;
+      case 'html': beautified=beautifyHTML(code);break;
+      case 'css': beautified=beautifyCSS(code);break;
+      case 'py': beautified=beautifyPython(code);break;
+      case 'json': beautified=beautifyJSON(code);break;
+      case 'sql': beautified=beautifySQL(code);break;
+      default:beautified=code;
+    }
+    document.getElementById('inputCode').value=beautified;
+    result.innerHTML='<div class="success-panel">✅ 代码已美化完成！共 '+beautified.split('\n').length+' 行</div>';
+  }catch(e){
+    result.innerHTML='<div class="error-panel"><div class="err-title">❌ 美化失败</div><div class="err-msg">'+e.message+'</div></div>';
+  }
+}
+
+function minify(){
+  var code=document.getElementById('inputCode').value;
+  if(!code.trim()){alert('请先输入代码');return;}
+  var result=document.getElementById('resultPanel');
+  try{
+    var minified;
+    switch(currentLang){
+      case 'js':
+        minified=code.replace(/\/\/[^\n]*/g,'').replace(/\/\*[\s\S]*?\*\//g,'').replace(/\s+/g,' ').replace(/\s*([{};,:])\s*/g,'$1').trim();
+        break;
+      case 'css':
+        minified=code.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\s+/g,' ').replace(/\s*([{};:,>~+])\s*/g,'$1').trim();
+        break;
+      case 'html':
+        minified=code.replace(/>\s+</g,'><').replace(/\s{2,}/g,' ').trim();
+        break;
+      case 'json':
+        minified=JSON.stringify(JSON.parse(code));
+        break;
+      default:
+        minified=code.replace(/\s+/g,' ').trim();
+    }
+    document.getElementById('inputCode').value=minified;
+    result.innerHTML='<div class="success-panel">🗜️ 代码已压缩！原始 '+code.length+' 字符 → 压缩后 '+minified.length+' 字符（减少'+(100-Math.round(minified.length/code.length*100))+'%）</div>';
+  }catch(e){
+    result.innerHTML='<div class="error-panel"><div class="err-title">❌ 压缩失败</div><div class="err-msg">'+e.message+'</div></div>';
+  }
+}
+
+function checkSyntax(){
+  var code=document.getElementById('inputCode').value;
+  if(!code.trim()){alert('请先输入代码');return;}
+  var result=document.getElementById('syntaxResult');
+  try{
+    switch(currentLang){
+      case 'js':checkJSSyntax(code,result);break;
+      case 'json':checkJSONSyntax(code,result);break;
+      case 'html':checkHTMLSyntax(code,result);break;
+      case 'css':checkCSSSyntax(code,result);break;
+      default:
+        result.innerHTML='<div class="success-panel">🔍 语法检测完成（该语言暂不支持详细检测）</div>';
+    }
+  }catch(e){
+    result.innerHTML='<div class="error-panel"><div class="err-title">❌ 检测失败</div><div class="err-msg">'+e.message+'</div></div>';
+  }
+}
+
+function checkJSSyntax(code,result){
+  try{
+    new Function(code);
+    result.innerHTML='<div class="success-panel">✅ JavaScript语法检测通过，未发现错误</div>';
+  }catch(e){
+    var msg=e.message;
+    var lineMatch=msg.match(/line (\d+)/i);
+    var line=lineMatch?lineMatch[1]:null;
+    var colMatch=msg.match(/column (\d+)/i);
+    var col=colMatch?colMatch[1]:null;
+    var html='<div class="error-panel"><div class="err-title">❌ 发现语法错误</div>';
+    html+='<div class="err-msg">'+msg+'</div>';
+    if(line)html+='<div class="err-suggest">📍 错误位置：第 '+line+' 行'+(col?'，第 '+col+' 列':'')+'</div>';
+    html+='<div class="err-suggest">💡 建议：检查该行附近的括号、引号、分号是否匹配</div>';
+    html+='</div>';
+    result.innerHTML=html;
+  }
+}
+
+function checkJSONSyntax(code,result){
+  try{
+    JSON.parse(code);
+    result.innerHTML='<div class="success-panel">✅ JSON格式正确</div>';
+  }catch(e){
+    var msg=e.message;
+    var pos=msg.match(/position (\d+)/i);
+    if(pos){
+      var lines=code.substring(0,parseInt(pos[1])).split('\n');
+      var lineNum=lines.length;
+      result.innerHTML='<div class="error-panel"><div class="err-title">❌ JSON格式错误</div><div class="err-msg">'+msg+'</div><div class="err-suggest">📍 错误位置：第 '+lineNum+' 行附近</div></div>';
+    } else {
+      result.innerHTML='<div class="error-panel"><div class="err-title">❌ JSON格式错误</div><div class="err-msg">'+msg+'</div></div>';
+    }
+  }
+}
+
+function checkHTMLSyntax(code,result){
+  var errors=[];
+  var openStack=[];
+  var voidTags=['area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'];
+  var tagRegex=/<\/?([a-z][a-z0-9-]*)[^>]*\/?>/gi;
+  var match;
+  var offset=0;
+  while((match=tagRegex.exec(code))!==null){
+    var tag=match[1].toLowerCase();
+    var full=match[0];
+    var pos=match.index;
+    var lineNum=code.substring(0,pos).split('\n').length;
+    if(full.startsWith('</')){
+      if(!voidTags.includes(tag)){
+        if(openStack.length>0&&openStack[openStack.length-1].tag===tag){
+          openStack.pop();
+        } else {
+          errors.push({line:lineNum,msg:'多余的闭合标签 &lt;/'+tag+'&gt;（未找到对应开标签）'});
+        }
+      } else {
+        errors.push({line:lineNum,msg:'&lt;'+tag+'&gt; 是自闭合标签，不需要 &lt;/'+tag+'&gt;'});
+      }
+    } else if(!full.endsWith('/>')&&!voidTags.includes(tag)){
+      openStack.push({tag:tag,line:lineNum});
+    }
+  }
+  if(errors.length>0){
+    var html='<div class="error-panel"><div class="err-title">❌ 发现 '+errors.length+' 个HTML语法问题</div>';
+    errors.forEach(function(e){
+      html+='<div class="err-suggest">📍 第 '+e.line+' 行：'+e.msg+'</div>';
+    });
+    html+='</div>';
+    result.innerHTML=html;
+  } else if(openStack.length>0){
+    var html='<div class="error-panel"><div class="err-title">⚠️ 发现未闭合标签</div>';
+    openStack.forEach(function(t){
+      html+='<div class="err-suggest">📍 第 '+t.line+' 行：&lt;'+t.tag+'&gt; 标签未闭合</div>';
+    });
+    html+='</div>';
+    result.innerHTML=html;
+  } else {
+    result.innerHTML='<div class="success-panel">✅ HTML结构检测通过，未发现明显错误</div>';
+  }
+}
+
+function checkCSSSyntax(code,result){
+  var errors=[];
+  var brace=0;
+  var lines=code.split('\n');
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i];
+    for(var j=0;j<line.length;j++){
+      if(line[j]==='{')brace++;
+      if(line[j]==='}')brace--;
+      if(brace<0){
+        errors.push({line:i+1,msg:'多余的闭合大括号 }'});
+        brace=0;
+      }
+    }
+  }
+  if(errors.length>0){
+    var html='<div class="error-panel"><div class="err-title">❌ CSS语法问题</div>';
+    errors.forEach(function(e){html+='<div class="err-suggest">📍 第 '+e.line+' 行：'+e.msg+'</div>';});
+    html+='</div>';
+    result.innerHTML=html;
+  } else if(brace>0){
+    result.innerHTML='<div class="error-panel"><div class="err-title">⚠️ CSS大括号不匹配</div><div class="err-suggest">❗ 有 '+brace+' 个未闭合的大括号，检查是否有缺少 }</div></div>';
+  } else {
+    result.innerHTML='<div class="success-panel">✅ CSS语法检测通过</div>';
+  }
+}
+
+function beautifyJS(code){
+  var indent=0;
+  var result='';
+  var i=0;
+  code=code.replace(/\{/g,' { ').replace(/\}/g,' } ').replace(/;/g,';');
+  var lines=code.split('\n');
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i].trim();
+    if(!line)continue;
+    if(line.match(/^}/))indent=Math.max(0,indent-1);
+    result+=('  '.repeat(indent))+line+'\n';
+    if(line.match(/\{$/))indent++;
+  }
+  result=beautifyMinJS(result);
+  return result;
+}
+
+function beautifyMinJS(code){
+  var indent=0;
+  var result='';
+  var lines=code.split('\n');
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i].trim();
+    if(!line)continue;
+    var dedent=0;
+    if(line.startsWith('}')||line.startsWith('else')||line.startsWith('while')||line.startsWith('catch')||line.startsWith('finally')){
+      dedent=1;
+    }
+    indent=Math.max(0,indent-dedent);
+    result+=('  '.repeat(indent))+line+'\n';
+    if(line.endsWith('{')||line.endsWith(';')&&!line.match(/^(if|for|while|switch|try|catch|finally)\s*\(/)){
+      indent++;
+    }
+    if(line.match(/^(if|for|while|switch|try|catch|finally)\s*\(.*\)\s*$/)){
+      indent++;
+    }
+  }
+  return result;
+}
+
+function beautifyHTML(code){
+  var indent=0;
+  var result='';
+  var tagRegex=/<\/?([a-z][a-z0-9]*)[^>]*\/?>/gi;
+  var lastPos=0;
+  var match;
+  while((match=tagRegex.exec(code))!==null){
+    var text=code.substring(lastPos,match.index);
+    if(text.trim()){
+      result+=('  '.repeat(indent))+text.trim()+'\n';
+    }
+    var full=match[0];
+    if(full.match(/^<\/(html|head|body|div|section|article|aside|header|footer|nav|main|ul|ol|li|table|thead|tbody|tr|td|th|p|form|h[1-6]|script|style|iframe|blockquote|details|summary)/i)){
+      indent=Math.max(0,indent-1);
+    }
+    if(full.startsWith('</')){
+      result+=('  '.repeat(indent))+full+'\n';
+    } else if(full.endsWith('/>')){
+      result+=('  '.repeat(indent))+full+'\n';
+    } else {
+      result+=('  '.repeat(indent))+full+'\n';
+      if(!full.match(/^<(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)/i)){
+        indent++;
+      }
+    }
+    lastPos=match.index+full.length;
+  }
+  var remaining=code.substring(lastPos).trim();
+  if(remaining)result+=remaining;
+  return result;
+}
+
+function beautifyCSS(code){
+  var indent=0;
+  var result='';
+  var lines=code.split('\n');
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i].trim();
+    if(!line||line==='{}')continue;
+    if(line.startsWith('}')){
+      indent=Math.max(0,indent-1);
+    }
+    result+=('  '.repeat(indent))+line+'\n';
+    if(line.endsWith('{'))indent++;
+  }
+  return result;
+}
+
+function beautifyPython(code){
+  var indent=0;
+  var result='';
+  var lines=code.split('\n');
+  var prevDecrease=false;
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i].rstrip();
+    if(!line)continue;
+    if(prevDecrease&&!line.match(/^\s*(def|class|else|elif|except|finally|while|for|if|try|with)\s*:/)){
+      indent=Math.max(0,indent-1);
+    }
+    prevDecrease=false;
+    if(line.match(/:\s*$/)){
+      result+=('    '.repeat(indent))+line+'\n';
+      indent++;
+      prevDecrease=true;
+    } else {
+      result+=('    '.repeat(indent))+line+'\n';
+    }
+  }
+  return result;
+}
+
+function beautifyJSON(code){
+  var obj=JSON.parse(code);
+  return JSON.stringify(obj,null,2);
+}
+
+function beautifySQL(code){
+  var keywords=['SELECT','FROM','WHERE','AND','OR','JOIN','LEFT','RIGHT','INNER','OUTER','ON','GROUP','BY','ORDER','HAVING','LIMIT','OFFSET','INSERT','INTO','VALUES','UPDATE','SET','DELETE','CREATE','TABLE','DROP','ALTER','INDEX','PRIMARY','KEY','FOREIGN','REFERENCES','NOT','NULL','UNIQUE','DEFAULT','AUTO_INCREMENT','VARCHAR','INT','TEXT','DATE','DATETIME','TIMESTAMP','BOOLEAN','FLOAT','DOUBLE','DECIMAL','ENUM','SET','DISTINCT','AS','IN','BETWEEN','LIKE','IS','EXISTS','CASE','WHEN','THEN','ELSE','END','UNION','ALL','COUNT','SUM','AVG','MIN','MAX','COALESCE','NULLIF','CAST','CONVERT','DATE_FORMAT','YEAR','MONTH','DAY','NOW','CURDATE','IFNULL','CONCAT','SUBSTRING','TRIM','UPPER','LOWER','LENGTH','INSTR','REPLACE'];
+  var sql=code.toUpperCase().replace(/'/g,"'");
+  var result=code;
+  keywords.forEach(function(kw){
+    var re=new RegExp('\\b'+kw+'\\b','gi');
+    result=result.replace(re,kw);
+  });
+  result=result.replace(/,\s*/g,',\n  ').replace(/WHERE/gi,'\nWHERE ').replace(/AND\s/gi,'\n  AND ').replace(/OR\s/gi,'\n  OR ').replace(/JOIN\s/gi,'\nJOIN ').replace(/LEFT\s+JOIN/gi,'\nLEFT JOIN').replace(/RIGHT\s+JOIN/gi,'\nRIGHT JOIN').replace(/INNER\s+JOIN/gi,'\nINNER JOIN').replace(/ORDER\s+BY/gi,'\nORDER BY').replace(/GROUP\s+BY/gi,'\nGROUP BY').replace(/HAVING/gi,'\nHAVING ').replace(/LIMIT/gi,'\nLIMIT ');
+  return result;
+}
+
+function clearCode(){
+  document.getElementById('inputCode').value='';
+  document.getElementById('resultPanel').innerHTML='';
+  document.getElementById('syntaxResult').innerHTML='';
+}
+
+function loadSample(){
+  var samples={
+    js:'function fibonacci(n){if(n<=1)return n;return fibonacci(n-1)+fibonacci(n-2);}const arr=[1,2,3,4,5];const doubled=arr.map(x=>x*2);console.log(doubled);',
+    html:'<div><header><h1>标题</h1><nav><a href="#">首页</a><a href="#">关于</a></nav></header><main><p>内容区域</p></main><footer>&copy; 2024</footer></div>',
+    css:'.container{max-width:1200px;margin:0 auto;padding:20px;}.header{background:#333;color:#fff;padding:20px;}.content{display:grid;grid-template-columns:1fr 1fr;gap:20px;}',
+    py:'def quicksort(arr):\n if len(arr)<=1:return arr\n pivot=arr[len(arr)//2]\n left=[x for x in arr if x<pivot]\n middle=[x for x in arr if x==pivot]\n right=[x for x in arr if x>pivot]\n return quicksort(left)+middle+quicksort(right)',
+    json:'{"name":"张三","age":30,"skills":["Python","JavaScript","CSS"],"projects":{"web":"工具箱","mobile":"App"},"active":true}',
+    sql:'select users.name,orders.total,products.title from users join orders on users.id=orders.user_id join products on orders.product_id=products.id where users.active=1 and orders.total>100 order by orders.total desc limit 10'
+  };
+  document.getElementById('inputCode').value=samples[currentLang]||samples.js;
+}
+
+function loadTemplate(t){
+  var templates={
+    fn:'async function fetchData(url){\n  try{\n    const response=await fetch(url);\n    if(!response.ok)throw new Error(`HTTP ${response.status}`);\n    const data=await response.json();\n    return data;\n  }catch(error){\n    console.error("获取数据失败:",error);\n    throw error;\n  }\n}',
+    arr:'// 数组常用操作\nconst nums=[1,2,3,4,5,6,7,8,9,10];\n\n// 过滤\nconst evens=nums.filter(n=>n%2===0);\n\n// 映射\nconst squared=nums.map(n=>n**2);\n\n// 累计\nconst sum=nums.reduce((acc,n)=>acc+n,0);\n\n// 查找\nconst found=nums.find(n=>n>5);\n\n// 排序\nconst sorted=[...nums].sort((a,b)=>a-b);',
+    fetch:'fetch("https://api.example.com/data",{\n  method:"POST",\n  headers:{"Content-Type":"application/json","Authorization":"Bearer TOKEN"},\n  body:JSON.stringify({name:"张三",value:123})\n})\n.then(res=>res.json())\n.then(data=>console.log("成功:",data))\n.catch(err=>console.error("失败:",err));',
+    class:'class UserManager{\n  constructor(){this.users=[];}\n\n  addUser(user){this.users.push(user);}\n\n  removeUser(id){this.users=this.users.filter(u=>u.id!==id);}\n\n  getUser(id){return this.users.find(u=>u.id===id);}\n\n  listUsers(){return [...this.users];}\n\n  get count(){return this.users.length;}\n}',
+    pyfn:'def parse_config(filepath):\n    """解析配置文件并返回字典""" \n    config={}\n    try:\n        with open(filepath,"r",encoding="utf-8")as f:\n            for line in f:\n                line=line.strip()\n                if line and not line.startswith("#"):\n                    key,value=line.split("=",1)\n                    config[key.strip()]=value.strip()\n        return config\n    except FileNotFoundError:\n        print(f"文件不存在: {filepath}")\n        return {}\n    except Exception as e:\n        print(f"解析错误: {e}")\n        return {}',
+    htmlpage:'<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width,initial-scale=1.0">\n  <title>页面标题</title>\n  <style>\n    *{margin:0;padding:0;box-sizing:border-box;}\n    body{font-family:Arial,sans-serif;line-height:1.6;}\n    .container{max-width:1200px;margin:0 auto;}\n  </style>\n</head>\n<body>\n  <header class="header"><div class="container"><h1>标题</h1></div></header>\n  <main class="container"><p>内容</p></main>\n  <footer>&copy; 2024</footer>\n</body>\n</html>'
+  };
+  document.getElementById('inputCode').value=templates[t]||'';
+}
+
+function copyCode(){
+  var code=document.getElementById('inputCode').value;
+  if(!code){alert('没有内容可复制');return;}
+  navigator.clipboard.writeText(code).then(function(){
+    var btn=event.target;
+    var orig=btn.textContent;
+    btn.textContent='✅ 已复制';
+    setTimeout(function(){btn.textContent=orig;},1500);
+  });
+}
+
+function downloadCode(){
+  var code=document.getElementById('inputCode').value;
+  if(!code){alert('没有内容可下载');return;}
+  var exts={js:'js',html:'html',css:'css',py:'py',json:'json',sql:'sql'};
+  var ext=exts[currentLang]||'txt';
+  var blob=new Blob([code],{type:'text/plain;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='code.'+ext;
+  a.click();
+}
+</script>
+</body>
+</html>
