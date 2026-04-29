@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>扫雷 - 小游戏乐园</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+      background: #c0c0c0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    .back { align-self: flex-start; color: #333; text-decoration: none; margin-bottom: 10px; }
+    h1 { color: #333; margin-bottom: 15px; }
+    .toolbar {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 15px;
+      background: #c0c0c0;
+      border: 2px solid #808080;
+      border-top-color: #fff;
+      border-left-color: #fff;
+      padding: 10px 20px;
+    }
+    .toolbar button {
+      padding: 5px 15px;
+      background: #c0c0c0;
+      border: 2px solid #808080;
+      border-top-color: #fff;
+      border-left-color: #fff;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+    .toolbar button:active {
+      border-top-color: #808080;
+      border-left-color: #808080;
+      border-bottom-color: #fff;
+      border-right-color: #fff;
+    }
+    .toolbar span { font-size: 1.2em; font-weight: bold; }
+    .face-btn {
+      width: 40px; height: 40px;
+      font-size: 1.5em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .game-board {
+      border: 3px solid #808080;
+      border-top-color: #fff;
+      border-left-color: #fff;
+      display: inline-grid;
+      gap: 1px;
+      background: #808080;
+    }
+    .cell {
+      width: 30px; height: 30px;
+      background: #c0c0c0;
+      border: 2px solid #fff;
+      border-right-color: #808080;
+      border-bottom-color: #808080;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.9em;
+      cursor: pointer;
+      user-select: none;
+    }
+    .cell.revealed {
+      border: 1px solid #808080;
+      background: #c0c0c0;
+      cursor: default;
+    }
+    .cell.flagged::after { content: '🚩'; }
+    .cell.mine::after { content: '💣'; }
+    .cell.exploded { background: #ff0000; }
+    .cell.num-1 { color: #0000ff; }
+    .cell.num-2 { color: #008000; }
+    .cell.num-3 { color: #ff0000; }
+    .cell.num-4 { color: #000080; }
+    .cell.num-5 { color: #800000; }
+    .cell.num-6 { color: #008080; }
+    .cell.num-7 { color: #000; }
+    .cell.num-8 { color: #808080; }
+  </style>
+</head>
+<body>
+  <a href="../index.html" class="back">← 返回首页</a>
+  <h1>💣 扫雷</h1>
+  <div class="toolbar">
+    <button onclick="setLevel('easy')">简单</button>
+    <button onclick="setLevel('medium')">中等</button>
+    <button onclick="setLevel('hard')">困难</button>
+    <span>💣 <span id="mineCount">10</span></span>
+    <button class="face-btn" onclick="initGame()" id="face">😊</button>
+    <span>⏱️ <span id="timer">0</span></span>
+  </div>
+  <div class="game-board" id="board"></div>
+  <p style="margin-top: 15px; color: #666;">左键翻开，右键插旗</p>
+
+  <script>
+    const levels = {
+      easy: { rows: 9, cols: 9, mines: 10 },
+      medium: { rows: 16, cols: 16, mines: 40 },
+      hard: { rows: 16, cols: 30, mines: 99 }
+    };
+    
+    let currentLevel = 'easy';
+    let board = [];
+    let revealed = 0;
+    let flagged = 0;
+    let gameOver = false;
+    let timer = null;
+    let seconds = 0;
+    let firstClick = true;
+    
+    function setLevel(level) {
+      currentLevel = level;
+      initGame();
+    }
+    
+    function initGame() {
+      const config = levels[currentLevel];
+      const boardEl = document.getElementById('board');
+      boardEl.innerHTML = '';
+      boardEl.style.gridTemplateColumns = `repeat(${config.cols}, 30px)`;
+      
+      board = [];
+      revealed = 0;
+      flagged = 0;
+      gameOver = false;
+      firstClick = true;
+      seconds = 0;
+      document.getElementById('timer').textContent = '0';
+      document.getElementById('mineCount').textContent = config.mines;
+      document.getElementById('face').textContent = '😊';
+      
+      if (timer) clearInterval(timer);
+      
+      // Create cells
+      for (let r = 0; r < config.rows; r++) {
+        board[r] = [];
+        for (let c = 0; c < config.cols; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.dataset.row = r;
+          cell.dataset.col = c;
+          cell.addEventListener('click', () => handleClick(r, c));
+          cell.addEventListener('contextmenu', (e) => { e.preventDefault(); handleRightClick(r, c); });
+          boardEl.appendChild(cell);
+          board[r][c] = { el: cell, mine: false, revealed: false, flagged: false, adjacent: 0 };
+        }
+      }
+    }
+    
+    function placeMines(excludeR, excludeC) {
+      const config = levels[currentLevel];
+      let placed = 0;
+      while (placed < config.mines) {
+        const r = Math.floor(Math.random() * config.rows);
+        const c = Math.floor(Math.random() * config.cols);
+        if (!board[r][c].mine && (r !== excludeR || c !== excludeC)) {
+          board[r][c].mine = true;
+          placed++;
+        }
+      }
+      
+      // Calculate adjacent mines
+      for (let r = 0; r < config.rows; r++) {
+        for (let c = 0; c < config.cols; c++) {
+          if (!board[r][c].mine) {
+            let count = 0;
+            for (let dr = -1; dr <= 1; dr++) {
+              for (let dc = -1; dc <= 1; dc++) {
+                const nr = r + dr, nc = c + dc;
+                if (nr >= 0 && nr < config.rows && nc >= 0 && nc < config.cols && board[nr][nc].mine) {
+                  count++;
+                }
+              }
+            }
+            board[r][c].adjacent = count;
+          }
+        }
+      }
+    }
+    
+    function handleClick(r, c) {
+      if (gameOver || board[r][c].revealed || board[r][c].flagged) return;
+      
+      if (firstClick) {
+        firstClick = false;
+        placeMines(r, c);
+        timer = setInterval(() => {
+          seconds++;
+          document.getElementById('timer').textContent = seconds;
+        }, 1000);
+      }
+      
+      reveal(r, c);
+      checkWin();
+    }
+    
+    function reveal(r, c) {
+      const config = levels[currentLevel];
+      if (r < 0 || r >= config.rows || c < 0 || c >= config.cols) return;
+      if (board[r][c].revealed || board[r][c].flagged) return;
+      
+      board[r][c].revealed = true;
+      board[r][c].el.classList.add('revealed');
+      revealed++;
+      
+      if (board[r][c].mine) {
+        board[r][c].el.classList.add('mine', 'exploded');
+        endGame(false);
+        return;
+      }
+      
+      if (board[r][c].adjacent > 0) {
+        board[r][c].el.textContent = board[r][c].adjacent;
+        board[r][c].el.classList.add('num-' + board[r][c].adjacent);
+      } else {
+        // Reveal neighbors
+        for (let dr = -1; dr <= 1; dr++) {
+          for (let dc = -1; dc <= 1; dc++) {
+            reveal(r + dr, c + dc);
+          }
+        }
+      }
+    }
+    
+    function handleRightClick(r, c) {
+      if (gameOver || board[r][c].revealed) return;
+      
+      const config = levels[currentLevel];
+      if (board[r][c].flagged) {
+        board[r][c].flagged = false;
+        board[r][c].el.classList.remove('flagged');
+        flagged--;
+      } else {
+        board[r][c].flagged = true;
+        board[r][c].el.classList.add('flagged');
+        flagged++;
+      }
+      document.getElementById('mineCount').textContent = config.mines - flagged;
+    }
+    
+    function checkWin() {
+      const config = levels[currentLevel];
+      if (revealed === config.rows * config.cols - config.mines) {
+        endGame(true);
+      }
+    }
+    
+    function endGame(won) {
+      gameOver = true;
+      clearInterval(timer);
+      document.getElementById('face').textContent = won ? '😎' : '😵';
+      
+      if (!won) {
+        // Reveal all mines
+        const config = levels[currentLevel];
+        for (let r = 0; r < config.rows; r++) {
+          for (let c = 0; c < config.cols; c++) {
+            if (board[r][c].mine && !board[r][c].revealed) {
+              board[r][c].el.classList.add('mine');
+            }
+          }
+        }
+      }
+    }
+    
+    initGame();
+  </script>
+</body>
+</html>

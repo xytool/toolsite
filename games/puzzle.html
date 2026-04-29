@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>拼图游戏 - 小游戏乐园</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      color: #fff;
+    }
+    .back { align-self: flex-start; color: #fff; text-decoration: none; margin-bottom: 10px; }
+    h1 { margin-bottom: 15px; }
+    .controls { margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .controls button, .controls label {
+      padding: 8px 20px;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+    .controls input[type="file"] { display: none; }
+    .puzzle-container {
+      display: grid;
+      gap: 2px;
+      background: rgba(255,255,255,0.1);
+      padding: 10px;
+      border-radius: 12px;
+    }
+    .puzzle-piece {
+      width: 100px; height: 100px;
+      background-size: 300px 300px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: transform 0.2s;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .puzzle-piece:hover { transform: scale(1.02); }
+    .puzzle-piece.empty { background: transparent; border: 2px dashed rgba(255,255,255,0.3); }
+    .stats { margin-top: 15px; font-size: 1.1em; }
+    .win-msg {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    .win-msg.show { display: flex; }
+    .win-msg h2 { font-size: 2.5em; margin-bottom: 15px; }
+  </style>
+</head>
+<body>
+  <a href="../index.html" class="back">← 返回首页</a>
+  <h1>🧩 拼图游戏</h1>
+  <div class="controls">
+    <label for="imageUpload">📷 上传图片</label>
+    <input type="file" id="imageUpload" accept="image/*" onchange="loadImage(event)">
+    <button onclick="setSize(3)">3x3</button>
+    <button onclick="setSize(4)">4x4</button>
+    <button onclick="setSize(5)">5x5</button>
+    <button onclick="shufflePuzzle()">🔀 打乱</button>
+  </div>
+  <div class="puzzle-container" id="puzzle"></div>
+  <div class="stats">
+    <span>步数: <strong id="moves">0</strong></span> | 
+    <span>时间: <strong id="time">0:00</strong></span>
+  </div>
+  
+  <div class="win-msg" id="winMsg">
+    <h2>🎉 拼图完成!</h2>
+    <p>用时: <span id="winTime"></span> | 步数: <span id="winMoves"></span></p>
+    <button onclick="shufflePuzzle()" style="padding:10px 30px;background:#f1c40f;color:#333;border:none;border-radius:25px;cursor:pointer;font-size:1em;">再玩一次</button>
+  </div>
+
+  <script>
+    let gridSize = 3;
+    let pieces = [];
+    let emptyIndex = 8;
+    let moves = 0;
+    let timer = null;
+    let seconds = 0;
+    let currentImage = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><rect fill="%234ecca3" width="300" height="300"/><text x="150" y="150" text-anchor="middle" fill="white" font-size="40">🎮</text></svg>';
+    
+    function setSize(size) {
+      gridSize = size;
+      emptyIndex = size * size - 1;
+      initPuzzle();
+    }
+    
+    function loadImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          currentImage = e.target.result;
+          initPuzzle();
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    
+    function initPuzzle() {
+      const puzzle = document.getElementById('puzzle');
+      puzzle.innerHTML = '';
+      puzzle.style.gridTemplateColumns = `repeat(${gridSize}, 100px)`;
+      
+      pieces = [];
+      moves = 0;
+      seconds = 0;
+      document.getElementById('moves').textContent = moves;
+      document.getElementById('time').textContent = '0:00';
+      document.getElementById('winMsg').classList.remove('show');
+      
+      if (timer) clearInterval(timer);
+      timer = setInterval(() => {
+        seconds++;
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        document.getElementById('time').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+      }, 1000);
+      
+      const pieceSize = 300 / gridSize;
+      
+      for (let i = 0; i < gridSize * gridSize; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'puzzle-piece';
+        piece.dataset.index = i;
+        
+        if (i === emptyIndex) {
+          piece.classList.add('empty');
+        } else {
+          const row = Math.floor(i / gridSize);
+          const col = i % gridSize;
+          piece.style.backgroundImage = `url(${currentImage})`;
+          piece.style.backgroundPosition = `-${col * pieceSize}px -${row * pieceSize}px`;
+          piece.style.backgroundSize = `${300}px ${300}px`;
+        }
+        
+        piece.addEventListener('click', () => movePiece(i));
+        puzzle.appendChild(piece);
+        pieces.push(piece);
+      }
+      
+      shufflePuzzle();
+    }
+    
+    function movePiece(index) {
+      if (document.getElementById('winMsg').classList.contains('show')) return;
+      
+      const row = Math.floor(index / gridSize);
+      const col = index % gridSize;
+      const emptyRow = Math.floor(emptyIndex / gridSize);
+      const emptyCol = emptyIndex % gridSize;
+      
+      // Check if adjacent
+      if ((Math.abs(row - emptyRow) === 1 && col === emptyCol) ||
+          (Math.abs(col - emptyCol) === 1 && row === emptyRow)) {
+        // Swap
+        const temp = pieces[index].style.cssText;
+        pieces[index].style.cssText = pieces[emptyIndex].style.cssText;
+        pieces[emptyIndex].style.cssText = temp;
+        
+        pieces[index].classList.toggle('empty');
+        pieces[emptyIndex].classList.toggle('empty');
+        
+        emptyIndex = index;
+        moves++;
+        document.getElementById('moves').textContent = moves;
+        
+        checkWin();
+      }
+    }
+    
+    function shufflePuzzle() {
+      // Make random valid moves
+      for (let i = 0; i < gridSize * gridSize * 5; i++) {
+        const neighbors = [];
+        const row = Math.floor(emptyIndex / gridSize);
+        const col = emptyIndex % gridSize;
+        
+        if (row > 0) neighbors.push(emptyIndex - gridSize);
+        if (row < gridSize - 1) neighbors.push(emptyIndex + gridSize);
+        if (col > 0) neighbors.push(emptyIndex - 1);
+        if (col < gridSize - 1) neighbors.push(emptyIndex + 1);
+        
+        const randomNeighbor = neighbors[Math.floor(Math.random() * neighbors.length)];
+        
+        // Swap without animation
+        const temp = pieces[randomNeighbor].style.cssText;
+        pieces[randomNeighbor].style.cssText = pieces[emptyIndex].style.cssText;
+        pieces[emptyIndex].style.cssText = temp;
+        
+        pieces[randomNeighbor].classList.toggle('empty');
+        pieces[emptyIndex].classList.toggle('empty');
+        
+        emptyIndex = randomNeighbor;
+      }
+      moves = 0;
+      document.getElementById('moves').textContent = moves;
+      document.getElementById('winMsg').classList.remove('show');
+    }
+    
+    function checkWin() {
+      for (let i = 0; i < pieces.length; i++) {
+        if (parseInt(pieces[i].dataset.index) !== i && !pieces[i].classList.contains('empty')) {
+          // Check if piece is in correct position
+          const currentBg = pieces[i].style.backgroundPosition;
+          const expectedRow = Math.floor(i / gridSize);
+          const expectedCol = i % gridSize;
+          const pieceSize = 300 / gridSize;
+          const expectedBg = `-${expectedCol * pieceSize}px -${expectedRow * pieceSize}px`;
+          if (currentBg !== expectedBg) return;
+        }
+      }
+      
+      clearInterval(timer);
+      document.getElementById('winTime').textContent = document.getElementById('time').textContent;
+      document.getElementById('winMoves').textContent = moves;
+      document.getElementById('winMsg').classList.add('show');
+    }
+    
+    // Initialize
+    initPuzzle();
+  </script>
+</body>
+</html>
