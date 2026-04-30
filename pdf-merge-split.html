@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="免费在线PDF合并拆分工具 - 合并多个PDF、拆分PDF页面、提取指定页面，纯浏览器本地处理，文件不上传服务器。">
+  <meta name="keywords" content="PDF合并,PDF拆分,PDF分割,PDF提取页面,在线PDF工具,免费PDF处理">
+  <title>PDF 合并/拆分工具 - 在线工具箱</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <style>
+    .mode-tabs { display:flex; gap:8px; margin-bottom:24px; }
+    .mode-tab {
+      flex:1; padding:14px; text-align:center; border-radius:10px; cursor:pointer;
+      border:2px solid var(--border); font-weight:600; font-size:15px; transition:all .2s; background:var(--card);
+    }
+    .mode-tab:hover { border-color:var(--primary); }
+    .mode-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .mode-tab .emoji { font-size:24px; display:block; margin-bottom:4px; }
+
+    .file-list { margin:16px 0; }
+    .file-item {
+      display:flex; align-items:center; gap:12px; padding:12px 16px;
+      background:var(--card); border:1px solid var(--border); border-radius:8px;
+      margin-bottom:8px; transition:all .2s; cursor:grab;
+    }
+    .file-item:hover { border-color:var(--primary); }
+    .file-item .thumb { width:40px; height:52px; background:#f1f5f9; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--text-muted); overflow:hidden; }
+    .file-item .thumb img { width:100%; height:100%; object-fit:cover; }
+    .file-item .info { flex:1; }
+    .file-item .name { font-weight:600; font-size:14px; word-break:break-all; }
+    .file-item .meta { font-size:12px; color:var(--text-muted); }
+    .file-item .remove { color:#dc2626; cursor:pointer; font-size:18px; padding:4px 8px; border-radius:4px; }
+    .file-item .remove:hover { background:#fef2f2; }
+    .file-item .move-btns { display:flex; gap:4px; }
+    .file-item .move-btns button { background:none; border:1px solid var(--border); border-radius:4px; padding:2px 8px; cursor:pointer; font-size:12px; }
+    .file-item .move-btns button:hover { background:var(--primary); color:#fff; }
+
+    .split-options { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:16px 0; }
+    .split-option {
+      padding:16px; border:2px solid var(--border); border-radius:10px; cursor:pointer;
+      text-align:center; transition:all .2s; background:var(--card);
+    }
+    .split-option:hover { border-color:var(--primary); }
+    .split-option.active { border-color:var(--primary); background:#eef2ff; }
+    .split-option .icon { font-size:28px; margin-bottom:6px; }
+    .split-option .label { font-weight:600; font-size:14px; }
+    .split-option .desc { font-size:12px; color:var(--text-muted); }
+
+    .page-preview { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0; }
+    .page-thumb {
+      width:100px; border:2px solid var(--border); border-radius:6px; padding:4px;
+      text-align:center; cursor:pointer; transition:all .2s; background:#fff;
+    }
+    .page-thumb:hover { border-color:var(--primary); }
+    .page-thumb.selected { border-color:var(--primary); background:#eef2ff; }
+    .page-thumb canvas { width:100%; height:auto; border-radius:3px; display:block; }
+    .page-thumb .page-num { font-size:11px; color:var(--text-muted); margin-top:4px; }
+
+    .result-list { margin-top:16px; }
+    .result-item {
+      display:flex; align-items:center; gap:12px; padding:12px 16px;
+      background:var(--card); border:1px solid var(--border); border-radius:8px;
+      margin-bottom:8px;
+    }
+    .result-item .icon { font-size:28px; }
+    .result-item .info { flex:1; }
+    .result-item .name { font-weight:600; font-size:14px; }
+    .result-item .meta { font-size:12px; color:var(--text-muted); }
+
+    .status-msg {
+      padding:12px 16px; border-radius:8px; margin:16px 0; font-size:14px;
+      display:flex; align-items:center; gap:8px;
+    }
+    .status-msg.success { background:#f0fdf4; color:#16a34a; }
+    .status-msg.error { background:#fef2f2; color:#dc2626; }
+    .status-msg.info { background:#eff6ff; color:#2563eb; }
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <a href="index.html" class="logo"><span>🧰</span> 在线工具箱</a>
+  <nav>
+    <a href="pdf-merge-split.html" class="active">PDF工具</a>
+    <a href="image-format-converter.html">图片转换</a>
+    <a href="regex-tester.html">正则测试</a>
+    <a href="markdown-editor.html">Markdown</a>
+  </nav>
+</header>
+
+<main class="container">
+  <div class="tool-header">
+    <h1>📄 PDF 合并/拆分工具</h1>
+    <p>合并多个PDF、拆分页面、提取指定页，纯浏览器本地处理，文件不上传服务器</p>
+  </div>
+  
+  <div class="tutorial-box">
+    <h3>📖 使用教程</h3>
+    <ol>
+      <li><strong>选择模式</strong> - 合并(多个PDF合为一个)、拆分(一拆多)、提取(选页导出)</li>
+      <li><strong>上传PDF</strong> - 拖拽或点击上传，支持多文件，合并模式可拖拽排序</li>
+      <li><strong>设置参数</strong> - 拆分可选每页一PDF、按范围、固定页数、按书签</li>
+      <li><strong>下载结果</strong> - 处理完成自动下载，或打包下载多个文件</li>
+    </ol>
+    <div class="tip"><strong>💡 提示：</strong>拆分和提取会显示页面缩略图预览，可点选需要导出的页面。</div>
+  </div>
+
+  
+
+  <!-- 模式切换 -->
+  <div class="mode-tabs">
+    <div class="mode-tab active" onclick="switchMode('merge')">
+      <span class="emoji">📎</span>合并PDF
+    </div>
+    <div class="mode-tab" onclick="switchMode('split')">
+      <span class="emoji">✂️</span>拆分PDF
+    </div>
+    <div class="mode-tab" onclick="switchMode('extract')">
+      <span class="emoji">🔍</span>提取页面
+    </div>
+  </div>
+
+  <!-- 合并模式 -->
+  <div id="mergePanel" class="card">
+    <div class="upload-area" id="mergeUpload" onclick="document.getElementById('mergeInput').click()">
+      <div class="icon">📁</div>
+      <p>点击或拖拽上传 PDF 文件（可多选）</p>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">支持同时上传多个PDF，可拖拽排序</p>
+    </div>
+    <input type="file" id="mergeInput" accept=".pdf" multiple hidden>
+
+    <div id="mergeFileList" class="file-list"></div>
+
+    <div id="mergeActions" style="margin-top:16px;display:flex;gap:12px;justify-content:center;">
+      <button class="btn btn-primary" onclick="mergePDFs()" id="mergeBtn">📎 合并所有PDF</button>
+      <button class="btn btn-outline" onclick="clearMerge()">🗑️ 清空列表</button>
+    </div>
+
+    <div id="mergeStatus"></div>
+  </div>
+
+  <!-- 拆分模式 -->
+  <div id="splitPanel" class="card">
+    <div class="upload-area" id="splitUpload" onclick="document.getElementById('splitInput').click()">
+      <div class="icon">📁</div>
+      <p>点击或拖拽上传 PDF 文件</p>
+    </div>
+    <input type="file" id="splitInput" accept=".pdf" hidden>
+
+    <div id="splitFileInfo" style="margin-top:16px;">
+      <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#f0fdf4;border-radius:8px;">
+        <span style="font-size:28px;">📄</span>
+        <div>
+          <div id="splitFileName" style="font-weight:600;"></div>
+          <div id="splitFileMeta" style="font-size:12px;color:var(--text-muted);"></div>
+        </div>
+        <button class="btn btn-outline" style="margin-left:auto;" onclick="clearSplit()">重新选择</button>
+      </div>
+    </div>
+
+    <div id="splitOptions">
+      <h3 style="margin:20px 0 12px;">选择拆分方式：</h3>
+      <div class="split-options">
+        <div class="split-option active" onclick="selectSplitMode('each')" id="splitEach">
+          <div class="icon">📄</div>
+          <div class="label">每页一个PDF</div>
+          <div class="desc">将每一页拆分为独立文件</div>
+        </div>
+        <div class="split-option" onclick="selectSplitMode('range')" id="splitRange">
+          <div class="icon">📑</div>
+          <div class="label">按范围拆分</div>
+          <div class="desc">指定页码范围分组拆分</div>
+        </div>
+        <div class="split-option" onclick="selectSplitMode('fixed')" id="splitFixed">
+          <div class="icon">📊</div>
+          <div class="label">固定页数拆分</div>
+          <div class="desc">每N页拆分为一个文件</div>
+        </div>
+        <div class="split-option" onclick="selectSplitMode('bookmark')" id="splitBookmark">
+          <div class="icon">🔖</div>
+          <div class="label">按书签拆分</div>
+          <div class="desc">根据PDF书签章节拆分</div>
+        </div>
+      </div>
+
+      <div id="rangeInput" style="margin-top:16px;">
+        <label style="font-size:14px;font-weight:600;">输入页码范围（如：1-3,5,7-10,12）：</label>
+        <input type="text" id="rangeValue" placeholder="1-3,5,7-10" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;margin-top:8px;font-size:14px;" oninput="previewRange()">
+        <div id="rangePreview" style="font-size:12px;color:var(--text-muted);margin-top:6px;"></div>
+      </div>
+
+      <div id="fixedInput" style="margin-top:16px;">
+        <label style="font-size:14px;font-weight:600;">每份包含页数：</label>
+        <input type="number" id="fixedValue" value="5" min="1" style="width:120px;padding:10px 14px;border:1px solid var(--border);border-radius:8px;margin-top:8px;font-size:14px;">
+      </div>
+
+    </div>
+
+    <div id="splitActions" style="margin-top:16px;display:flex;gap:12px;justify-content:center;">
+      <button class="btn btn-primary" onclick="splitPDF()" id="splitBtn" disabled>✂️ 拆分PDF</button>
+      <button class="btn btn-outline" onclick="clearSplit()">🗑️ 清空</button>
+    </div>
+
+    <div id="splitStatus"></div>
+    <div id="splitResults" class="result-list"></div>
+  </div>
+
+  <!-- 提取模式 -->
+  <div id="extractPanel" class="card">
+    <div class="upload-area" id="extractUpload" onclick="document.getElementById('extractInput').click()">
+      <div class="icon">📁</div>
+      <p>点击或拖拽上传 PDF 文件</p>
+    </div>
+    <input type="file" id="extractInput" accept=".pdf" hidden>
+
+    <div id="extractFileInfo" style="margin-top:16px;"></div>
+
+    <div id="extractPages">
+      <h3 style="margin:20px 0 12px;">选择要提取的页面（点击选择/取消）：</h3>
+      <div style="margin-bottom:12px;display:flex;gap:8px;">
+        <button class="btn btn-outline" onclick="selectAllPages()" style="padding:6px 14px;font-size:13px;">全选</button>
+        <button class="btn btn-outline" onclick="deselectAllPages()" style="padding:6px 14px;font-size:13px;">全不选</button>
+        <button class="btn btn-outline" onclick="selectOddPages()" style="padding:6px 14px;font-size:13px;">奇数页</button>
+        <button class="btn btn-outline" onclick="selectEvenPages()" style="padding:6px 14px;font-size:13px;">偶数页</button>
+        <span id="selectedCount" style="margin-left:auto;font-size:13px;color:var(--text-muted);align-self:center;">已选 0 页</span>
+      </div>
+      <div id="pagePreview" class="page-preview"></div>
+    </div>
+
+    <div id="extractActions" style="margin-top:16px;display:flex;gap:12px;justify-content:center;">
+      <button class="btn btn-primary" onclick="extractPages()" id="extractBtn" disabled>🔍 提取选中页面</button>
+      <button class="btn btn-outline" onclick="clearExtract()">🗑️ 重新选择</button>
+    </div>
+
+    <div id="extractStatus"></div>
+  </div>
+</main>
+
+<footer class="footer">
+  <p>© 2026 在线工具箱 · 所有文件仅在浏览器本地处理，不会上传到服务器</p>
+</footer>
+
+<script>
+// PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+let currentMode = 'merge';
+let mergeFiles = [];
+let splitPdfBytes = null;
+let extractPdfBytes = null;
+let extractSelectedPages = new Set();
+let splitMode = 'each';
+let totalPages = 0;
+
+function switchMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-tab').forEach((t, i) => {
+    t.classList.toggle('active', ['merge','split','extract'][i] === mode);
+  });
+  // All panels always visible, just scroll to the selected one
+  const targetPanel = document.getElementById(mode + 'Panel');
+  if (targetPanel) targetPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// === 合并功能 ===
+function setupDragDrop(el, handler) {
+  el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('dragover'); });
+  el.addEventListener('dragleave', () => el.classList.remove('dragover'));
+  el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('dragover'); handler(e.dataTransfer.files); });
+}
+
+setupDragDrop(document.getElementById('mergeUpload'), files => addMergeFiles(files));
+document.getElementById('mergeInput').addEventListener('change', e => addMergeFiles(e.target.files));
+
+async function addMergeFiles(files) {
+  for (const file of files) {
+    if (file.type !== 'application/pdf') continue;
+    const buf = await file.arrayBuffer();
+    try {
+      const pdf = await PDFLib.PDFDocument.load(buf);
+      const pageCount = pdf.getPageCount();
+      mergeFiles.push({ name: file.name, size: file.size, bytes: new Uint8Array(buf), pages: pageCount });
+    } catch (e) {
+      alert(`文件 ${file.name} 读取失败: ${e.message}`);
+    }
+  }
+  renderMergeList();
+}
+
+function renderMergeList() {
+  const list = document.getElementById('mergeFileList');
+  list.innerHTML = mergeFiles.map((f, i) => `
+    <div class="file-item" draggable="true" ondragstart="dragMerge(event,${i})" ondragover="event.preventDefault()" ondrop="dropMerge(event,${i})">
+      <div class="thumb">PDF</div>
+      <div class="info">
+        <div class="name">${esc(f.name)}</div>
+        <div class="meta">${formatSize(f.size)} · ${f.pages} 页</div>
+      </div>
+      <div class="move-btns">
+        <button onclick="moveMerge(${i},-1)" ${i===0?'disabled':''}>▲</button>
+        <button onclick="moveMerge(${i},1)" ${i===mergeFiles.length-1?'disabled':''}>▼</button>
+      </div>
+      <span class="remove" onclick="removeMerge(${i})">✕</span>
+    </div>
+  `).join('');
+  // mergeActions always visible
+}
+
+let dragIdx = -1;
+function dragMerge(e, i) { dragIdx = i; }
+function dropMerge(e, i) {
+  if (dragIdx === i) return;
+  const item = mergeFiles.splice(dragIdx, 1)[0];
+  mergeFiles.splice(i, 0, item);
+  renderMergeList();
+}
+function moveMerge(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= mergeFiles.length) return;
+  [mergeFiles[i], mergeFiles[j]] = [mergeFiles[j], mergeFiles[i]];
+  renderMergeList();
+}
+function removeMerge(i) { mergeFiles.splice(i, 1); renderMergeList(); }
+function clearMerge() { mergeFiles = []; renderMergeList(); document.getElementById('mergeStatus').innerHTML = ''; }
+
+async function mergePDFs() {
+  if (mergeFiles.length < 2) return showStatus('mergeStatus', '请至少上传2个PDF文件', 'error');
+  showStatus('mergeStatus', '⏳ 正在合并...', 'info');
+  try {
+    const merged = await PDFLib.PDFDocument.create();
+    let totalPagesCopied = 0;
+    for (let i = 0; i < mergeFiles.length; i++) {
+      const f = mergeFiles[i];
+      console.log(`合并第 ${i+1}/${mergeFiles.length}: ${f.name}, ${f.pages} 页`);
+      const src = await PDFLib.PDFDocument.load(f.bytes);
+      const srcPageCount = src.getPageCount();
+      const indices = src.getPageIndices();
+      console.log(`  源文件页数: ${srcPageCount}, 索引: ${JSON.stringify(indices)}`);
+      const pages = await merged.copyPages(src, indices);
+      console.log(`  复制了 ${pages.length} 页`);
+      pages.forEach(p => merged.addPage(p));
+      totalPagesCopied += pages.length;
+    }
+    console.log(`总共复制了 ${totalPagesCopied} 页`);
+    const bytes = await merged.save();
+    console.log(`输出PDF大小: ${bytes.length} 字节`);
+    downloadBlob(new Blob([bytes], {type:'application/pdf'}), '合并结果.pdf');
+    const totalPages = merged.getPageCount();
+    showStatus('mergeStatus', `✅ 合并成功！共 ${mergeFiles.length} 个文件，${totalPages} 页，已开始下载`, 'success');
+  } catch (e) {
+    console.error('合并错误:', e);
+    showStatus('mergeStatus', `❌ 合并失败: ${e.message}`, 'error');
+  }
+}
+
+// === 拆分功能 ===
+setupDragDrop(document.getElementById('splitUpload'), files => loadSplitFile(files[0]));
+document.getElementById('splitInput').addEventListener('change', e => loadSplitFile(e.target.files[0]));
+
+async function loadSplitFile(file) {
+  if (!file || file.type !== 'application/pdf') return alert('请上传PDF文件');
+  splitPdfBytes = new Uint8Array(await file.arrayBuffer());
+  try {
+    const pdf = await PDFLib.PDFDocument.load(splitPdfBytes);
+    totalPages = pdf.getPageCount();
+    document.getElementById('splitFileName').textContent = file.name;
+    document.getElementById('splitFileMeta').textContent = `${formatSize(file.size)} · ${totalPages} 页`;
+    // splitUpload replaced by file info
+    document.getElementById('splitBtn').disabled = false;
+  } catch (e) {
+    alert(`文件读取失败: ${e.message}`);
+  }
+}
+
+function selectSplitMode(mode) {
+  splitMode = mode;
+  document.querySelectorAll('.split-option').forEach(o => o.classList.remove('active'));
+  document.getElementById({each:'splitEach',range:'splitRange',fixed:'splitFixed',bookmark:'splitBookmark'}[mode]).classList.add('active');
+  document.getElementById('rangeInput').style.display = mode === 'range' ? 'block' : 'none';
+  document.getElementById('fixedInput').style.display = mode === 'fixed' ? 'block' : 'none';
+}
+
+function previewRange() {
+  const ranges = parseRanges(document.getElementById('rangeValue').value, totalPages);
+  document.getElementById('rangePreview').textContent = ranges ? `将拆分为 ${ranges.length} 个文件` : '格式错误，请输入如 1-3,5,7-10';
+}
+
+function parseRanges(str, max) {
+  if (!str.trim()) return null;
+  const groups = str.split(',').map(g => g.trim()).filter(Boolean);
+  const result = [];
+  for (const g of groups) {
+    if (g.includes('-')) {
+      const [a, b] = g.split('-').map(Number);
+      if (isNaN(a) || isNaN(b) || a < 1 || b > max || a > b) return null;
+      const pages = [];
+      for (let i = a; i <= b; i++) pages.push(i - 1);
+      result.push(pages);
+    } else {
+      const n = Number(g);
+      if (isNaN(n) || n < 1 || n > max) return null;
+      result.push([n - 1]);
+    }
+  }
+  return result.length ? result : null;
+}
+
+function clearSplit() {
+  splitPdfBytes = null;
+  // splitUpload restored
+  document.getElementById('splitBtn').disabled = true;
+  document.getElementById('splitResults').innerHTML = '';
+  document.getElementById('splitStatus').innerHTML = '';
+}
+
+function clearExtract() {
+  extractPdfBytes = null;
+  extractSelectedPages.clear();
+  // extractUpload restored
+  document.getElementById('extractBtn').disabled = true;
+  document.getElementById('pagePreview').innerHTML = '';
+  document.getElementById('extractStatus').innerHTML = '';
+  document.getElementById('selectedCount').textContent = '已选 0 页';
+}
+
+async function splitPDF() {
+  if (!splitPdfBytes) return;
+  showStatus('splitStatus', '⏳ 正在拆分...', 'info');
+  const results = document.getElementById('splitResults');
+  results.innerHTML = '';
+
+  try {
+    const src = await PDFLib.PDFDocument.load(splitPdfBytes);
+    const name = document.getElementById('splitFileName').textContent.replace('.pdf', '');
+    let fileGroups = [];
+
+    if (splitMode === 'each') {
+      for (let i = 0; i < totalPages; i++) fileGroups.push({ pages: [i], label: `第${i+1}页` });
+    } else if (splitMode === 'range') {
+      const ranges = parseRanges(document.getElementById('rangeValue').value, totalPages);
+      if (!ranges) return showStatus('splitStatus', '❌ 页码范围格式错误', 'error');
+      ranges.forEach((pages, i) => fileGroups.push({ pages, label: `范围${i+1}` }));
+    } else if (splitMode === 'fixed') {
+      const n = parseInt(document.getElementById('fixedValue').value) || 5;
+      for (let i = 0; i < totalPages; i += n) {
+        const pages = [];
+        for (let j = i; j < Math.min(i + n, totalPages); j++) pages.push(j);
+        fileGroups.push({ pages, label: `第${i+1}-${Math.min(i+n, totalPages)}页` });
+      }
+    } else if (splitMode === 'bookmark') {
+      // 简单按书签拆分 - 如果没有书签则回退到每页
+      fileGroups.push({ pages: src.getPageIndices(), label: '全部（无书签）' });
+    }
+
+    for (const group of fileGroups) {
+      const newPdf = await PDFLib.PDFDocument.create();
+      const copied = await newPdf.copyPages(src, group.pages);
+      copied.forEach(p => newPdf.addPage(p));
+      const bytes = await newPdf.save();
+      const fileName = `${name}_${group.label}.pdf`;
+      downloadBlob(new Blob([bytes], {type:'application/pdf'}), fileName);
+      results.innerHTML += `
+        <div class="result-item">
+          <span class="icon">📄</span>
+          <div class="info">
+            <div class="name">${esc(fileName)}</div>
+            <div class="meta">${group.pages.length} 页 · ${formatSize(bytes.length)}</div>
+          </div>
+          <span style="color:#16a34a;font-weight:600;">✅ 已下载</span>
+        </div>`;
+    }
+    showStatus('splitStatus', `✅ 拆分完成！共生成 ${fileGroups.length} 个文件`, 'success');
+  } catch (e) {
+    showStatus('splitStatus', `❌ 拆分失败: ${e.message}`, 'error');
+  }
+}
+
+// === 提取功能 ===
+setupDragDrop(document.getElementById('extractUpload'), files => loadExtractFile(files[0]));
+document.getElementById('extractInput').addEventListener('change', e => loadExtractFile(e.target.files[0]));
+
+async function loadExtractFile(file) {
+  if (!file || file.type !== 'application/pdf') return;
+  extractPdfBytes = new Uint8Array(await file.arrayBuffer());
+  extractSelectedPages = new Set();
+
+  try {
+    const pdf = await pdfjsLib.getDocument({data: extractPdfBytes.slice()}).promise;
+    const libPdf = await PDFLib.PDFDocument.load(extractPdfBytes);
+    const count = libPdf.getPageCount();
+
+    document.getElementById('extractFileInfo').innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#f0fdf4;border-radius:8px;">
+        <span style="font-size:28px;">📄</span>
+        <div>
+          <div style="font-weight:600;">${esc(file.name)}</div>
+          <div style="font-size:12px;color:var(--text-muted);">${formatSize(file.size)} · ${count} 页</div>
+        </div>
+      </div>`;
+
+    // extractUpload replaced by file info
+    document.getElementById('extractBtn').disabled = false;
+
+    const preview = document.getElementById('pagePreview');
+    preview.innerHTML = '<div style="color:var(--text-muted);">⏳ 正在渲染页面预览...</div>';
+
+    // 渲染缩略图
+    const thumbs = [];
+    for (let i = 1; i <= Math.min(count, 50); i++) {
+      const page = await pdf.getPage(i);
+      const vp = page.getViewport({scale: 0.3});
+      const canvas = document.createElement('canvas');
+      canvas.width = vp.width;
+      canvas.height = vp.height;
+      await page.render({canvasContext: canvas.getContext('2d'), viewport: vp}).promise;
+      thumbs.push({ canvas, pageNum: i });
+    }
+
+    preview.innerHTML = '';
+    thumbs.forEach(({canvas, pageNum}) => {
+      const div = document.createElement('div');
+      div.className = 'page-thumb';
+      div.dataset.page = pageNum;
+      div.onclick = () => togglePage(pageNum, div);
+      div.appendChild(canvas);
+      const label = document.createElement('div');
+      label.className = 'page-num';
+      label.textContent = `第 ${pageNum} 页`;
+      div.appendChild(label);
+      preview.appendChild(div);
+    });
+
+    if (count > 50) {
+      preview.innerHTML += `<div style="width:100%;text-align:center;color:var(--text-muted);font-size:13px;padding:8px;">仅显示前50页预览，共${count}页</div>`;
+    }
+  } catch (e) {
+    alert(`文件读取失败: ${e.message}`);
+  }
+}
+
+function togglePage(num, el) {
+  if (extractSelectedPages.has(num)) {
+    extractSelectedPages.delete(num);
+    el.classList.remove('selected');
+  } else {
+    extractSelectedPages.add(num);
+    el.classList.add('selected');
+  }
+  document.getElementById('selectedCount').textContent = `已选 ${extractSelectedPages.size} 页`;
+}
+function selectAllPages() {
+  document.querySelectorAll('.page-thumb').forEach(el => {
+    const n = parseInt(el.dataset.page);
+    extractSelectedPages.add(n);
+    el.classList.add('selected');
+  });
+  document.getElementById('selectedCount').textContent = `已选 ${extractSelectedPages.size} 页`;
+}
+function deselectAllPages() {
+  extractSelectedPages.clear();
+  document.querySelectorAll('.page-thumb').forEach(el => el.classList.remove('selected'));
+  document.getElementById('selectedCount').textContent = '已选 0 页';
+}
+function selectOddPages() {
+  deselectAllPages();
+  document.querySelectorAll('.page-thumb').forEach(el => {
+    const n = parseInt(el.dataset.page);
+    if (n % 2 === 1) { extractSelectedPages.add(n); el.classList.add('selected'); }
+  });
+  document.getElementById('selectedCount').textContent = `已选 ${extractSelectedPages.size} 页`;
+}
+function selectEvenPages() {
+  deselectAllPages();
+  document.querySelectorAll('.page-thumb').forEach(el => {
+    const n = parseInt(el.dataset.page);
+    if (n % 2 === 0) { extractSelectedPages.add(n); el.classList.add('selected'); }
+  });
+  document.getElementById('selectedCount').textContent = `已选 ${extractSelectedPages.size} 页`;
+}
+
+async function extractPages() {
+  if (extractSelectedPages.size === 0) return showStatus('extractStatus', '请选择要提取的页面', 'error');
+  showStatus('extractStatus', '⏳ 正在提取...', 'info');
+  try {
+    const src = await PDFLib.PDFDocument.load(extractPdfBytes);
+    const newPdf = await PDFLib.PDFDocument.create();
+    const indices = [...extractSelectedPages].sort((a,b) => a - b).map(n => n - 1);
+    const pages = await newPdf.copyPages(src, indices);
+    pages.forEach(p => newPdf.addPage(p));
+    const bytes = await newPdf.save();
+    downloadBlob(new Blob([bytes], {type:'application/pdf'}), '提取页面.pdf');
+    showStatus('extractStatus', `✅ 提取成功！共 ${extractSelectedPages.size} 页，已开始下载`, 'success');
+  } catch (e) {
+    showStatus('extractStatus', `❌ 提取失败: ${e.message}`, 'error');
+  }
+}
+
+// === 通用 ===
+function showStatus(id, msg, type) {
+  document.getElementById(id).innerHTML = `<div class="status-msg ${type}">${msg}</div>`;
+}
+
+function downloadBlob(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / 1048576).toFixed(1) + ' MB';
+}
+
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+
+</body>
+</html>

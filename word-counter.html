@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="免费在线字数统计工具 - 统计中英文字数、字符数、行数、段落数、句子数，实时分析阅读时间，支持关键词密度和词频统计。">
+  <title>字数统计 - 在线工具箱</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { font-family: 'Segoe UI', system-ui, sans-serif; }
+    textarea {
+      width: 100%; min-height: 300px; padding: 14px; border: 1px solid var(--border);
+      border-radius: 8px; font-family: 'Cascadia Code','Fira Code',Consolas,monospace;
+      font-size: 14px; line-height: 1.8; resize: vertical; outline: none;
+      transition: border-color .2s; box-sizing: border-box;
+    }
+    textarea:focus { border-color: var(--primary); }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin: 16px 0; }
+    .stat-card {
+      background: #fff; border: 1px solid var(--border); border-radius: 10px;
+      padding: 16px; text-align: center; transition: all .2s;
+    }
+    .stat-card:hover { border-color: var(--primary); transform: translateY(-1px); }
+    .stat-card .num { font-size: 28px; font-weight: 800; color: var(--primary); line-height: 1; }
+    .stat-card .label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .stat-card .sub { font-size: 11px; color: var(--text-muted); }
+
+    .freq-list { display: flex; flex-direction: column; gap: 6px; }
+    .freq-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+    .freq-bar-wrap { flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+    .freq-bar { height: 100%; background: var(--primary); border-radius: 4px; transition: width .3s; }
+    .freq-word { font-weight: 700; font-size: 14px; min-width: 60px; }
+    .freq-count { font-size: 13px; color: var(--text-muted); min-width: 40px; text-align: right; }
+
+    .keyword-chip { display: inline-block; padding: 4px 12px; background: #eef2ff; color: var(--primary); border-radius: 20px; font-size: 13px; font-weight: 600; margin: 3px; }
+    .keyword-chip.high { background: #fef3c7; color: #ca8a04; }
+
+    /* 实时分析条 */
+    .realtime-bar {
+      display: flex; gap: 16px; justify-content: space-between; flex-wrap: wrap;
+      padding: 10px 16px; background: #f8fafc; border-radius: 8px;
+      border: 1px solid var(--border); margin-bottom: 12px; font-size: 13px;
+    }
+    .rt-item { display: flex; gap: 6px; align-items: center; }
+    .rt-label { color: var(--text-muted); }
+    .rt-val { font-weight: 700; color: var(--primary); }
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <a href="index.html" class="logo"><span>🧰</span> 在线工具箱</a>
+  <nav>
+    <a href="image-compressor.html">图片压缩</a>
+    <a href="qr-generator.html">二维码</a>
+    <a href="json-formatter.html">JSON工具</a>
+    <a href="password-generator.html">密码生成</a>
+    <a href="timestamp-converter.html">时间戳</a>
+    <a href="base64-tool.html">Base64</a>
+    <a href="text-diff-tool.html">文本对比</a>
+    <a href="word-counter.html" class="active">字数统计</a>
+  </nav>
+</header>
+
+<main class="container">
+  <div class="tool-header">
+    <h1>📝 字数统计工具</h1>
+    <p>实时统计中英文字数、字符数、行数、段落数，阅读时间估算，词频分析和关键词密度。</p>
+  </div>
+  
+  <div class="tutorial-box">
+    <h3>📖 使用教程</h3>
+    <ol>
+      <li><strong>输入文本</strong> - 粘贴或直接输入要统计的文本</li>
+      <li><strong>实时统计</strong> - 自动显示字数、字符数、行数</li>
+      <li><strong>词频分析</strong> - 显示出现频率最高的词汇Top20</li>
+      <li><strong>阅读时间</strong> - 估算阅读所需时间</li>
+    </ol>
+    <div class="tip"><strong>💡 提示：</strong>支持中英文混合统计，自动识别语言。</div>
+  </div>
+  
+  <div
+  
+
+ class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <span style="font-weight:700;font-size:15px;">✏️ 输入文本</span>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline" style="font-size:13px;padding:6px 14px;" onclick="loadSample()">📝 加载示例</button>
+        <button class="btn btn-outline" style="font-size:13px;padding:6px 14px;" onclick="clearText()">🗑️ 清空</button>
+      </div>
+    </div>
+    <textarea id="textInput" placeholder="在此输入或粘贴文本内容，字数统计将实时显示..."
+      oninput="analyze()" spellcheck="false"></textarea>
+  </div>
+
+  <!-- 实时统计条 -->
+  <div class="realtime-bar" id="realtimeBar">
+    <div class="rt-item"><span class="rt-label">字符</span><span class="rt-val" id="rtChars">0</span></div>
+    <div class="rt-item"><span class="rt-label">汉字</span><span class="rt-val" id="rtChinese">0</span></div>
+    <div class="rt-item"><span class="rt-label">英文词</span><span class="rt-val" id="rtWords">0</span></div>
+    <div class="rt-item"><span class="rt-label">行</span><span class="rt-val" id="rtLines">0</span></div>
+    <div class="rt-item"><span class="rt-label">段落</span><span class="rt-val" id="rtParas">0</span></div>
+    <div class="rt-item"><span class="rt-label">句子</span><span class="rt-val" id="rtSentences">0</span></div>
+    <div class="rt-item"><span class="rt-label">阅读</span><span class="rt-val" id="rtReadTime">0 分钟</span></div>
+  </div>
+
+  <!-- 详细统计 -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="num" id="statChars">0</div>
+      <div class="label">总字符数</div>
+      <div class="sub">含空格</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="statCharsNoSpace">0</div>
+      <div class="label">字符数</div>
+      <div class="sub">不含空格</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="statChinese">0</div>
+      <div class="label">中文字符</div>
+      <div class="sub">汉字数量</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="statEnglish">0</div>
+      <div class="label">英文字母</div>
+      <div class="sub">A-Z a-z</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="statWords">0</div>
+      <div class="label">英文单词</div>
+      <div class="sub">word count</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="statDigits">0</div>
+      <div class="label">数字</div>
+      <div class="sub">0-9</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="statLines">0</div>
+      <div class="label">行数</div>
+      <div class="sub">总行数</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="statParas">0</div>
+      <div class="label">段落</div>
+      <div class="sub">空行分段</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="statSentences">0</div>
+      <div class="label">句子</div>
+      <div class="sub">。！？.!?</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="statPunctuation">0</div>
+      <div class="label">标点符号</div>
+      <div class="sub">，。！？等</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="statReadTime">0 分钟</div>
+      <div class="label">阅读时间</div>
+      <div class="sub">按 300字/分钟</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="statSpeakTime">0 分钟</div>
+      <div class="label">朗读时间</div>
+      <div class="sub">按 150字/分钟</div>
+    </div>
+  </div>
+
+  <!-- 关键词密度 -->
+  <div class="card" style="margin-top:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span style="font-weight:700;font-size:15px;">🔑 关键词密度（出现3次以上）</span>
+      <span style="font-size:12px;color:var(--text-muted);">仅统计中文词组（3字以上）</span>
+    </div>
+    <div id="keywordDensity">请输入文本...</div>
+  </div>
+
+  <!-- 词频统计 -->
+  <div class="card" style="margin-top:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span style="font-weight:700;font-size:15px;">📊 词频统计 Top 20</span>
+      <button class="btn btn-outline" style="font-size:12px;padding:4px 12px;" onclick="copyFreq()">📋 复制</button>
+    </div>
+    <div class="freq-list" id="freqList">请输入文本查看词频...</div>
+  </div>
+
+  <!-- 字符分布 -->
+  <div class="card" style="margin-top:16px;">
+    <div style="font-weight:700;font-size:15px;margin-bottom:12px;">📈 字符类型分布</div>
+    <div id="charDist" style="display:flex;flex-direction:column;gap:8px;"></div>
+  </div>
+</main>
+
+<footer class="footer">
+  <p>© 2026 在线工具箱 · 所有文件仅在浏览器本地处理，不会上传到服务器</p>
+</footer>
+
+<script>
+function analyze() {
+  const text = document.getElementById('textInput').value;
+  if (!text) {
+    resetStats();
+    return;
+  }
+
+  // 基本统计
+  const chars = text.length;
+  const charsNoSpace = text.replace(/\s/g, '').length;
+  const chinese = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
+  const english = (text.match(/[a-zA-Z]/g) || []).length;
+  const digits = (text.match(/\d/g) || []).length;
+  const lines = text.split('\n').length;
+  const paras = text.split(/\n\s*\n/).filter(p => p.trim()).length;
+  const sentences = (text.match(/[。！？.!?]{1,}/g) || []).length;
+  const punctuation = (text.match(/[,，.。!！?？;；:：""''【】《》（）()\[\]{}]/g) || []).length;
+  const words = (text.match(/[a-zA-Z]+/g) || []).length;
+  const chineseChars = chinese;
+  // 阅读时间：中文按300字/分钟，英文按200词/分钟
+  const readTime = Math.max(1, Math.ceil((chineseChars + words * 5) / 300));
+  const speakTime = Math.max(1, Math.ceil((chineseChars + words * 5) / 150));
+
+  // 实时统计
+  document.getElementById('rtChars').textContent = chars;
+  document.getElementById('rtChinese').textContent = chinese;
+  document.getElementById('rtWords').textContent = words;
+  document.getElementById('rtLines').textContent = lines;
+  document.getElementById('rtParas').textContent = paras;
+  document.getElementById('rtSentences').textContent = sentences;
+  document.getElementById('rtReadTime').textContent = readTime + ' 分钟';
+
+  // 详细统计
+  document.getElementById('statChars').textContent = chars;
+  document.getElementById('statCharsNoSpace').textContent = charsNoSpace;
+  document.getElementById('statChinese').textContent = chinese;
+  document.getElementById('statEnglish').textContent = english;
+  document.getElementById('statDigits').textContent = digits;
+  document.getElementById('statWords').textContent = words;
+  document.getElementById('statLines').textContent = lines;
+  document.getElementById('statParas').textContent = paras;
+  document.getElementById('statSentences').textContent = sentences;
+  document.getElementById('statPunctuation').textContent = punctuation;
+  document.getElementById('statReadTime').textContent = readTime + ' 分钟';
+  document.getElementById('statSpeakTime').textContent = speakTime + ' 分钟';
+
+  // 关键词密度
+  analyzeKeywords(text, chinese);
+
+  // 词频统计
+  analyzeFreq(text);
+
+  // 字符分布
+  analyzeCharDist(text, chars);
+}
+
+function analyzeKeywords(text, chineseCount) {
+  const el = document.getElementById('keywordDensity');
+  if (!chineseCount) { el.textContent = '请输入中文文本'; return; }
+
+  // 中文词组提取（2-4字词组）
+  const words = {};
+  const patterns = text.match(/[\u4e00-\u9fa5]{2,4}/g) || [];
+  patterns.forEach(w => { words[w] = (words[w] || 0) + 1; });
+
+  const sorted = Object.entries(words).filter(([_, c]) => c >= 3).sort((a, b) => b[1] - a[1]).slice(0, 20);
+  if (!sorted.length) { el.textContent = '未发现重复3次以上的词组'; return; }
+
+  const maxCount = sorted[0][1];
+  el.innerHTML = sorted.map(([word, count]) => {
+    const pct = ((count / chineseCount) * 100).toFixed(1);
+    const isHigh = pct > 5;
+    return `<span class="keyword-chip ${isHigh?'high':''}">${word} ${count}次 (${pct}%)</span>`;
+  }).join('');
+}
+
+function analyzeFreq(text) {
+  const el = document.getElementById('freqList');
+  // 提取英文单词
+  const words = text.toLowerCase().match(/[a-z]{2,}/g) || [];
+  const freq = {};
+  words.forEach(w => { freq[w] = (freq[w] || 0) + 1; });
+
+  // 中文词组
+  const cnWords = text.match(/[\u4e00-\u9fa5]{2,4}/g) || [];
+  cnWords.forEach(w => { freq[w] = (freq[w] || 0) + 1; });
+
+  const sorted = Object.entries(freq).filter(([_, c]) => c >= 1).sort((a, b) => b[1] - a[1]).slice(0, 20);
+  if (!sorted.length) { el.innerHTML = '<div style="color:#94a3b8;">请输入文本查看词频...</div>'; return; }
+
+  const maxCount = sorted[0][1];
+  el.innerHTML = sorted.map(([word, count]) => {
+    const pct = Math.round((count / maxCount) * 100);
+    return `<div class="freq-item">
+      <span class="freq-word">${escHtml(word)}</span>
+      <div class="freq-bar-wrap"><div class="freq-bar" style="width:${pct}%"></div></div>
+      <span class="freq-count">${count}次</span>
+    </div>`;
+  }).join('');
+}
+
+function analyzeCharDist(text, total) {
+  const chinese = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
+  const english = (text.match(/[a-zA-Z]/g) || []).length;
+  const digits = (text.match(/\d/g) || []).length;
+  const space = (text.match(/\s/g) || []).length;
+  const punct = (text.match(/[^\w\s\u4e00-\u9fa5]/g) || []).length;
+  const other = total - chinese - english - digits - space - punct;
+
+  const items = [
+    { label: '中文字符', count: chinese, color: '#4f46e5' },
+    { label: '英文字母', count: english, color: '#059669' },
+    { label: '数字', count: digits, color: '#d97706' },
+    { label: '空格/换行', count: space, color: '#94a3b8' },
+    { label: '标点符号', count: punct, color: '#dc2626' },
+    { label: '其他字符', count: Math.max(0, other), color: '#64748b' },
+  ].filter(i => i.count > 0);
+
+  const el = document.getElementById('charDist');
+  el.innerHTML = items.map(item => {
+    const pct = total > 0 ? ((item.count / total) * 100).toFixed(1) : 0;
+    return `<div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+        <span>${item.label}</span>
+        <span><b style="color:${item.color}">${item.count}</b> <span style="color:var(--text-muted);">(${pct}%)</span></span>
+      </div>
+      <div style="height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:${item.color};border-radius:3px;"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function resetStats() {
+  ['rtChars','rtChinese','rtWords','rtLines','rtParas','rtSentences','rtReadTime',
+   'statChars','statCharsNoSpace','statChinese','statEnglish','statDigits','statWords',
+   'statLines','statParas','statSentences','statPunctuation','statReadTime','statSpeakTime'
+  ].forEach(id => document.getElementById(id).textContent = '0');
+  document.getElementById('keywordDensity').textContent = '请输入文本...';
+  document.getElementById('freqList').innerHTML = '<div style="color:#94a3b8;">请输入文本查看词频...</div>';
+  document.getElementById('charDist').innerHTML = '';
+}
+
+function clearText() {
+  document.getElementById('textInput').value = '';
+  resetStats();
+}
+
+function loadSample() {
+  document.getElementById('textInput').value = `随着人工智能技术的飞速发展，我们正站在一个新时代的门槛上。人工智能已经渗透到我们生活的方方面面，从智能手机上的语音助手，到医疗诊断中的智能系统，再到自动驾驶汽车的核心算法，人工智能正在以惊人的速度改变着这个世界。
+
+本文将从以下几个方面探讨人工智能的发展现状和未来趋势：
+第一，技术进步的速度正在加快。深度学习算法的突破，使得机器在图像识别、自然语言处理等领域的表现已经超过了人类水平。
+第二，应用场景不断拓展。从智能制造到智慧城市，从精准医疗到个性化教育，人工智能正在各行各业发挥着越来越重要的作用。
+第三，伦理和安全问题日益受到关注。如何确保人工智能系统的公平性和透明度，如何防止技术被滥用，这些问题需要全社会共同面对和解决。
+
+展望未来，人工智能将继续快速发展。我们有理由相信，只要合理引导和规范发展，人工智能一定会为人类社会带来更多福祉。`;
+  analyze();
+}
+
+function copyFreq() {
+  const items = document.querySelectorAll('.freq-item');
+  if (!items.length) return alert('没有内容可复制');
+  const text = Array.from(items).map(el => {
+    const word = el.querySelector('.freq-word').textContent;
+    const count = el.querySelector('.freq-count').textContent;
+    return word + ' ' + count;
+  }).join('\n');
+  navigator.clipboard.writeText(text);
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+
+</body>
+</html>

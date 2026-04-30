@@ -1,0 +1,373 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="免费在线Base64编码解码工具 - 支持文本/文件Base64互转、URL编码、Unicode转换、MIME类型检测，实时预览。">
+  <title>Base64 编码解码 - 在线工具箱</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { font-family: 'Segoe UI', system-ui, sans-serif; }
+    .editor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .editor-grid { grid-template-columns: 1fr; } }
+    textarea { width: 100%; min-height: 300px; padding: 14px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Cascadia Code','Fira Code',Consolas,monospace; font-size: 13px; line-height: 1.6; resize: vertical; outline: none; transition: border-color .2s; box-sizing: border-box; }
+    textarea:focus { border-color: var(--primary); }
+    .action-bar { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; align-items: center; }
+    .action-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+    .label { font-size: 14px; font-weight: 600; min-width: 100px; }
+    .file-preview { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; margin: 4px; }
+    .file-preview img { max-width: 60px; max-height: 60px; border-radius: 4px; }
+    .mime-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .mime-txt { background: #eff6ff; color: #2563eb; }
+    .mime-img { background: #f0fdf4; color: #16a34a; }
+    .mime-bin { background: #fef3c7; color: #ca8a04; }
+    .info-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; font-size: 13px; margin: 8px 0; display: flex; gap: 16px; flex-wrap: wrap; }
+    .info-item { display: flex; gap: 6px; align-items: center; }
+    .info-item .key { color: var(--text-muted); }
+    .info-item .val { font-weight: 700; color: var(--primary); font-family: monospace; }
+    .tab-bar { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+    .tab-btn { padding: 8px 18px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; background: #e2e8f0; color: #475569; transition: all .2s; }
+    .tab-btn.active { background: var(--primary); color: #fff; }
+    .tab-btn:hover:not(.active) { background: #cbd5e1; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+  </style>
+</head>
+<body>
+<header class="navbar">
+  <a href="index.html" class="logo"><span>🛠️</span> 在线工具箱</a>
+  <nav>
+    <a href="image-compressor.html">图片压缩</a>
+    <a href="qr-generator.html">二维码</a>
+    <a href="json-formatter.html">JSON工具</a>
+    <a href="password-generator.html">密码生成</a>
+    <a href="timestamp-converter.html">时间戳</a>
+    <a href="base64-tool.html" class="active">Base64</a>
+  </nav>
+</header>
+
+<main class="container">
+  <div class="tool-header">
+    <h1>🔤 Base64 编码解码工具</h1>
+    <p>文本/文件 Base64 互转、URL 编码、Unicode 转换，实时处理，完全本地运行。</p>
+  </div>
+  
+  <div class="tutorial-box">
+    <h3>📖 使用教程</h3>
+    <ol>
+      <li><strong>选择模式</strong> - 文本编码、文件编码、URL编码、Unicode转换</li>
+      <li><strong>输入内容</strong> - 粘贴文本或拖拽文件</li>
+      <li><strong>处理转换</strong> - 点击编码/解码按钮执行转换</li>
+      <li><strong>复制结果</strong> - 一键复制到剪贴板</li>
+    </ol>
+    <div class="tip"><strong>💡 提示：</strong>支持文件拖拽，自动读取文件内容并编码。</div>
+  </div>
+  
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('text')">📝 文本编码</button>
+    <button class="tab-btn" onclick="switchTab('file')">📁 文件编码</button>
+    <button class="tab-btn" onclick="switchTab('url')">🔗 URL编码</button>
+    <button class="tab-btn" onclick="switchTab('unicode')">⌨️ Unicode</button>
+  </div>
+
+  <div id="tab-text" class="tab-panel active">
+    <div class="action-bar">
+      <button class="btn btn-primary" onclick="b64Encode()">➡️ Base64 编码</button>
+      <button class="btn btn-outline" onclick="b64Decode()">⬅️ Base64 解码</button>
+      <button class="btn btn-outline" onclick="swapText()">🔄 交换两侧</button>
+      <button class="btn btn-outline" onclick="clearText()">🗑️ 清空</button>
+    </div>
+    <div class="editor-grid">
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span style="font-weight:600;font-size:14px;">📥 输入</span>
+          <div class="info-item"><span class="key">字符:</span><span class="val" id="inChars">0</span></div>
+        </div>
+        <textarea id="textInput" placeholder="输入要编码或解码的文本..." oninput="document.getElementById('inChars').textContent=this.value.length" spellcheck="false"></textarea>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span style="font-weight:600;font-size:14px;">📤 输出</span>
+          <div class="info-item"><span class="key">字符:</span><span class="val" id="outChars">0</span></div>
+        </div>
+        <textarea id="textOutput" placeholder="结果将在此显示..." spellcheck="false"></textarea>
+      </div>
+    </div>
+    <div class="info-box">
+      <div class="info-item"><span class="key">原始字节:</span><span class="val" id="origBytes">0</span></div>
+      <div class="info-item"><span class="key">Base64:</span><span class="val" id="b64Bytes">0</span></div>
+      <div class="info-item"><span class="key">膨胀:</span><span class="val" id="b64Ratio">-</span></div>
+    </div>
+  </div>
+
+  <div id="tab-file" class="tab-panel">
+    <div class="action-bar">
+      <button class="btn btn-primary" onclick="fileToBase64()">➡️ 文件 → Base64</button>
+      <button class="btn btn-outline" onclick="base64ToFile()">⬅️ Base64 → 文件</button>
+      <button class="btn btn-outline" onclick="clearFile()">🗑️ 清空</button>
+    </div>
+    <div class="card" style="margin-bottom:16px;">
+      <div style="font-weight:600;font-size:14px;margin-bottom:8px;">📁 上传文件（编码为 Base64）</div>
+      <input type="file" id="fileInput" style="display:none;" onchange="previewFile(this)">
+      <div class="upload-area" onclick="document.getElementById('fileInput').click()" id="fileUploadArea" style="border:2px dashed var(--border);border-radius:12px;padding:32px;text-align:center;cursor:pointer;">
+        <div style="font-size:36px;margin-bottom:8px;">📂</div>
+        <p style="font-size:14px;">点击上传任意文件</p>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">图片/音频/视频/任意文件均可</p>
+      </div>
+      <div id="filePreviewArea" style="margin-top:12px;display:none;"></div>
+    </div>
+    <div class="card">
+      <div style="font-weight:600;font-size:14px;margin-bottom:8px;">📋 Base64 内容</div>
+      <textarea id="fileB64" placeholder="粘贴 Base64 字符串（将还原为文件）..." style="min-height:200px;background:#f8fafc;" spellcheck="false"></textarea>
+      <div id="b64FileInfo" class="info-box" style="display:none;"></div>
+    </div>
+    <div class="card" style="margin-top:16px;background:#fef3c7;border-color:#fcd34d;">
+      <div style="font-weight:600;font-size:14px;margin-bottom:8px;">💡 使用说明</div>
+      <ul style="font-size:13px;line-height:2;color:#92400e;padding-left:18px;">
+        <li><b>编码：</b>上传任意文件，自动生成 Base64 字符串，可粘贴到代码中作 data URI</li>
+        <li><b>解码：</b>粘贴 Base64 字符串，点击"Base64 → 文件"，自动下载还原后的原文件</li>
+        <li><b>Data URI：</b>编码后可生成 <code style="background:#fff;padding:1px 4px;border-radius:3px;">data:image/png;base64,...</code> 格式</li>
+        <li><b>适用场景：</b>CSS/HTML 内嵌小图片、小音频，减少 HTTP 请求</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="tab-url" class="tab-panel">
+    <div class="action-bar">
+      <button class="btn btn-primary" onclick="urlEncode()">🔗 URL 编码</button>
+      <button class="btn btn-outline" onclick="urlDecode()">🔓 URL 解码</button>
+      <button class="btn btn-outline" onclick="urlEncodeAll()">➡️ 编码全部字符</button>
+      <button class="btn btn-outline" onclick="swapText()">🔄 交换两侧</button>
+    </div>
+    <div class="editor-grid">
+      <div>
+        <div style="font-weight:600;font-size:14px;margin-bottom:6px;">📥 输入 URL / 字符</div>
+        <textarea id="urlInput" placeholder="输入包含特殊字符的 URL 或字符串..." oninput="document.getElementById('inChars').textContent=this.value.length" spellcheck="false"></textarea>
+      </div>
+      <div>
+        <div style="font-weight:600;font-size:14px;margin-bottom:6px;">📤 结果</div>
+        <textarea id="urlOutput" placeholder="结果..." oninput="document.getElementById('outChars').textContent=this.value.length" spellcheck="false"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-unicode" class="tab-panel">
+    <div class="action-bar">
+      <button class="btn btn-primary" onclick="unicodeEncode()">⌨️ 文本 → Unicode</button>
+      <button class="btn btn-outline" onclick="unicodeDecode()">📝 Unicode → 文本</button>
+      <button class="btn btn-outline" onclick="unicodeNrEncode()">🔢 数字格式 (\u4e2d)</button>
+    </div>
+    <div class="editor-grid">
+      <div>
+        <div style="font-weight:600;font-size:14px;margin-bottom:6px;">📥 文本</div>
+        <textarea id="uniInput" placeholder="输入中文或其他 Unicode 字符..." spellcheck="false"></textarea>
+      </div>
+      <div>
+        <div style="font-weight:600;font-size:14px;margin-bottom:6px;">📤 Unicode 结果</div>
+        <textarea id="uniOutput" placeholder="结果..." spellcheck="false"></textarea>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <div style="font-weight:700;font-size:14px;margin-bottom:8px;">📦 常用 Unicode 字符</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u00a9')">© 版权</button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u00ae')">® 注册</button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2122')">™ 商标</button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2022')">• 圆点</button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2014')">— 破折号</button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u201c\u201d')">"" 引号</button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2190\u2191\u2192\u2193')">←↑→↓ 箭头</button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2605\u2606')">★☆ 星</button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2665\u2666\u2663\u2660')">♥♦♣♠ 花色</button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u00b0')">° 度</button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u00b2\u00b3')">²³ 上标</button>
+        <button class="btn btn-outline" style="font-size:13px;" onclick="insertChar('\u2192')">→ 右箭头</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <p>© 2026 在线工具箱 · 所有文件仅在浏览器本地处理，不会上传到服务器。</p>
+</footer>
+
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector('[onclick="switchTab(\''+name+'\')"]').classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function b64Encode() {
+  const text = document.getElementById('textInput').value;
+  if (!text) return alert('请输入文本');
+  try {
+    const encoded = btoa(unescape(encodeURIComponent(text)));
+    document.getElementById('textOutput').value = encoded;
+    updateB64Stats(text, encoded);
+  } catch(e) { alert('编码失败：' + e.message); }
+}
+
+function b64Decode() {
+  const text = document.getElementById('textInput').value;
+  if (!text) return alert('请输入 Base64 字符');
+  try {
+    const decoded = decodeURIComponent(escape(atob(text)));
+    document.getElementById('textOutput').value = decoded;
+    updateB64Stats(decoded, text);
+  } catch(e) { alert('解码失败：' + e.message); }
+}
+
+function updateB64Stats(original, encoded) {
+  document.getElementById('inChars').textContent = original.length;
+  document.getElementById('outChars').textContent = encoded.length;
+  document.getElementById('origBytes').textContent = new TextEncoder().encode(original).length + ' B';
+  document.getElementById('b64Bytes').textContent = encoded.length + ' B';
+  const ratio = ((encoded.length / new TextEncoder().encode(original).length - 1) * 100).toFixed(1);
+  document.getElementById('b64Ratio').textContent = '+' + ratio + '%';
+}
+
+function swapText() {
+  const input = document.getElementById('textInput');
+  const output = document.getElementById('textOutput');
+  const tmp = input.value;
+  input.value = output.value;
+  output.value = tmp;
+  updateB64Stats(input.value, output.value);
+}
+
+function clearText() {
+  document.getElementById('textInput').value = '';
+  document.getElementById('textOutput').value = '';
+  document.getElementById('inChars').textContent = '0';
+  document.getElementById('outChars').textContent = '0';
+  document.getElementById('origBytes').textContent = '0';
+  document.getElementById('b64Bytes').textContent = '0';
+  document.getElementById('b64Ratio').textContent = '-';
+}
+
+let currentFileName = '';
+let currentFileMime = '';
+
+function previewFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  currentFileName = file.name;
+  currentFileMime = file.type;
+  const isImage = file.type.startsWith('image/');
+  let previewHtml = '<div class="file-preview"><span class="mime-tag ' + (isImage ? 'mime-img' : 'mime-txt') + '">' + escHtml(file.type || '未知') + '</span><span>' + escHtml(file.name) + '</span><span style="color:var(--text-muted);">(' + (file.size/1024).toFixed(1) + ' KB)</span></div>';
+  if (isImage) {
+    const reader = new FileReader();
+    reader.onload = e => { previewHtml += '<div style="margin-top:8px;"><img src="' + e.target.result + '" style="max-width:120px;max-height:120px;border-radius:6px;border:1px solid var(--border);"></div>'; document.getElementById('filePreviewArea').innerHTML = previewHtml; };
+    reader.readAsDataURL(file);
+  } else {
+    document.getElementById('filePreviewArea').innerHTML = previewHtml;
+  }
+  document.getElementById('fileUploadArea').style.display = 'none';
+  document.getElementById('filePreviewArea').style.display = 'block';
+  fileToBase64_single(file);
+}
+
+function fileToBase64_single(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const b64 = e.target.result.split(',')[1];
+    document.getElementById('fileB64').value = b64;
+    document.getElementById('b64FileInfo').style.display = 'flex';
+    document.getElementById('b64FileInfo').innerHTML = '<div class="info-item"><span class="key">文件:</span><span class="val">' + escHtml(file.name) + '</span></div><div class="info-item"><span class="key">MIME:</span><span class="val">' + escHtml(file.type) + '</span></div><div class="info-item"><span class="key">大小:</span><span class="val">' + (file.size/1024).toFixed(1) + ' KB</span></div><div class="info-item"><span class="key">Base64:</span><span class="val">' + b64.length + ' 字符</span></div>';
+    currentFileMime = file.type;
+  };
+  reader.readAsDataURL(file);
+}
+
+function fileToBase64() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.onchange = e => { if (e.target.files[0]) previewFile({ files: e.target.files }); };
+  input.click();
+}
+
+function base64ToFile() {
+  const b64 = document.getElementById('fileB64').value.trim();
+  if (!b64) return alert('请先粘贴 Base64 字符');
+  let mime = currentFileMime || 'application/octet-stream';
+  try {
+    const binStr = atob(b64);
+    const bytes = new Uint8Array(binStr.length);
+    for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+    const blob = new Blob([bytes], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = currentFileName || 'decoded_file';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  } catch(e) { alert('解码失败：' + e.message); }
+}
+
+function clearFile() {
+  document.getElementById('fileInput').value = '';
+  document.getElementById('fileB64').value = '';
+  document.getElementById('filePreviewArea').style.display = 'none';
+  document.getElementById('fileUploadArea').style.display = 'block';
+  document.getElementById('b64FileInfo').style.display = 'none';
+  currentFileName = '';
+  currentFileMime = '';
+}
+
+function urlEncode() {
+  const text = document.getElementById('urlInput').value;
+  if (!text) return alert('请输入文本');
+  document.getElementById('urlOutput').value = encodeURIComponent(text);
+}
+
+function urlDecode() {
+  const text = document.getElementById('urlInput').value;
+  if (!text) return alert('请输入 URL 编码字符');
+  try { document.getElementById('urlOutput').value = decodeURIComponent(text); }
+  catch(e) { document.getElementById('urlOutput').value = '❌ 解码失败：' + e.message; }
+}
+
+function urlEncodeAll() {
+  const text = document.getElementById('urlInput').value;
+  if (!text) return alert('请输入文本');
+  document.getElementById('urlOutput').value = encodeURI(text);
+}
+
+function unicodeEncode() {
+  const text = document.getElementById('uniInput').value;
+  if (!text) return alert('请输入文本');
+  let result = '';
+  for (const ch of text) result += '\\u' + ch.charCodeAt(0).toString(16).padStart(4, '0');
+  document.getElementById('uniOutput').value = result;
+}
+
+function unicodeDecode() {
+  const text = document.getElementById('uniInput').value;
+  if (!text) return alert('请输入 Unicode 字符');
+  try {
+    const result = text.replace(/\\u([0-9a-fA-F]{4})/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
+    document.getElementById('uniOutput').value = result;
+  } catch(e) { document.getElementById('uniOutput').value = '❌ 解码失败'; }
+}
+
+function unicodeNrEncode() {
+  const text = document.getElementById('uniInput').value;
+  if (!text) return alert('请输入文本');
+  let result = '';
+  for (const ch of text) result += ch.charCodeAt(0).toString(16).padStart(4, '0');
+  document.getElementById('uniOutput').value = result;
+}
+
+function insertChar(ch) {
+  document.getElementById('uniInput').value += ch;
+  document.getElementById('uniInput').focus();
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>
