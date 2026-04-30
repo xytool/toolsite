@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>贪吃蛇 - 在线小游戏</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { background: #1a1a2e; }
+    .game-container { max-width: 600px; margin: 80px auto 40px; text-align: center; }
+    h1 { color: #fff; margin-bottom: 20px; }
+    #gameCanvas { background: #16213e; border: 3px solid #4f46e5; border-radius: 8px; }
+    .score { color: #fff; font-size: 24px; margin: 20px 0; }
+    .controls { margin-top: 20px; }
+    .btn { background: #4f46e5; color: #fff; border: none; padding: 12px 30px; border-radius: 8px; font-size: 16px; cursor: pointer; margin: 5px; }
+    .btn:hover { background: #4338ca; }
+    .info { color: #94a3b8; margin-top: 20px; }
+    .mobile-controls { display: none; margin-top: 20px; }
+    .mobile-btn { width: 60px; height: 60px; background: #4f46e5; color: #fff; border: none; border-radius: 8px; font-size: 24px; margin: 5px; cursor: pointer; }
+    @media (max-width: 768px) {
+      .mobile-controls { display: grid; grid-template-columns: repeat(3, 60px); justify-content: center; }
+      .mobile-controls .up { grid-column: 2; }
+      .mobile-controls .left { grid-column: 1; grid-row: 2; }
+      .mobile-controls .down { grid-column: 2; grid-row: 2; }
+      .mobile-controls .right { grid-column: 3; grid-row: 2; }
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <a href="index.html" class="logo"><span>🎮</span> 小游戏站</a>
+    <nav><a href="index.html">返回首页</a></nav>
+  </header>
+  <div class="game-container">
+    <h1>🐍 贪吃蛇</h1>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div class="score">得分: <span id="score">0</span></div>
+    <div class="controls">
+      <button class="btn" onclick="startGame()">开始游戏</button>
+      <button class="btn" onclick="pauseGame()">暂停</button>
+    </div>
+    <div class="mobile-controls">
+      <button class="mobile-btn up" onclick="setDirection('up')">↑</button>
+      <button class="mobile-btn left" onclick="setDirection('left')">←</button>
+      <button class="mobile-btn down" onclick="setDirection('down')">↓</button>
+      <button class="mobile-btn right" onclick="setDirection('right')">→</button>
+    </div>
+    <p class="info">键盘方向键或WASD控制，移动端点击按钮</p>
+  </div>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const gridSize = 20;
+    let snake = [{x: 10, y: 10}];
+    let food = {x: 15, y: 15};
+    let direction = 'right';
+    let nextDirection = 'right';
+    let score = 0;
+    let gameLoop = null;
+    let paused = false;
+    function draw() {
+      ctx.fillStyle = '#16213e';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+      ctx.fillStyle = '#22c55e';
+      snake.forEach((segment, i) => {
+        ctx.fillStyle = i === 0 ? '#16a34a' : '#22c55e';
+        ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
+      });
+    }
+    function move() {
+      if (paused) return;
+      direction = nextDirection;
+      const head = {...snake[0]};
+      if (direction === 'up') head.y--;
+      if (direction === 'down') head.y++;
+      if (direction === 'left') head.x--;
+      if (direction === 'right') head.x++;
+      if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20 || snake.some(s => s.x === head.x && s.y === head.y)) {
+        clearInterval(gameLoop);
+        alert('游戏结束！得分: ' + score);
+        return;
+      }
+      snake.unshift(head);
+      if (head.x === food.x && head.y === food.y) {
+        score += 10;
+        document.getElementById('score').textContent = score;
+        placeFood();
+      } else {
+        snake.pop();
+      }
+      draw();
+    }
+    function placeFood() {
+      do {
+        food = {x: Math.floor(Math.random() * 20), y: Math.floor(Math.random() * 20)};
+      } while (snake.some(s => s.x === food.x && s.y === food.y));
+    }
+    function startGame() {
+      snake = [{x: 10, y: 10}];
+      direction = 'right';
+      nextDirection = 'right';
+      score = 0;
+      paused = false;
+      document.getElementById('score').textContent = 0;
+      placeFood();
+      clearInterval(gameLoop);
+      gameLoop = setInterval(move, 150);
+    }
+    function pauseGame() {
+      paused = !paused;
+    }
+    function setDirection(dir) {
+      const opposites = {up: 'down', down: 'up', left: 'right', right: 'left'};
+      if (opposites[dir] !== direction) nextDirection = dir;
+    }
+    document.addEventListener('keydown', e => {
+      const keys = {ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', w: 'up', s: 'down', a: 'left', d: 'right', W: 'up', S: 'down', A: 'left', D: 'right'};
+      if (keys[e.key]) {
+        e.preventDefault();
+        setDirection(keys[e.key]);
+      }
+    });
+    draw();
+  </script>
+</body>
+</html>

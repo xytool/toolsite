@@ -1,10 +1,10 @@
-﻿/* ===== 首页 Hero 区域 ===== */
+/* ===== 首页 Hero 区域 ===== */
 .hero {
   text-align: center;
-  padding: 32px 0 24px;
+  padding: 48px 0 24px;
 }
 .hero h1 {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 800;
   margin-bottom: 12px;
   background: linear-gradient(135deg, #4f46e5, #7c3aed);
@@ -13,7 +13,7 @@
   background-clip: text;
 }
 .hero p {
-  font-size: 16px;
+  font-size: 17px;
   color: var(--text-muted);
   max-width: 500px;
   margin: 0 auto;
