@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>抽签抽奖 - 在线工具</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+.lottery-box { text-align:center; padding:30px 20px; }
+.lottery-display { font-size:56px; font-weight:800; color:var(--primary); min-height:80px; margin:20px 0; }
+.lottery-display.rolling { animation: shake 0.1s infinite; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+.participant-list { margin:20px 0; }
+.participant-list textarea { width:100%; min-height:120px; padding:12px; border:1px solid var(--border); border-radius:8px; font-size:14px; }
+.winner-card { background:linear-gradient(135deg,#fef3c7,#fde68a); border:2px solid #f59e0b; border-radius:16px; padding:24px; margin:20px 0; text-align:center; }
+.winner-card .trophy { font-size:48px; }
+.winner-card .name { font-size:28px; font-weight:800; color:#92400e; margin:12px 0; }
+.settings { display:flex; gap:16px; justify-content:center; margin:16px 0; flex-wrap:wrap; }
+.settings label { font-size:14px; color:var(--text-muted); }
+.settings input { width:60px; padding:4px 8px; border:1px solid var(--border); border-radius:6px; }
+</style>
+</head>
+<body>
+<div class="navbar"><a href="index.html" class="logo"><span>🧰</span> 在线工具箱</a></div>
+<div class="container">
+  <div class="tool-header"><h1>🎉 抽签/抽奖</h1><p>输入名单，公平公正随机抽取</p></div>
+  <div class="card">
+    <div class="participant-list">
+      <p style="color:var(--text-muted);margin-bottom:8px;">每行输入一个参与者的名字：</p>
+      <textarea id="nameList" placeholder="张三&#10;李四&#10;王五&#10;赵六">张三
+李四
+王五
+赵六
+钱七
+孙八
+周九
+吴十</textarea>
+    </div>
+    <div class="settings">
+      <label>抽取人数：<input type="number" id="winnerCount" value="1" min="1" max="10"></label>
+      <label><input type="checkbox" id="removeWinner"> 中奖者不再参与</label>
+    </div>
+    <div class="lottery-box">
+      <div class="lottery-display" id="display">🎲</div>
+      <button class="btn btn-primary" style="padding:14px 40px;font-size:16px;" onclick="startDraw()">🎯 开始抽取</button>
+    </div>
+    <div id="resultBox"></div>
+  </div>
+</div>
+<script>
+var participants = [];
+var winners = [];
+function startDraw() {
+  var list = document.getElementById('nameList').value.split('\n').filter(function(n){return n.trim();});
+  if(list.length === 0) { alert('请输入参与者名单'); return; }
+  var count = parseInt(document.getElementById('winnerCount').value) || 1;
+  var remove = document.getElementById('removeWinner').checked;
+  if(remove) { list = list.filter(function(n){return winners.indexOf(n) === -1;}); }
+  if(list.length < count) { alert('剩余参与者不足' + count + '人'); return; }
+  
+  var display = document.getElementById('display');
+  display.className = 'lottery-display rolling';
+  var rollCount = 0;
+  var rollInterval = setInterval(function(){
+    display.textContent = list[Math.floor(Math.random() * list.length)];
+    rollCount++;
+    if(rollCount > 20) {
+      clearInterval(rollInterval);
+      display.className = 'lottery-display';
+      showWinners(list, count, remove);
+    }
+  }, 100);
+}
+function showWinners(list, count, remove) {
+  var result = [];
+  var temp = list.slice();
+  for(var i = 0; i < count; i++) {
+    var idx = Math.floor(Math.random() * temp.length);
+    result.push(temp[idx]);
+    if(remove) winners.push(temp[idx]);
+    temp.splice(idx, 1);
+  }
+  var html = '<div class="winner-card"><div class="trophy">🏆</div>';
+  result.forEach(function(w, i){
+    html += '<div class="name">' + (count > 1 ? '第' + (i+1) + '名：' : '') + w + '</div>';
+  });
+  html += '</div>';
+  document.getElementById('resultBox').innerHTML = html;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>随机决定器 - 在线工具</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+.decide-box { text-align:center; padding:40px 20px; }
+.decide-box h2 { font-size:48px; margin:20px 0; min-height:60px; }
+.options-input { width:100%; min-height:100px; padding:12px; border:1px solid var(--border); border-radius:8px; font-size:14px; margin-bottom:12px; }
+.mode-btns { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:20px; }
+.mode-btn { padding:8px 16px; border:1px solid var(--border); border-radius:20px; background:#fff; cursor:pointer; font-size:13px; }
+.mode-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+.big-btn { padding:16px 48px; font-size:18px; border-radius:12px; }
+.result-anim { animation: bounce 0.5s; }
+@keyframes bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+.history { margin-top:20px; text-align:left; }
+.history-item { padding:8px 12px; background:#f8fafc; border-radius:6px; margin-bottom:6px; font-size:13px; }
+</style>
+</head>
+<body>
+<div class="navbar"><a href="index.html" class="logo"><span>🧰</span> 在线工具箱</a></div>
+<div class="container">
+  <div class="tool-header"><h1>🎲 随机决定器</h1><p>抛硬币、掷骰子、抽选项，让命运来决定</p></div>
+  
+  <div class="card">
+    <div class="mode-btns">
+      <button class="mode-btn active" onclick="setMode('coin')">🪙 抛硬币</button>
+      <button class="mode-btn" onclick="setMode('dice')">🎲 掷骰子</button>
+      <button class="mode-btn" onclick="setMode('custom')">📝 自定义选项</button>
+    </div>
+    
+    <div id="coinMode" class="decide-box">
+      <div style="font-size:80px;" id="coinIcon">🪙</div>
+      <h2 id="coinResult">点击按钮抛硬币</h2>
+      <button class="btn btn-primary big-btn" onclick="flipCoin()">抛硬币</button>
+    </div>
+    
+    <div id="diceMode" class="decide-box" style="display:none;">
+      <div style="font-size:80px;" id="diceIcon">🎲</div>
+      <h2 id="diceResult">点击按钮掷骰子</h2>
+      <div style="margin:12px 0;">
+        <label>骰子数量: <input type="number" id="diceCount" value="1" min="1" max="10" style="width:60px;padding:4px;"></label>
+      </div>
+      <button class="btn btn-primary big-btn" onclick="rollDice()">掷骰子</button>
+    </div>
+    
+    <div id="customMode" style="display:none;">
+      <p style="color:var(--text-muted);margin-bottom:8px;">每行输入一个选项：</p>
+      <textarea class="options-input" id="customOptions" placeholder="选项1&#10;选项2&#10;选项3">今天吃火锅&#10;今天吃烧烤&#10;今天吃日料&#10;今天吃川菜&#10;今天自己做饭</textarea>
+      <div class="decide-box">
+        <h2 id="customResult" style="min-height:60px;">点击按钮随机选择</h2>
+        <button class="btn btn-primary big-btn" onclick="randomPick()">🎯 帮我决定</button>
+      </div>
+    </div>
+    
+    <div class="history" id="historyBox">
+      <h4 style="margin-bottom:8px;">📋 历史记录</h4>
+      <div id="historyList"></div>
+    </div>
+  </div>
+</div>
+<script>
+let history = [];
+function setMode(mode) {
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('coinMode').style.display = mode === 'coin' ? 'block' : 'none';
+  document.getElementById('diceMode').style.display = mode === 'dice' ? 'block' : 'none';
+  document.getElementById('customMode').style.display = mode === 'custom' ? 'block' : 'none';
+}
+function flipCoin() {
+  const result = Math.random() < 0.5 ? '正面' : '反面';
+  const icon = result === '正面' ? '🪙' : '💿';
+  document.getElementById('coinIcon').textContent = icon;
+  const el = document.getElementById('coinResult');
+  el.textContent = '结果是：' + result + '！';
+  el.className = 'result-anim';
+  setTimeout(() => el.className = '', 500);
+  addHistory('抛硬币：' + result);
+}
+function rollDice() {
+  const count = parseInt(document.getElementById('diceCount').value) || 1;
+  let results = [];
+  for(let i = 0; i < count; i++) results.push(Math.floor(Math.random() * 6) + 1);
+  const sum = results.reduce((a,b) => a+b, 0);
+  const icons = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+  document.getElementById('diceIcon').textContent = results.map(r => icons[r-1]).join(' ');
+  const el = document.getElementById('diceResult');
+  el.textContent = count === 1 ? '点数：' + results[0] : '点数：' + results.join('+') + ' = ' + sum;
+  el.className = 'result-anim';
+  setTimeout(() => el.className = '', 500);
+  addHistory('掷骰子：' + results.join(','));
+}
+function randomPick() {
+  const options = document.getElementById('customOptions').value.split('\n').filter(o => o.trim());
+  if(options.length < 2) { alert('请至少输入2个选项'); return; }
+  const result = options[Math.floor(Math.random() * options.length)];
+  const el = document.getElementById('customResult');
+  el.textContent = '🎉 ' + result + '！';
+  el.className = 'result-anim';
+  setTimeout(() => el.className = '', 500);
+  addHistory('随机选择：' + result);
+}
+function addHistory(text) {
+  const now = new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  history.unshift('[' + now + '] ' + text);
+  if(history.length > 20) history.pop();
+  document.getElementById('historyList').innerHTML = history.map(h => '<div class="history-item">' + h + '</div>').join('');
+}
+</script>
+</body>
+</html>

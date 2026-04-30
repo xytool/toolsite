@@ -1,0 +1,182 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>迷宫生成器 - 在线工具</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+.maze-container { display:flex; justify-content:center; margin:20px 0; overflow:auto; }
+#mazeCanvas { border:2px solid var(--border); border-radius:8px; }
+.maze-controls { display:flex; gap:12px; justify-content:center; margin:16px 0; flex-wrap:wrap; }
+.maze-controls label { font-size:14px; color:var(--text-muted); }
+.maze-controls input { width:60px; padding:4px 8px; border:1px solid var(--border); border-radius:6px; }
+.solution-path { margin-top:12px; padding:12px; background:#f0fdf4; border-radius:8px; font-size:13px; color:#166534; }
+</style>
+</head>
+<body>
+<div class="navbar"><a href="index.html" class="logo"><span>🧰</span> 在线工具箱</a></div>
+<div class="container">
+  <div class="tool-header"><h1>🌀 迷宫生成器</h1><p>自动生成可打印的迷宫，支持显示答案</p></div>
+  <div class="card">
+    <div class="maze-controls">
+      <label>宽度：<input type="number" id="mazeW" value="21" min="5" max="51" step="2"></label>
+      <label>高度：<input type="number" id="mazeH" value="21" min="5" max="51" step="2"></label>
+      <button class="btn btn-primary" onclick="generateMaze()">🎲 生成迷宫</button>
+      <button class="btn btn-outline" onclick="showSolution()">💡 显示答案</button>
+      <button class="btn btn-outline" onclick="printMaze()">🖨️ 打印</button>
+    </div>
+    <div class="maze-container">
+      <canvas id="mazeCanvas" width="420" height="420"></canvas>
+    </div>
+    <div class="solution-path" id="solutionPath" style="display:none;"></div>
+  </div>
+</div>
+<script>
+var canvas = document.getElementById('mazeCanvas');
+var ctx = canvas.getContext('2d');
+var maze = [];
+var cellSize = 20;
+var solution = [];
+
+function generateMaze() {
+  var w = parseInt(document.getElementById('mazeW').value);
+  var h = parseInt(document.getElementById('mazeH').value);
+  if(w % 2 === 0) w++; if(h % 2 === 0) h++;
+  cellSize = Math.min(20, Math.floor(400 / Math.max(w, h)));
+  canvas.width = w * cellSize + 1;
+  canvas.height = h * cellSize + 1;
+  
+  // 初始化：全是墙
+  maze = [];
+  for(var y = 0; y < h; y++) {
+    maze[y] = [];
+    for(var x = 0; x < w; x++) {
+      maze[y][x] = 1;
+    }
+  }
+  
+  // 递归回溯生成迷宫
+  var stack = [];
+  var startX = 1, startY = 1;
+  maze[startY][startX] = 0;
+  stack.push({x:startX, y:startY});
+  
+  while(stack.length > 0) {
+    var current = stack[stack.length - 1];
+    var neighbors = [];
+    var dirs = [[0,-2],[0,2],[-2,0],[2,0]];
+    for(var i = 0; i < 4; i++) {
+      var nx = current.x + dirs[i][0];
+      var ny = current.y + dirs[i][1];
+      if(nx > 0 && nx < w-1 && ny > 0 && ny < h-1 && maze[ny][nx] === 1) {
+        neighbors.push({x:nx, y:ny, dx:dirs[i][0]/2, dy:dirs[i][1]/2});
+      }
+    }
+    
+    if(neighbors.length > 0) {
+      var next = neighbors[Math.floor(Math.random() * neighbors.length)];
+      maze[current.y + next.dy][current.x + next.dx] = 0;
+      maze[next.y][next.x] = 0;
+      stack.push({x:next.x, y:next.y});
+    } else {
+      stack.pop();
+    }
+  }
+  
+  // 入口和出口
+  maze[0][1] = 0;
+  maze[h-1][w-2] = 0;
+  
+  drawMaze(false);
+  document.getElementById('solutionPath').style.display = 'none';
+}
+
+function drawMaze(showSolution) {
+  var w = maze[0].length;
+  var h = maze.length;
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  for(var y = 0; y < h; y++) {
+    for(var x = 0; x < w; x++) {
+      if(maze[y][x] === 1) {
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+      }
+    }
+  }
+  
+  // 入口和出口标记
+  ctx.fillStyle = '#16a34a';
+  ctx.fillRect(1 * cellSize + 2, 0 * cellSize + 2, cellSize - 4, cellSize - 4);
+  ctx.fillStyle = '#dc2626';
+  ctx.fillRect((w-2) * cellSize + 2, (h-1) * cellSize + 2, cellSize - 4, cellSize - 4);
+  
+  if(showSolution && solution.length > 0) {
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(solution[0].x * cellSize + cellSize/2, solution[0].y * cellSize + cellSize/2);
+    for(var i = 1; i < solution.length; i++) {
+      ctx.lineTo(solution[i].x * cellSize + cellSize/2, solution[i].y * cellSize + cellSize/2);
+    }
+    ctx.stroke();
+  }
+}
+
+function solveMaze() {
+  var w = maze[0].length;
+  var h = maze.length;
+  var start = {x:1, y:0};
+  var end = {x:w-2, y:h-1};
+  var queue = [start];
+  var visited = {};
+  var parent = {};
+  visited[start.x + ',' + start.y] = true;
+  
+  while(queue.length > 0) {
+    var current = queue.shift();
+    if(current.x === end.x && current.y === end.y) {
+      // 找到路径
+      solution = [];
+      var node = current;
+      while(node) {
+        solution.unshift(node);
+        node = parent[node.x + ',' + node.y];
+      }
+      return;
+    }
+    
+    var dirs = [[0,-1],[0,1],[-1,0],[1,0]];
+    for(var i = 0; i < 4; i++) {
+      var nx = current.x + dirs[i][0];
+      var ny = current.y + dirs[i][1];
+      if(nx >= 0 && nx < w && ny >= 0 && ny < h && maze[ny][nx] === 0 && !visited[nx + ',' + ny]) {
+        visited[nx + ',' + ny] = true;
+        parent[nx + ',' + ny] = current;
+        queue.push({x:nx, y:ny});
+      }
+    }
+  }
+}
+
+function showSolution() {
+  if(maze.length === 0) { generateMaze(); return; }
+  solveMaze();
+  drawMaze(true);
+  document.getElementById('solutionPath').style.display = 'block';
+  document.getElementById('solutionPath').textContent = '💡 红色线条为正确路径，绿色为入口，红色方块为出口';
+}
+
+function printMaze() {
+  var w = window.open('', '_blank');
+  w.document.write('<html><head><title>迷宫</title></head><body style="text-align:center;"><h2>🌀 迷宫挑战</h2><p>从绿色入口进入，找到红色出口</p><img src="' + canvas.toDataURL() + '"><p style="color:#999;font-size:12px;">由在线工具箱生成</p></body></html>');
+  w.document.close();
+  w.print();
+}
+
+generateMaze();
+</script>
+</body>
+</html>

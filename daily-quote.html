@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每日一言 - 在线工具</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+.quote-box { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; border-radius:20px; padding:40px; margin:20px 0; text-align:center; }
+.quote-text { font-size:24px; line-height:1.6; margin-bottom:20px; font-weight:500; }
+.quote-author { font-size:16px; opacity:.8; }
+.quote-tag { display:inline-block; background:rgba(255,255,255,.2); padding:6px 16px; border-radius:20px; font-size:13px; margin-top:16px; }
+.action-btns { display:flex; gap:12px; justify-content:center; margin-top:24px; flex-wrap:wrap; }
+.history-list { margin-top:24px; }
+.history-item { padding:12px 16px; background:#f8fafc; border-radius:8px; margin-bottom:8px; font-size:14px; }
+</style>
+</head>
+<body>
+<div class="navbar"><a href="index.html" class="logo"><span>🧰</span> 在线工具箱</a></div>
+<div class="container">
+  <div class="tool-header"><h1>📖 每日一言</h1><p>随机名言警句，点亮每一天</p></div>
+  <div class="card">
+    <div class="quote-box">
+      <div class="quote-text" id="quoteText">点击按钮，获取今日名言</div>
+      <div class="quote-author" id="quoteAuthor"></div>
+      <div class="quote-tag" id="quoteTag">💡 智慧</div>
+    </div>
+    <div class="action-btns">
+      <button class="btn btn-primary" onclick="newQuote()">🔄 换一句</button>
+      <button class="btn btn-outline" onclick="copyQuote()">📋 复制</button>
+      <button class="btn btn-outline" onclick="shareQuote()">📤 分享</button>
+    </div>
+    <div class="history-list" id="historyList"></div>
+  </div>
+</div>
+<script>
+var quotes = [
+  {text:'生活不是等待风暴过去，而是学会在雨中跳舞。',author:'维维安·格林',tag:'🌈 励志'},
+  {text:'成功的路上并不拥挤，因为坚持的人不多。',author:'佚名',tag:'💪 坚持'},
+  {text:'你的时间有限，不要浪费在重复别人的生活上。',author:'史蒂夫·乔布斯',tag:'⏰ 时间'},
+  {text:'种一棵树最好的时间是十年前，其次是现在。',author:'丹比萨·莫约',tag:'🌱 行动'},
+  {text:'未曾长夜痛哭者，不足以语人生。',author:'歌德',tag:'🌙 成长'},
+  {text:'人生如逆旅，我亦是行人。',author:'苏轼',tag:'🚶 人生'},
+  {text:'山重水复疑无路，柳暗花明又一村。',author:'陆游',tag:'🌸 希望'},
+  {text:'知之为知之，不知为不知，是知也。',author:'孔子',tag:'📚 智慧'},
+  {text:'千里之行，始于足下。',author:'老子',tag:'👣 行动'},
+  {text:'不积跬步，无以至千里；不积小流，无以成江海。',author:'荀子',tag:'💧 积累'},
+  {text:'天行健，君子以自强不息。',author:'《周易》',tag:'⚡ 奋斗'},
+  {text:'路漫漫其修远兮，吾将上下而求索。',author:'屈原',tag:'🔍 探索'},
+  {text:'纸上得来终觉浅，绝知此事要躬行。',author:'陆游',tag:'🛠️ 实践'},
+  {text:'博学之，审问之，慎思之，明辨之，笃行之。',author:'《中庸》',tag:'🎓 学习'},
+  {text:'宝剑锋从磨砺出，梅花香自苦寒来。',author:'古诗',tag:'🗡️ 磨砺'}
+];
+var history = [];
+function newQuote() {
+  var idx = Math.floor(Math.random() * quotes.length);
+  var q = quotes[idx];
+  document.getElementById('quoteText').textContent = q.text;
+  document.getElementById('quoteAuthor').textContent = '—— ' + q.author;
+  document.getElementById('quoteTag').textContent = q.tag;
+  history.unshift(q.text + ' —— ' + q.author);
+  if(history.length > 10) history.pop();
+  document.getElementById('historyList').innerHTML = '<h4 style="margin-bottom:12px;">📋 最近浏览</h4>' + history.map(function(h){return '<div class="history-item">' + h + '</div>';}).join('');
+}
+function copyQuote() {
+  var text = document.getElementById('quoteText').textContent + ' ' + document.getElementById('quoteAuthor').textContent;
+  navigator.clipboard.writeText(text).then(function(){alert('已复制到剪贴板');});
+}
+function shareQuote() {
+  var text = document.getElementById('quoteText').textContent;
+  if(navigator.share) { navigator.share({title:'每日一言',text:text}); }
+  else { alert('请手动复制分享'); }
+}
+newQuote();
+</script>
+</body>
+</html>
